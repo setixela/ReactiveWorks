@@ -8,14 +8,14 @@
 import UIKit
 
 public struct VCEvent: InitProtocol {
-   public var viewDidLoad: Event<Void>?
-   public var viewWillAppear: Event<Void>?
-   public var viewWillDissappear: Event<Void>?
+   public var viewDidLoad: Eventee<Void>?
+   public var viewWillAppear: Eventee<Void>?
+   public var viewWillDissappear: Eventee<Void>?
 
    // setup
-   public var setTitle: Event<String>?
-   public var setLeftBarItems: Event<[UIBarButtonItem]>?
-   public var setRightBarItems: Event<[UIBarButtonItem]>?
+   public var setTitle: Eventee<String>?
+   public var setLeftBarItems: Eventee<[UIBarButtonItem]>?
+   public var setRightBarItems: Eventee<[UIBarButtonItem]>?
 
    //
    public init() {}

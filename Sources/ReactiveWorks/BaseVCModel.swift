@@ -27,7 +27,7 @@ public protocol VCModelProtocol: UIViewController, Communicable where Events == 
    init(sceneModel: SceneModelProtocol)
 }
 
-public class BaseVCModel: UIViewController, VCModelProtocol {
+open class BaseVCModel: UIViewController, VCModelProtocol {
    public let sceneModel: SceneModelProtocol
 
    public lazy var baseView: UIView = sceneModel.makeMainView()

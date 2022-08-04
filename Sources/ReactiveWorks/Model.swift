@@ -11,7 +11,7 @@ public protocol ModelProtocol: AnyObject {
    func start()
 }
 
-public class BaseModel: NSObject, ModelProtocol {
+open class BaseModel: NSObject, ModelProtocol {
    public func start() {
       print("Needs to override start()")
    }

@@ -6,7 +6,7 @@
 //
 
 public protocol InitProtocol {
-    init()
+   init()
 }
 
 public protocol BuilderProtocol: InitProtocol {
@@ -15,6 +15,6 @@ public protocol BuilderProtocol: InitProtocol {
    var builder: Builder { get }
 }
 
-public class BaseClass: InitProtocol {
+open class BaseClass: InitProtocol {
    public required init() {}
 }

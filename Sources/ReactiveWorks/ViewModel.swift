@@ -20,7 +20,7 @@ public protocol ViewModelProtocol: UIViewModel {
    init()
 }
 
-public class BaseViewModel<View: UIView>: NSObject, ViewModelProtocol {
+open class BaseViewModel<View: UIView>: NSObject, ViewModelProtocol {
    private weak var weakView: View?
 
    // will be cleaned after presenting view

@@ -23,6 +23,8 @@ public protocol SceneModel: SceneModelProtocol {
 
 public struct SceneEvent<Input>: InitProtocol {
    public var input: Event<Input>?
+
+   public init() {}
 }
 
 public protocol Assetable {

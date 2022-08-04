@@ -36,7 +36,7 @@ public protocol Assetable {
    typealias Text = Asset.Text
 }
 
-public class BaseSceneModel<
+open class BaseSceneModel<
    VCModel: VCModelProtocol,
    MainViewModel: ViewModelProtocol,
    Asset: AssetRoot,

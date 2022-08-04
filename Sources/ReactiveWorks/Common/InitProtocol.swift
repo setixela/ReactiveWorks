@@ -6,7 +6,7 @@
 //
 
 public protocol InitProtocol {
-    init()
+   init()
 }
 
 public protocol BuilderProtocol: InitProtocol {

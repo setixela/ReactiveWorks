@@ -16,7 +16,7 @@ open class BaseModel: NSObject, ModelProtocol {
       print("Needs to override start()")
    }
 
-   override required init() {
+   public override required init() {
       super.init()
       start()
    }

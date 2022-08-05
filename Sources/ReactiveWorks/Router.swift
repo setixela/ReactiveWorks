@@ -20,10 +20,10 @@ final class Router<Scene: InitProtocol>: RouterProtocol, Communicable {
     func start() {}
 
     struct Events: InitProtocol {
-        var push: Eventee<UIViewController>?
-        var pop: Eventee<Void>?
-        var popToRoot: Eventee<Void>?
-        var present: Eventee<UIViewController>?
+        var push: Event<UIViewController>?
+        var pop: Event<Void>?
+        var popToRoot: Event<Void>?
+        var present: Event<UIViewController>?
     }
 
     func route(_ keypath: KeyPath<Scene, SceneModelProtocol>, navType: NavType, payload: Any? = nil) {

@@ -9,7 +9,7 @@ import Foundation
 
 public typealias VoidClosure = () -> Void
 public typealias GenericClosure<T> = (T) -> Void
-public typealias Eventee<T> = (T) -> Void
+public typealias Event<T> = (T) -> Void
 
 public protocol LambdaProtocol {
    func perform<AnyType>(_ value: AnyType)
@@ -26,5 +26,5 @@ public struct Lambda<T>: LambdaProtocol where T: Any {
       lambda(value)
    }
 
-   let lambda: Eventee<T>
+   let lambda: Event<T>
 }

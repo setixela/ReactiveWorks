@@ -34,7 +34,7 @@ public protocol Communicable: AnyObject {
 public extension Communicable {
    //
    @discardableResult
-   func sendEvent<T>(_ event: KeyPath<Events, Eventee<T>?>, payload: T) -> Self {
+   func sendEvent<T>(_ event: KeyPath<Events, Event<T>?>, payload: T) -> Self {
       guard
          let lambda = eventsStore[keyPath: event]
       else {
@@ -50,12 +50,12 @@ public extension Communicable {
    }
 
    @discardableResult
-   func sendEvent<T>(_ event: KeyPath<Events, Eventee<T>?>, _ payload: T) -> Self {
+   func sendEvent<T>(_ event: KeyPath<Events, Event<T>?>, _ payload: T) -> Self {
       return sendEvent(event, payload: payload)
    }
 
    @discardableResult
-   func sendEvent(_ event: KeyPath<Events, Eventee<Void>?>) -> Self {
+   func sendEvent(_ event: KeyPath<Events, Event<Void>?>) -> Self {
       guard
          let lambda = eventsStore[keyPath: event]
       else {
@@ -71,17 +71,17 @@ public extension Communicable {
    }
 
    @discardableResult
-   func onEvent<T>(_ event: WritableKeyPath<Events, Eventee<T>?>, _ lambda: @escaping Eventee<T>) -> Self {
+   func onEvent<T>(_ event: WritableKeyPath<Events, Event<T>?>, _ lambda: @escaping Event<T>) -> Self {
       eventsStore[keyPath: event] = lambda
       return self
    }
 
    @discardableResult
-   func onEvent<T>(_ event: WritableKeyPath<Events, Eventee<T>?>) -> Work<Void, T> {
+   func onEvent<T>(_ event: WritableKeyPath<Events, Event<T>?>) -> Work<Void, T> {
       let work = Work<Void, T>()
       print("\n### WORK     \(work)\n")
       //
-      let lambda: Eventee<T> = { value in
+      let lambda: Event<T> = { value in
          work.success(result: value)
          print("\n### WORK     \(work)\n")
       }

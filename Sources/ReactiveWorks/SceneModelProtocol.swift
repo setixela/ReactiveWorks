@@ -52,6 +52,8 @@ open class BaseSceneModel<
 
    public var eventsStore: Events = .init()
 
+   public init() {}
+
    public func start() {
       print("Needs to override start()")
    }

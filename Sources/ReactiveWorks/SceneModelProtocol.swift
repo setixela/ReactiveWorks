@@ -54,7 +54,7 @@ open class BaseSceneModel<
 
    public init() {}
 
-   public func start() {
+   open func start() {
       print("Needs to override start()")
    }
 

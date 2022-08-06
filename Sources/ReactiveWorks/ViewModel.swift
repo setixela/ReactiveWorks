@@ -18,14 +18,28 @@ public protocol ViewModelProtocol: UIViewModel {
    var view: View { get }
 
    init()
+
+   // new
+   var autostartedView: View? { get set }
+   var isAutoreleaseView: Bool { get set }
+}
+
+public extension ViewModelProtocol {
+    var uiView: UIView {
+      if isAutoreleaseView, let readyView = autostartedView {
+         autostartedView = nil
+         return readyView
+      }
+      return view
+   }
 }
 
 open class BaseViewModel<View: UIView>: NSObject, ViewModelProtocol {
    private weak var weakView: View?
 
    // will be cleaned after presenting view
-   private var autostartedView: View?
-   private var isAutoreleaseView = false
+   public var autostartedView: View?
+   public var isAutoreleaseView = false
 
    public var view: View {
       if let view = weakView {
@@ -39,13 +53,13 @@ open class BaseViewModel<View: UIView>: NSObject, ViewModelProtocol {
       }
    }
 
-   public var uiView: UIView {
-      if isAutoreleaseView, let readyView = autostartedView {
-         autostartedView = nil
-         return readyView
-      }
-      return view
-   }
+//   public var uiView: UIView {
+//      if isAutoreleaseView, let readyView = autostartedView {
+//         autostartedView = nil
+//         return readyView
+//      }
+//      return view
+//   }
 
    public override required init() {
       super.init()

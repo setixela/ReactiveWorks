@@ -25,6 +25,18 @@ public protocol ViewModelProtocol: UIViewModel {
    init()
 }
 
+public extension ViewModelProtocol where Self: ComboRight {
+   var uiView: UIView {
+      print("uiview")
+      let stackView = UIStackView()
+      stackView.axis = .horizontal
+      stackView.addArrangedSubview(uiView)
+      stackView.addArrangedSubview(rightModel.uiView)
+      return stackView
+   }
+}
+
+
 public extension ViewModelProtocol {
    var uiView: UIView {
       if isAutoreleaseView, let readyView = autostartedView {

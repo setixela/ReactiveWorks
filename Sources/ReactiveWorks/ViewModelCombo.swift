@@ -26,13 +26,13 @@ public extension ComboRight {
    }
 }
 
-//public extension UIViewModel where Self: ComboRight {
-//   var uiView: UIView {
-//      print("uiview")
-//      let stackView = UIStackView()
-//      stackView.axis = .horizontal
-//      stackView.addArrangedSubview(uiView)
-//      stackView.addArrangedSubview(rightModel.uiView)
-//      return stackView
-//   }
-//}
+public extension ViewModelProtocol where Self: ComboRight {
+   var uiView: UIView {
+      print("uiview")
+      let stackView = UIStackView()
+      stackView.axis = .horizontal
+      stackView.addArrangedSubview(uiView)
+      stackView.addArrangedSubview(rightModel.uiView)
+      return stackView
+   }
+}

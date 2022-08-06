@@ -25,7 +25,7 @@ public protocol ViewModelProtocol: UIViewModel {
    init()
 }
 
-public extension ViewModelProtocol where Self: ComboRight {
+public extension UIViewModel where Self: ComboRight {
    var uiView: UIView {
       print("uiview")
       let stackView = UIStackView()

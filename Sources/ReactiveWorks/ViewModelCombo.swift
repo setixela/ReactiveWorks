@@ -7,7 +7,9 @@
 
 import UIKit
 
-public protocol Combo {}
+public protocol Combo {
+   var uiView: UIView { get }
+}
 
 public extension Combo {
    var mainModel: Self { self }
@@ -31,8 +33,9 @@ public extension ViewModelProtocol where Self: ComboRight {
       print("uiview")
       let stackView = UIStackView()
       stackView.axis = .horizontal
-      stackView.addArrangedSubview(uiView)
+      stackView.addArrangedSubview(self.uiView)
       stackView.addArrangedSubview(rightModel.uiView)
+      print("exe")
       return stackView
    }
 }

@@ -10,6 +10,8 @@ import UIKit
 // Associatedtype View Erasing protocol
 public protocol UIViewModel: ModelProtocol {
    var uiView: UIView { get }
+
+   func start()
 }
 
 public protocol ViewModelProtocol: UIViewModel {

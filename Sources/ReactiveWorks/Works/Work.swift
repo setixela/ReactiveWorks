@@ -34,6 +34,7 @@ public final class Work<In, Out> {
    private var finisher: ((Out) -> Void)?
    private var genericFail: LambdaProtocol?
    private var nextWork: WorkWrappperProtocol?
+   private var onAnyResultVoidClosure: VoidClosure?
 
    // Methods
    public init(input: In?, _ closure: @escaping WorkClosure<In, Out>) {
@@ -52,16 +53,19 @@ public final class Work<In, Out> {
    public func success(result: Out) {
       self.result = result
 
+      onAnyResultVoidClosure?()
       finisher?(result)
       nextWork?.perform(result)
    }
 
    public func failThenNext<T>(_ value: T) {
+      onAnyResultVoidClosure?()
       genericFail?.perform(value)
       nextWork?.perform(value)
    }
 
    public func fail<T>(_ value: T) {
+      onAnyResultVoidClosure?()
       genericFail?.perform(value)
    }
 }
@@ -75,6 +79,12 @@ public extension Work {
 
    @discardableResult func onFail<T>(_ failure: @escaping GenericClosure<T>) -> Self {
       genericFail = Lambda(lambda: failure)
+
+      return self
+   }
+
+   @discardableResult func doNext(_ closure: @escaping VoidClosure) -> Self {
+      onAnyResultVoidClosure = closure
 
       return self
    }

@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Aleksandr Solovyev on 07.08.2022.
 //

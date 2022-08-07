@@ -10,8 +10,6 @@ import UIKit
 // Associatedtype View Erasing protocol
 public protocol UIViewModel: ModelProtocol {
    var uiView: UIView { get }
-
-   func start()
 }
 
 public protocol ViewModelProtocol: UIViewModel {
@@ -25,25 +23,9 @@ public protocol ViewModelProtocol: UIViewModel {
    init()
 }
 
-public extension UIViewModel where Self: ComboRight {
+public extension UIViewModel where Self: ViewModelProtocol {
    var uiView: UIView {
-      print("uiview")
-      let stackView = UIStackView()
-      stackView.axis = .horizontal
-      stackView.addArrangedSubview(uiView)
-      stackView.addArrangedSubview(rightModel.uiView)
-      return stackView
-   }
-}
-
-
-public extension ViewModelProtocol {
-   var uiView: UIView {
-      if isAutoreleaseView, let readyView = autostartedView {
-         autostartedView = nil
-         return readyView
-      }
-      return view
+      return myView()
    }
 }
 
@@ -66,14 +48,6 @@ open class BaseViewModel<View: UIView>: NSObject, ViewModelProtocol {
       }
    }
 
-//   public var uiView: UIView {
-//      if isAutoreleaseView, let readyView = autostartedView {
-//         autostartedView = nil
-//         return readyView
-//      }
-//      return view
-//   }
-
    override public required init() {
       super.init()
    }
@@ -86,7 +60,7 @@ open class BaseViewModel<View: UIView>: NSObject, ViewModelProtocol {
    open func start() {}
 
    public func setupView(_ closure: GenericClosure<View>) {
-      closure(view)
+      closure(self.view)
    }
 }
 

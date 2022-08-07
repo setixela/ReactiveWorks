@@ -46,6 +46,7 @@ public extension ComboRight {
 }
 
 public extension ComboRight {
+   @discardableResult
    func setRight(_ closure: (RightModel) -> Void) -> Self {
       closure(rightModel)
       return self
@@ -67,6 +68,7 @@ public extension ComboLeft {
 }
 
 public extension ComboLeft {
+   @discardableResult
    func setLeft(_ closure: (LeftModel) -> Void) -> Self {
       closure(leftModel)
       return self

@@ -46,6 +46,7 @@ public extension ComboDown {
 }
 
 public extension ComboDown {
+   @discardableResult
    func setDown(_ closure: (DownModel) -> Void) -> Self {
       closure(downModel)
       return self
@@ -67,6 +68,7 @@ public extension ComboTop {
 }
 
 public extension ComboTop {
+   @discardableResult
    func setTop(_ closure: (TopModel) -> Void) -> Self {
       closure(topModel)
       return self

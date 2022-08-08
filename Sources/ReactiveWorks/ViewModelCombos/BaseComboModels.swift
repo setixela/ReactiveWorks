@@ -19,7 +19,7 @@ public class ComboMainModel<Main: VMP>: BaseViewModel<Main.View>, Combo
 public class ComboRightModel<Main: VMP, RightModel: VMP>:
    BaseViewModel<Main.View>, ComboRight
 {
-   public let rightModel
+   public let rightModel = RightModel()
 }
 
 public class ComboRightDownModel<Main: VMP, RightModel: VMP, DownModel: VMP>:

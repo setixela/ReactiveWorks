@@ -17,7 +17,7 @@ public extension Combo {
 
 // MARK: - ViewModelProtocol + Combos
 
-public extension ViewModelProtocol {
+extension ViewModelProtocol {
    func myView() -> UIView {
       var horStack: UIStackView?
       var vertStack: UIStackView?

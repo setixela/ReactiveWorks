@@ -19,6 +19,16 @@ extension RightModelProtocol {
    }
 }
 
+public protocol Right2ModelProtocol: RightModelProtocol {
+   func right2Model() -> UIViewModel
+}
+
+extension Right2ModelProtocol {
+   func right2Model() -> UIViewModel {
+      fatalError()
+   }
+}
+
 // MARK: - LeftModelProtocol
 
 public protocol LeftModelProtocol {
@@ -49,6 +59,26 @@ public extension ComboRight {
    @discardableResult
    func setRight(_ closure: (RightModel) -> Void) -> Self {
       closure(rightModel)
+      return self
+   }
+}
+
+//
+
+public protocol ComboRight2: ComboRight, Right2ModelProtocol {
+   var right2Model: RightModel { get }
+}
+
+public extension ComboRight2 {
+   func right2Model() -> UIViewModel {
+      return right2Model
+   }
+}
+
+public extension ComboRight2 {
+   @discardableResult
+   func setRight2(_ closure: (RightModel) -> Void) -> Self {
+      closure(right2Model)
       return self
    }
 }

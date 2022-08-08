@@ -19,6 +19,17 @@ extension DownModelProtocol {
    }
 }
 
+public protocol Down2ModelProtocol: DownModelProtocol {
+   func down2Model() -> UIViewModel
+}
+
+extension Down2ModelProtocol {
+   func down2Model() -> UIViewModel {
+      fatalError()
+   }
+}
+
+
 // MARK: - TopModelProtocol
 
 public protocol TopModelProtocol {
@@ -49,6 +60,28 @@ public extension ComboDown {
    @discardableResult
    func setDown(_ closure: (DownModel) -> Void) -> Self {
       closure(downModel)
+      return self
+   }
+}
+
+///
+
+public protocol ComboDown2: ComboDown, Down2ModelProtocol {
+   associatedtype Down2Model: UIViewModel
+
+   var down2Model: Down2Model { get }
+}
+
+public extension ComboDown2 {
+   func down2Model() -> UIViewModel {
+      return down2Model
+   }
+}
+
+public extension ComboDown2 {
+   @discardableResult
+   func setDown2(_ closure: (Down2Model) -> Void) -> Self {
+      closure(down2Model)
       return self
    }
 }

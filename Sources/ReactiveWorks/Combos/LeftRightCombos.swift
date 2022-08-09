@@ -9,19 +9,10 @@ import Foundation
 
 // MARK: - Combo
 
-public protocol Combo {
-   associatedtype M
-}
+public protocol Combo {}
 
 public extension Combo {
-   typealias M = Self
    var mainModel: Self { self }
-
-//   @discardableResult
-//   func setMain<M: MVP(_ closure: (M) -> Void) -> Self {
-//      closure(self)
-//      return self
-//   }
 }
 
 extension Combo {

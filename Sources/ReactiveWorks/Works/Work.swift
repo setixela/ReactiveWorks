@@ -32,6 +32,7 @@ public final class Work<In, Out> {
 
    // Private
    private var finisher: ((Out) -> Void)?
+   private var voidFinisher: VoidClosure?
    private var genericFail: LambdaProtocol?
    private var nextWork: WorkWrappperProtocol?
    private var onAnyResultVoidClosure: VoidClosure?
@@ -54,6 +55,7 @@ public final class Work<In, Out> {
       self.result = result
 
       onAnyResultVoidClosure?()
+      voidFinisher?()
       finisher?(result)
       nextWork?.perform(result)
    }
@@ -73,6 +75,12 @@ public final class Work<In, Out> {
 public extension Work {
    @discardableResult func onSuccess(_ finisher: @escaping (Out) -> Void) -> Self {
       self.finisher = finisher
+
+      return self
+   }
+
+   @discardableResult func onSuccess(_ voidFinisher: @escaping () -> Void) -> Self {
+      self.voidFinisher = voidFinisher
 
       return self
    }

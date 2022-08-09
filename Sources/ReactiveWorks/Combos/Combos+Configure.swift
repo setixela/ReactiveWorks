@@ -8,34 +8,6 @@
 import Foundation
 import UIKit
 
-private extension Combos
-{
-   func configureRightStart()
-   {
-      view.axis = .horizontal
-   }
-
-   func configureDownStart()
-   {
-      view.axis = .vertical
-   }
-
-   // makers
-   var vertical: UIStackView
-   {
-      let stack = UIStackView()
-      stack.axis = .vertical
-      return stack
-   }
-
-   var horizontal: UIStackView
-   {
-      let stack = UIStackView()
-      stack.axis = .horizontal
-      return stack
-   }
-}
-
 extension Combos
 {
    func configure<M>() where S == SComboM<M>
@@ -199,5 +171,33 @@ extension Combos
       horz.addArrangedSubview(models.right.uiView)
       horz.addArrangedSubview(models.right2.uiView)
       view.addArrangedSubview(horz)
+   }
+}
+
+private extension Combos
+{
+   func configureRightStart()
+   {
+      view.axis = .horizontal
+   }
+
+   func configureDownStart()
+   {
+      view.axis = .vertical
+   }
+
+   // makers
+   var vertical: UIStackView
+   {
+      let stack = UIStackView()
+      stack.axis = .vertical
+      return stack
+   }
+
+   var horizontal: UIStackView
+   {
+      let stack = UIStackView()
+      stack.axis = .horizontal
+      return stack
    }
 }

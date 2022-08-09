@@ -1,0 +1,172 @@
+//
+//  File.swift
+//
+//
+//  Created by Aleksandr Solovyev on 09.08.2022.
+//
+
+import Foundation
+
+public extension Combos
+{
+   convenience init<M>(_ setMain: GenericClosure<M>) where S == SComboM<M>
+   {
+      self.init()
+      setMain(models.main)
+      configure()
+   }
+
+   convenience init<M, R>(
+      _ setMain: GenericClosure<M>,
+      setRight: GenericClosure<R>) where S == SComboMR<M, R>
+   {
+      self.init()
+      setMain(models.main)
+      setRight(models.right)
+      configure()
+   }
+
+   convenience init<M, R, R2>(
+      _ setMain: GenericClosure<M>,
+      setRight: GenericClosure<R>,
+      setRight2: GenericClosure<R2>) where S == SComboMRR<M, R, R2>
+   {
+      self.init()
+      setMain(models.main)
+      setRight(models.right)
+      setRight2(models.right2)
+      configure()
+   }
+
+   convenience init<M, R, D>(
+      _ setMain: GenericClosure<M>,
+      setRight: GenericClosure<R>,
+      setDown: GenericClosure<D>) where S == SComboMRD<M, R, D>
+   {
+      self.init()
+      setMain(models.main)
+      setRight(models.right)
+      setDown(models.down)
+      configure()
+   }
+
+   convenience init<M, R, R2, D>(
+      _ setMain: GenericClosure<M>,
+      setRight: GenericClosure<R>,
+      setRight2: GenericClosure<R2>,
+      setDown: GenericClosure<D>) where S == SComboMRRD<M, R, R2, D>
+   {
+      self.init()
+      setMain(models.main)
+      setRight(models.right)
+      setRight2(models.right2)
+      setDown(models.down)
+      configure()
+   }
+
+   convenience init<M, R, D, R2>(
+      _ setMain: GenericClosure<M>,
+      setRight: GenericClosure<R>,
+      setDown: GenericClosure<D>,
+      setRight2: GenericClosure<R2>) where S == SComboMRDR<M, R, D, R2>
+   {
+      self.init()
+      setMain(models.main)
+      setRight(models.right)
+      setDown(models.down)
+      setRight2(models.right2)
+      configure()
+   }
+
+   convenience init<M, R, D, D2>(
+      _ setMain: GenericClosure<M>,
+      setRight: GenericClosure<R>,
+      setDown: GenericClosure<D>,
+      setDown2: GenericClosure<D2>) where S == SComboMRDD<M, R, D, D2>
+   {
+      self.init()
+      setMain(models.main)
+      setRight(models.right)
+      setDown(models.down)
+      setDown2(models.down2)
+      configure()
+   }
+
+   // down
+
+   convenience init<M, D>(
+      _ setMain: GenericClosure<M>,
+      setDown: GenericClosure<D>) where S == SComboMD<M, D>
+   {
+      self.init()
+      setMain(models.main)
+      setDown(models.down)
+      configure()
+   }
+
+   convenience init<M, D, R>(
+      _ setMain: GenericClosure<M>,
+      setDown: GenericClosure<D>,
+      setRight: GenericClosure<R>) where S == SComboMDR<M, D, R>
+   {
+      self.init()
+      setMain(models.main)
+      setDown(models.down)
+      setRight(models.right)
+      configure()
+   }
+
+   convenience init<M, D, D2>(
+      _ setMain: GenericClosure<M>,
+      setDown: GenericClosure<D>,
+      setDown2: GenericClosure<D2>) where S == SComboMDD<M, D, D2>
+   {
+      self.init()
+      setMain(models.main)
+      setDown(models.down)
+      setDown2(models.down2)
+      configure()
+   }
+
+   convenience init<M, D, D2, R>(
+      _ setMain: GenericClosure<M>,
+      setDown: GenericClosure<D>,
+      setDown2: GenericClosure<D2>,
+      setRight: GenericClosure<R>) where S == SComboMDDR<M, D, D2, R>
+   {
+      self.init()
+      setMain(models.main)
+      setDown(models.down)
+      setDown2(models.down2)
+      setRight(models.right)
+      configure()
+   }
+
+   convenience init<M, D, R, D2>(
+      _ setMain: GenericClosure<M>,
+      setDown: GenericClosure<D>,
+      setRight: GenericClosure<R>,
+      setDown2: GenericClosure<D2>) where S == SComboMDRD<M, D, R, D2>
+   {
+      self.init()
+      setMain(models.main)
+      setDown(models.down)
+      setRight(models.right)
+      setDown2(models.down2)
+      configure()
+   }
+
+   convenience init<M, D, R, R2>(
+      _ setMain: GenericClosure<M>,
+      setDown: GenericClosure<D>,
+      setRight: GenericClosure<R>,
+      setRight2: GenericClosure<R2>) where S == SComboMDRR<M, D, R, R2>
+   {
+      self.init()
+      setMain(models.main)
+      setDown(models.down)
+      setRight(models.right)
+      setRight2(models.right2)
+      configure()
+   }
+}

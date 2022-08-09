@@ -7,13 +7,6 @@
 
 import UIKit
 
-// MARK: - Combo
-
-public protocol Combo {}
-
-public extension Combo {
-   var mainModel: Self { self }
-}
 
 // MARK: - ViewModelProtocol + Combos
 

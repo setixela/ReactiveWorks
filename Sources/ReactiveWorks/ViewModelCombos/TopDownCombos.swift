@@ -45,9 +45,9 @@ extension TopModelProtocol {
 // MARK: - ComboDown
 
 public protocol ComboDown: Combo, DownModelProtocol {
-   associatedtype DownModel: UIViewModel
+   associatedtype D: UIViewModel
 
-   var downModel: DownModel { get }
+   var downModel: D { get }
 }
 
 public extension ComboDown {
@@ -58,7 +58,7 @@ public extension ComboDown {
 
 public extension ComboDown {
    @discardableResult
-   func setDown(_ closure: (DownModel) -> Void) -> Self {
+   func setDown(_ closure: (D) -> Void) -> Self {
       closure(downModel)
       return self
    }
@@ -67,9 +67,9 @@ public extension ComboDown {
 ///
 
 public protocol ComboDown2: ComboDown, Down2ModelProtocol {
-   associatedtype Down2Model: UIViewModel
+   associatedtype D2: UIViewModel
 
-   var down2Model: Down2Model { get }
+   var down2Model: D2 { get }
 }
 
 public extension ComboDown2 {
@@ -80,7 +80,7 @@ public extension ComboDown2 {
 
 public extension ComboDown2 {
    @discardableResult
-   func setDown2(_ closure: (Down2Model) -> Void) -> Self {
+   func setDown2(_ closure: (D2) -> Void) -> Self {
       closure(down2Model)
       return self
    }
@@ -89,9 +89,9 @@ public extension ComboDown2 {
 // MARK: - ComboTop
 
 public protocol ComboTop: Combo, TopModelProtocol {
-   associatedtype TopModel: UIViewModel
+   associatedtype T: UIViewModel
 
-   var topModel: TopModel { get }
+   var topModel: T { get }
 }
 
 public extension ComboTop {
@@ -102,7 +102,7 @@ public extension ComboTop {
 
 public extension ComboTop {
    @discardableResult
-   func setTop(_ closure: (TopModel) -> Void) -> Self {
+   func setTop(_ closure: (T) -> Void) -> Self {
       closure(topModel)
       return self
    }

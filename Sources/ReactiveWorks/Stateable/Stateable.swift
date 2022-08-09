@@ -15,6 +15,10 @@ public protocol Stateable: InitProtocol {
    func applyState(_ state: State)
 }
 
+//extension Stateable {
+//   public func applyState(_ state: State) {}
+//}
+
 public extension Stateable {
    init(_ states: State...) {
       self.init(states)

@@ -7,6 +7,31 @@
 
 import Foundation
 
+// MARK: - Combo
+
+public protocol Combo {
+   associatedtype M
+}
+
+public extension Combo {
+   typealias M = Self
+   var mainModel: Self { self }
+
+//   @discardableResult
+//   func setMain<M: MVP(_ closure: (M) -> Void) -> Self {
+//      closure(self)
+//      return self
+//   }
+}
+
+extension Combo {
+   @discardableResult
+   func setMain<M: VMP & Stateable>(_ closure: (M) -> Void) -> Self {
+      closure(self as! M)
+      return self
+   }
+}
+
 // MARK: - RightModelProtocol
 
 public protocol RightModelProtocol {
@@ -44,9 +69,9 @@ extension LeftModelProtocol {
 // MARK: - ComboRight
 
 public protocol ComboRight: Combo, RightModelProtocol {
-   associatedtype RightModel: UIViewModel
+   associatedtype R: UIViewModel
 
-   var rightModel: RightModel { get }
+   var rightModel: R { get }
 }
 
 public extension ComboRight {
@@ -57,7 +82,7 @@ public extension ComboRight {
 
 public extension ComboRight {
    @discardableResult
-   func setRight(_ closure: (RightModel) -> Void) -> Self {
+   func setRight(_ closure: (R) -> Void) -> Self {
       closure(rightModel)
       return self
    }
@@ -66,7 +91,9 @@ public extension ComboRight {
 //
 
 public protocol ComboRight2: ComboRight, Right2ModelProtocol {
-   var right2Model: RightModel { get }
+   associatedtype R2: UIViewModel
+
+   var right2Model: R2 { get }
 }
 
 public extension ComboRight2 {
@@ -77,7 +104,7 @@ public extension ComboRight2 {
 
 public extension ComboRight2 {
    @discardableResult
-   func setRight2(_ closure: (RightModel) -> Void) -> Self {
+   func setRight2(_ closure: (R2) -> Void) -> Self {
       closure(right2Model)
       return self
    }
@@ -86,9 +113,9 @@ public extension ComboRight2 {
 // MARK: - ComboLeft
 
 public protocol ComboLeft: Combo, LeftModelProtocol {
-   associatedtype LeftModel: UIViewModel
+   associatedtype L: UIViewModel
 
-   var leftModel: LeftModel { get }
+   var leftModel: L { get }
 }
 
 public extension ComboLeft {
@@ -99,7 +126,7 @@ public extension ComboLeft {
 
 public extension ComboLeft {
    @discardableResult
-   func setLeft(_ closure: (LeftModel) -> Void) -> Self {
+   func setLeft(_ closure: (L) -> Void) -> Self {
       closure(leftModel)
       return self
    }

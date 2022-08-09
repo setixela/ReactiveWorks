@@ -16,10 +16,6 @@ public typealias VMPS = VMP & Stateable
 public class Combos<S: SCP>: BaseViewModel<UIStackView>
 {
    public let models: S = .init()
-//
-//   public init() {
-//      self.models = models
-//   }
 
    @discardableResult
    public func set<M>(_ keypath: KeyPath<S, M>, closure: GenericClosure<M>) -> Self

@@ -10,10 +10,11 @@ import UIKit
 
 public typealias VMP = ViewModelProtocol
 public typealias VMPS = VMP & Stateable
+public typealias VMPS2 = VMP & Stateable2
 
 // MARK: - Right combos
 
-public class Combos<S: SCP>: BaseViewModel<UIStackView>
+open class Combos<S: SCP>: BaseViewModel<UIStackView>
 {
    public let models: S = .init()
 
@@ -31,6 +32,7 @@ public extension Combos
    func setMain<M>(_ setMain: GenericClosure<M>) where S == SComboM<M>
    {
       setMain(models.main)
+      configure()
    }
 
    // right
@@ -41,6 +43,7 @@ public extension Combos
    {
       setMain(models.main)
       setRight(models.right)
+      configure()
    }
 
    func setMain<M, R, R2>(
@@ -51,6 +54,7 @@ public extension Combos
       setMain(models.main)
       setRight(models.right)
       setRight2(models.right2)
+      configure()
    }
 
    func setMain<M, R, D>(
@@ -61,6 +65,7 @@ public extension Combos
       setMain(models.main)
       setRight(models.right)
       setDown(models.down)
+      configure()
    }
 
    func setMain<M, R, R2, D>(
@@ -73,6 +78,7 @@ public extension Combos
       setRight(models.right)
       setRight2(models.right2)
       setDown(models.down)
+      configure()
    }
 
    func setMain<M, R, D, R2>(
@@ -85,6 +91,7 @@ public extension Combos
       setRight(models.right)
       setDown(models.down)
       setRight2(models.right2)
+      configure()
    }
 
    func setMain<M, R, D, D2>(
@@ -97,6 +104,7 @@ public extension Combos
       setRight(models.right)
       setDown(models.down)
       setDown2(models.down2)
+      configure()
    }
 
    // down
@@ -107,6 +115,7 @@ public extension Combos
    {
       setMain(models.main)
       setDown(models.down)
+      configure()
    }
 
    func setMain<M, D, R>(
@@ -117,6 +126,7 @@ public extension Combos
       setMain(models.main)
       setDown(models.down)
       setRight(models.right)
+      configure()
    }
 
    func setMain<M, D, D2>(
@@ -127,6 +137,7 @@ public extension Combos
       setMain(models.main)
       setDown(models.down)
       setDown2(models.down2)
+      configure()
    }
 
    func setMain<M, D, D2, R>(
@@ -139,6 +150,7 @@ public extension Combos
       setDown(models.down)
       setDown2(models.down2)
       setRight(models.right)
+      configure()
    }
 
    func setMain<M, D, R, D2>(
@@ -151,6 +163,7 @@ public extension Combos
       setDown(models.down)
       setRight(models.right)
       setDown2(models.down2)
+      configure()
    }
 
    func setMain<M, D, R, R2>(
@@ -163,5 +176,6 @@ public extension Combos
       setDown(models.down)
       setRight(models.right)
       setRight2(models.right2)
+      configure()
    }
 }

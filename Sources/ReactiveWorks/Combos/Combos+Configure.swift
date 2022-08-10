@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-extension Combos
+public extension Combos
 {
    func configure<M>() where S == SComboM<M>
    {
@@ -178,12 +178,18 @@ private extension Combos
 {
    func configureRightStart()
    {
+      clear()
       view.axis = .horizontal
    }
 
    func configureDownStart()
    {
+      clear()
       view.axis = .vertical
+   }
+
+   private func clear() {
+      view.subviews.forEach { $0.removeFromSuperview() }
    }
 
    // makers

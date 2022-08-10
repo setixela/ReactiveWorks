@@ -12,8 +12,7 @@ public extension Combos
    convenience init<M>(_ setMain: GenericClosure<M>) where S == SComboM<M>
    {
       self.init()
-      setMain(models.main)
-      configure()
+      self.setMain(setMain)
    }
 
    convenience init<M, R>(
@@ -21,9 +20,7 @@ public extension Combos
       setRight: GenericClosure<R>) where S == SComboMR<M, R>
    {
       self.init()
-      setMain(models.main)
-      setRight(models.right)
-      configure()
+      self.setMain(setMain, setRight: setRight)
    }
 
    convenience init<M, R, R2>(
@@ -32,10 +29,9 @@ public extension Combos
       setRight2: GenericClosure<R2>) where S == SComboMRR<M, R, R2>
    {
       self.init()
-      setMain(models.main)
-      setRight(models.right)
-      setRight2(models.right2)
-      configure()
+      self.setMain(setMain,
+                   setRight: setRight,
+                   setRight2: setRight2)
    }
 
    convenience init<M, R, D>(
@@ -44,10 +40,9 @@ public extension Combos
       setDown: GenericClosure<D>) where S == SComboMRD<M, R, D>
    {
       self.init()
-      setMain(models.main)
-      setRight(models.right)
-      setDown(models.down)
-      configure()
+      self.setMain(setMain,
+                   setRight: setRight,
+                   setDown: setDown)
    }
 
    convenience init<M, R, R2, D>(
@@ -57,11 +52,10 @@ public extension Combos
       setDown: GenericClosure<D>) where S == SComboMRRD<M, R, R2, D>
    {
       self.init()
-      setMain(models.main)
-      setRight(models.right)
-      setRight2(models.right2)
-      setDown(models.down)
-      configure()
+      self.setMain(setMain,
+                   setRight: setRight,
+                   setRight2: setRight2,
+                   setDown: setDown)
    }
 
    convenience init<M, R, D, R2>(
@@ -71,11 +65,10 @@ public extension Combos
       setRight2: GenericClosure<R2>) where S == SComboMRDR<M, R, D, R2>
    {
       self.init()
-      setMain(models.main)
-      setRight(models.right)
-      setDown(models.down)
-      setRight2(models.right2)
-      configure()
+      self.setMain(setMain,
+                   setRight: setRight,
+                   setDown: setDown,
+                   setRight2: setRight2)
    }
 
    convenience init<M, R, D, D2>(
@@ -85,11 +78,10 @@ public extension Combos
       setDown2: GenericClosure<D2>) where S == SComboMRDD<M, R, D, D2>
    {
       self.init()
-      setMain(models.main)
-      setRight(models.right)
-      setDown(models.down)
-      setDown2(models.down2)
-      configure()
+      self.setMain(setMain,
+                   setRight: setRight,
+                   setDown: setDown,
+                   setDown2: setDown2)
    }
 
    // down
@@ -99,9 +91,7 @@ public extension Combos
       setDown: GenericClosure<D>) where S == SComboMD<M, D>
    {
       self.init()
-      setMain(models.main)
-      setDown(models.down)
-      configure()
+      self.setMain(setMain, setDown: setDown)
    }
 
    convenience init<M, D, R>(
@@ -110,10 +100,7 @@ public extension Combos
       setRight: GenericClosure<R>) where S == SComboMDR<M, D, R>
    {
       self.init()
-      setMain(models.main)
-      setDown(models.down)
-      setRight(models.right)
-      configure()
+      self.setMain(setMain, setDown: setDown, setRight: setRight)
    }
 
    convenience init<M, D, D2>(
@@ -122,10 +109,7 @@ public extension Combos
       setDown2: GenericClosure<D2>) where S == SComboMDD<M, D, D2>
    {
       self.init()
-      setMain(models.main)
-      setDown(models.down)
-      setDown2(models.down2)
-      configure()
+      self.setMain(setMain, setDown: setDown, setDown2: setDown2)
    }
 
    convenience init<M, D, D2, R>(
@@ -135,11 +119,7 @@ public extension Combos
       setRight: GenericClosure<R>) where S == SComboMDDR<M, D, D2, R>
    {
       self.init()
-      setMain(models.main)
-      setDown(models.down)
-      setDown2(models.down2)
-      setRight(models.right)
-      configure()
+      self.setMain(setMain, setDown: setDown, setDown2: setDown2, setRight: setRight)
    }
 
    convenience init<M, D, R, D2>(
@@ -149,11 +129,7 @@ public extension Combos
       setDown2: GenericClosure<D2>) where S == SComboMDRD<M, D, R, D2>
    {
       self.init()
-      setMain(models.main)
-      setDown(models.down)
-      setRight(models.right)
-      setDown2(models.down2)
-      configure()
+      self.setMain(setMain, setDown: setDown, setRight: setRight, setDown2: setDown2)
    }
 
    convenience init<M, D, R, R2>(
@@ -163,10 +139,6 @@ public extension Combos
       setRight2: GenericClosure<R2>) where S == SComboMDRR<M, D, R, R2>
    {
       self.init()
-      setMain(models.main)
-      setDown(models.down)
-      setRight(models.right)
-      setRight2(models.right2)
-      configure()
+      self.setMain(setMain, setDown: setDown, setRight: setRight, setRight2: setRight2)
    }
 }

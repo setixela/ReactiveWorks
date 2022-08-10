@@ -157,6 +157,24 @@ public extension Work {
    }
 
    @discardableResult
+   func doMix<T: Any>(_ value: T?) -> Work<Out, (Out, T)> {
+      let work = Work<Out, (Out, T)>()
+      work.closure = { work in
+         guard
+            let value = value,
+            let input = work.input else {
+            work.fail(())
+            return
+         }
+
+         work.success(result: (input, value))
+      }
+      nextWork = WorkWrappper(work: work)
+
+      return work
+   }
+
+   @discardableResult
    func doInput<T>(_ input: T?) -> Work<Out, T> {
       let work = Work<Out, T>()
       work.closure = {

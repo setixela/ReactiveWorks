@@ -15,9 +15,17 @@ public protocol Stateable: InitProtocol {
    func applyState(_ state: State)
 }
 
-//extension Stateable {
-//   public func applyState(_ state: State) {}
-//}
+extension Stateable {
+   public func applyState(_ state: State) {
+      fatalError()
+   }
+}
+
+extension Stateable2 {
+   public func applyState(_ state: State2) {
+      fatalError()
+   }
+}
 
 public extension Stateable {
    init(_ states: State...) {

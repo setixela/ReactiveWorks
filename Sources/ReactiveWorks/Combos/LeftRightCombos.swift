@@ -9,7 +9,11 @@ import Foundation
 
 // MARK: - Combo
 
-public protocol Combo {}
+public protocol Combo {
+   associatedtype M: UIViewModel
+
+   var mainModel: M { get }
+}
 
 public extension Combo {
    var mainModel: Self { self }

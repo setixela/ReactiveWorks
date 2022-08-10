@@ -17,6 +17,12 @@ public protocol LambdaProtocol {
 
 /// Lambda wrapper
 public struct Lambda<T>: LambdaProtocol where T: Any {
+   let lambda: Event<T>
+
+   public init(lambda: @escaping Event<T>) {
+      self.lambda = lambda
+   }
+
    public func perform<AnyType>(_ value: AnyType) where AnyType: Any {
       guard let value = value as? T else {
          print("Lambda payloads not conform: {\(value.self)} is not {\(T.self)}")
@@ -25,6 +31,4 @@ public struct Lambda<T>: LambdaProtocol where T: Any {
 
       lambda(value)
    }
-
-   let lambda: Event<T>
 }

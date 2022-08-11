@@ -7,6 +7,13 @@
 
 import Foundation
 
+public typealias VMP = ViewModelProtocol
+public typealias VMPS = VMP & Stateable
+public typealias VMPS2 = VMP & Stateable2
+public typealias BVM = BaseViewModel
+public typealias SMP = SceneModelProtocol
+public typealias BSM = BaseSceneModel
+
 public typealias VoidClosure = () -> Void
 public typealias GenericClosure<T> = (T) -> Void
 public typealias Event<T> = (T) -> Void

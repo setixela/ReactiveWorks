@@ -8,10 +8,6 @@
 import Foundation
 import UIKit
 
-public typealias VMP = ViewModelProtocol
-public typealias VMPS = VMP & Stateable
-public typealias VMPS2 = VMP & Stateable2
-
 // MARK: - Right combos
 
 open class Combos<S: SCP>: BaseViewModel<UIStackView>

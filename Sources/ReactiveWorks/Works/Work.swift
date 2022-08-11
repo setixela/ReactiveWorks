@@ -125,10 +125,16 @@ public extension Work {
    }
 
    @discardableResult
-   func doNext<Worker>(worker: Worker, input: Worker.In? = nil)
+   func doNext<Worker>(worker: Worker?, input: Worker.In? = nil)
       -> Work<Worker.In, Worker.Out>
       where Worker: WorkerProtocol, Out == Worker.In
    {
+
+      guard let worker = worker else {
+         fatalError()
+        // return .init()
+      }
+      
       let work = Work<Worker.In, Worker.Out>(input: input, worker.doAsync(work:))
       nextWork = WorkWrappper<Worker.In, Worker.Out>(work: work)
 

@@ -25,6 +25,10 @@ public protocol ViewModelProtocol: UIViewModel {
 
 public extension UIViewModel where Self: ViewModelProtocol {
    var uiView: UIView {
+      let vuew = myView()
+      if Config.isDebugView {
+         vuew.backgroundColor = .random
+      }
       return myView()
    }
 }
@@ -67,5 +71,11 @@ open class BaseViewModel<View: UIView>: NSObject, ViewModelProtocol {
 public extension UIViewModel where Self: Stateable {
    init(state: State) {
       self.init(state)
+   }
+}
+
+private extension UIColor {
+   static var random: UIColor {
+      .init(hue: .random(in: 0 ... 1), saturation: 0.33, brightness: 1, alpha: 0.4)
    }
 }

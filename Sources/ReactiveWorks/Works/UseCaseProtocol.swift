@@ -11,13 +11,6 @@ public protocol UseCaseProtocol {
    associatedtype In
    associatedtype Out
 
-   func work() -> Work<In, Out>
-   func work(_ input: In?) -> Work<In, Out>
+   var work: Work<In, Out> { get }
 }
 
-public extension UseCaseProtocol {
-
-   func work(_ input: In?) -> Work<In, Out> {
-      fatalError()
-   }
-}

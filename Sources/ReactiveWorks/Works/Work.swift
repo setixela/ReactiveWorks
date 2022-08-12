@@ -15,7 +15,7 @@ public typealias MapClosure<In, Out> = (In) -> Out
 
 // MARK: - Work
 
-public final class Work<In, Out> {
+public final class Work<In, Out>: Any {
    public var input: In?
 
    public var unsafeInput: In {
@@ -111,7 +111,7 @@ public extension Work {
    func doNext<U: UseCaseProtocol>(usecase: U) -> Work<U.In, U.Out>
       where Out == U.In
    {
-      let work = usecase.work()
+      let work = usecase.work
       nextWork = WorkWrappper<U.In, U.Out>(work: work)
       return work
    }

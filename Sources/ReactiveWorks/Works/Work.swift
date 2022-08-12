@@ -181,7 +181,7 @@ public extension Work {
    }
 
    @discardableResult
-   func doMix<T: AnyObject>(_ value: T?) -> Work<Out, (Out, T)> {
+   func doWeakMix<T: AnyObject>(_ value: T?) -> Work<Out, (Out, T)> {
       let work = Work<Out, (Out, T)>()
       weak var value = value
       work.closure = { work in
@@ -216,8 +216,9 @@ public extension Work {
    }
 
    @discardableResult
-   func doInput<T: AnyObject>(_ input: T?) -> Work<Out, T> {
+   func doWeakInput<T: AnyObject>(_ input: T?) -> Work<Out, T> {
       weak var input = input
+
       let work = Work<Out, T>()
       work.closure = {
          guard let input = input else {

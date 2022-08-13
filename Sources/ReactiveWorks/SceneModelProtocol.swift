@@ -33,7 +33,7 @@ public protocol Assetable {
    typealias Design = Asset.Design
    typealias Service = Asset.Service
    typealias Scene = Asset.Scene
-   typealias Text = Asset.Text
+   typealias Text = Asset.Design.Text
 }
 
 open class BaseSceneModel<

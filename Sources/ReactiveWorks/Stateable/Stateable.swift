@@ -80,6 +80,13 @@ public extension Stateable2 {
 
       return self
    }
+
+   @discardableResult
+   func set(_ states: State2...) -> Self {
+      states.forEach { applyState($0) }
+
+      return self
+   }
 }
 
 // protocol Stateable3: Stateable2 {

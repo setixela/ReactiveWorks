@@ -23,10 +23,12 @@ public extension AssetRoot {
    static var service: Service { .init() }
    static var design: Design { .init() }
 
-   static var text: Text { .init() }
+   static var text: Text { Design.text }
 
    static var router: Router { .init() }
 }
+
+//
 
 public protocol DesignRoot: InitProtocol {
    associatedtype Text: InitProtocol
@@ -39,4 +41,17 @@ public protocol DesignRoot: InitProtocol {
    associatedtype State: InitProtocol
 
    associatedtype Params: InitProtocol
+}
+
+public extension DesignRoot {
+   static var text: Text { .init() }
+   static var color: Color { .init() }
+   static var icon: Icon { .init() }
+   static var font: Font { .init() }
+   static var label: Label { .init() }
+   static var button: Button { .init() }
+
+   static var state: State { .init() }
+
+   static var params: Params { .init() }
 }

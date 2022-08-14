@@ -18,7 +18,7 @@ public protocol SceneModel: SceneModelProtocol {
    associatedtype MainViewModel: ViewModelProtocol
 
    var vcModel: VCModel? { get set }
-   var mainViewModel: MainViewModel { get }
+   var mainVM: MainViewModel { get }
 }
 
 public struct SceneEvent<Input>: InitProtocol {
@@ -44,7 +44,7 @@ open class BaseSceneModel<
 >: SceneModel {
    private var _inputValue: Any?
 
-   public lazy var mainViewModel = MainViewModel()
+   public lazy var mainVM = MainViewModel()
 
    public weak var vcModel: VCModel?
 
@@ -71,7 +71,7 @@ public extension BaseSceneModel {
    }
 
    func makeMainView() -> UIView {
-      let view = mainViewModel.uiView
+      let view = mainVM.uiView
       start()
       return view
    }

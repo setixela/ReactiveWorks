@@ -75,6 +75,7 @@ extension ViewModelProtocol {
          autostartedView = nil
          return readyView
       }
+      view.layoutIfNeeded()
       return view
    }
 }

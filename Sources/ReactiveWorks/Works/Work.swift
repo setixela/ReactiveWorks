@@ -98,6 +98,14 @@ public extension Work {
    }
 }
 
+public extension Work {
+   @discardableResult
+   func retainBy(_ retainer: Retainer?) -> Self {
+      retainer?.retain(self)
+      return self
+   }
+}
+
 // exte
 public extension Work {
    @discardableResult
@@ -129,12 +137,11 @@ public extension Work {
       -> Work<Worker.In, Worker.Out>
       where Worker: WorkerProtocol, Out == Worker.In
    {
-
       guard let worker = worker else {
          fatalError()
-        // return .init()
+         // return .init()
       }
-      
+
       let work = Work<Worker.In, Worker.Out>(input: input, worker.doAsync(work:))
       nextWork = WorkWrappper<Worker.In, Worker.Out>(work: work)
 
@@ -168,7 +175,8 @@ public extension Work {
       work.closure = { work in
          guard
             let value = value,
-            let input = work.input else {
+            let input = work.input
+         else {
             work.fail(())
             return
          }
@@ -187,7 +195,8 @@ public extension Work {
       work.closure = { work in
          guard
             let value = value,
-            let input = work.input else {
+            let input = work.input
+         else {
             work.fail(())
             return
          }
@@ -322,3 +331,28 @@ public struct WorkWrappper<T, U>: WorkWrappperProtocol where T: Any, U: Any {
    let work: Work<T, U>
 }
 
+extension Work: Hashable {}
+
+public final class Retainer {
+   private lazy var retained: Set<AnyHashable> = []
+
+   public init() {}
+
+   public func retain(_ some: AnyHashable) {
+      retained.update(with: some)
+   }
+
+   deinit {
+      retained.removeAll()
+   }
+}
+
+public extension Hashable where Self: AnyObject {
+   func hash(into hasher: inout Hasher) {
+      hasher.combine(ObjectIdentifier(self))
+   }
+
+   static func ==(lhs: Self, rhs: Self) -> Bool {
+      ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
+   }
+}

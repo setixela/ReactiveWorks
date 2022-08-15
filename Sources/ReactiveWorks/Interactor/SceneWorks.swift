@@ -7,10 +7,12 @@
 
 import Foundation
 
-public protocol SceneWorks: InitProtocol, Assetable {
-   associatedtype TempStorage
+public typealias InitAnyObject = AnyObject & InitProtocol
 
-   var tempStorage: TempStorage { get set }
+public protocol SceneWorks: InitProtocol, Assetable {
+   associatedtype Temp: InitAnyObject
+
+   static var store: Temp { get }
 }
 
 public extension SceneWorks {
@@ -25,4 +27,45 @@ public protocol WorkableModel {
    associatedtype Works: SceneWorks
 
    var works: Works { get }
+}
+
+open class BaseSceneWorks<Temp: InitAnyObject, Asset: AssetRoot>: SceneWorks {
+   public required init() {
+      UnsafeTemper.initStore(for: Temp.self)
+   }
+
+   deinit {
+      UnsafeTemper.initStore(for: Temp.self)
+   }
+
+   public static var store: Temp {
+      UnsafeTemper.store(for: Temp.self)
+   }
+}
+
+enum UnsafeTemper {
+   private static var storage: [String: InitAnyObject] = [:]
+
+   static func initStore(for type: InitAnyObject.Type) {
+      let key = String(reflecting: type)
+      let new = type.init()
+
+      storage[key] = new
+   }
+
+   static func store<T: InitAnyObject>(for type: T.Type) -> T {
+      let key = String(reflecting: type)
+
+      guard let value = storage[key] as? T else {
+         fatalError()
+      }
+
+      return value
+   }
+
+   static func clearStore(for type: InitAnyObject.Type) {
+      let key = String(reflecting: type)
+
+      storage[key] = nil
+   }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol WorkerProtocol {
+public protocol WorkerProtocol: AnyObject {
    associatedtype In
    associatedtype Out
 

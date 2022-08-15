@@ -30,6 +30,9 @@ public protocol WorkableModel {
 }
 
 open class BaseSceneWorks<Temp: InitAnyObject, Asset: AssetRoot>: SceneWorks {
+
+   public lazy var retainer = Retainer()
+   
    public required init() {
       UnsafeTemper.initStore(for: Temp.self)
    }

@@ -19,6 +19,7 @@ public typealias BSM = BaseSceneModel
 public typealias VoidClosure = () -> Void
 public typealias GenericClosure<T> = (T) -> Void
 public typealias Event<T> = (T) -> Void
+public typealias VoidEvent = VoidClosure
 
 public protocol LambdaProtocol {
    func perform<AnyType>(_ value: AnyType)

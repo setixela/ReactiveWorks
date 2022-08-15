@@ -89,6 +89,35 @@ public extension Stateable2 {
    }
 }
 
+public protocol Stateable3: Stateable2 {
+   associatedtype State3
+
+   func applyState(_ state: State3)
+}
+
+public extension Stateable3 {
+   @discardableResult
+   func set(_ state: State3) -> Self {
+      applyState(state)
+
+      return self
+   }
+
+   @discardableResult
+   func set(_ state: [State3]) -> Self {
+      state.forEach { applyState($0) }
+
+      return self
+   }
+
+   @discardableResult
+   func set(_ states: State3...) -> Self {
+      states.forEach { applyState($0) }
+
+      return self
+   }
+}
+
 // protocol Stateable2: Stateable2 {
 //    associatedtype State3
 //

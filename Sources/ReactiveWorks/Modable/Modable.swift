@@ -29,8 +29,38 @@ public extension Modable {
 
    @discardableResult
    func setMode(_ keypath: KeyPath<Mode, Event<Mode.WeakSelf?>?>) -> Self where Mode.WeakSelf == Self {
+      let mode = self.modes[keyPath: keypath]
       DispatchQueue.main.async { [weak self] in
-         self?.modes[keyPath: keypath]?(self)
+         mode?(self)
+      }
+
+      return self
+   }
+}
+
+public protocol SceneModeProtocol: InitProtocol {}
+
+public protocol SceneModable: AnyObject {
+   associatedtype Mode: SceneModeProtocol
+
+   var modes: Mode { get set }
+}
+
+public extension SceneModable {
+   @discardableResult
+   func onModeChanged(_ keypath: WritableKeyPath<Mode, VoidClosure?>,
+                      _ block: VoidClosure?) -> Self
+   {
+      modes[keyPath: keypath] = block
+
+      return self
+   }
+
+   @discardableResult
+   func setMode(_ keypath: KeyPath<Mode, VoidClosure?>) -> Self {
+      let mode = self.modes[keyPath: keypath]
+      DispatchQueue.main.async {
+         mode?()
       }
 
       return self

@@ -35,10 +35,14 @@ open class BaseSceneWorks<Temp: InitAnyObject, Asset: AssetRoot>: SceneWorks {
    }
 
    deinit {
-      UnsafeTemper.initStore(for: Temp.self)
+      UnsafeTemper.clearStore(for: Temp.self)
    }
 
    public static var store: Temp {
+      UnsafeTemper.store(for: Temp.self)
+   }
+
+   public var store: Temp {
       UnsafeTemper.store(for: Temp.self)
    }
 }

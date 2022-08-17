@@ -5,6 +5,10 @@
 //  Created by Aleksandr Solovyev on 10.08.2022.
 //
 
+func log(_ object: Any, _ slf: Any? = nil) {
+   print("\n ##### (\((slf != nil) ? String(describing: type(of: slf)) : "")) |-> \(object)\n\n")
+}
+
 import Foundation
 
 public protocol WeakSelfied: InitProtocol {
@@ -31,6 +35,7 @@ public extension Modable {
    func setMode(_ keypath: KeyPath<Mode, Event<Mode.WeakSelf?>?>) -> Self where Mode.WeakSelf == Self {
       let mode = self.modes[keyPath: keypath]
       DispatchQueue.main.async { [weak self] in
+         log(self)
          mode?(self)
       }
 

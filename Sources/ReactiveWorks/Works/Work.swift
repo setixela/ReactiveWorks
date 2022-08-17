@@ -15,7 +15,7 @@ public typealias MapClosure<In, Out> = (In) -> Out
 
 // MARK: - Work
 
-public final class Work<In, Out>: Any {
+open class Work<In, Out>: Any {
    public var input: In?
 
    public var unsafeInput: In {
@@ -260,18 +260,18 @@ public extension Work {
 
 public extension Work {
    @discardableResult
-   func doSync() -> Self {
+   func doSync() -> Out {
       closure?(self)
 
-      return self
+      return result ?? { fatalError() }()
    }
 
    @discardableResult
-   func doSync(_ input: In?) -> Self {
+   func doSync(_ input: In?) -> Out {
       self.input = input
       closure?(self)
 
-      return self
+      return result ?? { fatalError() }()
    }
 
    @discardableResult

@@ -35,7 +35,6 @@ public extension Modable {
    func setMode(_ keypath: KeyPath<Mode, Event<Mode.WeakSelf?>?>) -> Self where Mode.WeakSelf == Self {
       let mode = self.modes[keyPath: keypath]
       DispatchQueue.main.async { [weak self] in
-         log(self)
          mode?(self)
       }
 

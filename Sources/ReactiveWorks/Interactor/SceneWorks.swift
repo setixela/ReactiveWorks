@@ -44,10 +44,6 @@ open class BaseSceneWorks<Temp: InitAnyObject, Asset: AssetRoot>: SceneWorks {
    public static var store: Temp {
       UnsafeTemper.store(for: Temp.self)
    }
-
-   public var store: Temp {
-      UnsafeTemper.store(for: Temp.self)
-   }
 }
 
 enum UnsafeTemper {

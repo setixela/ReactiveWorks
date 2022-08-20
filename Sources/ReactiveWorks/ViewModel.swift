@@ -52,6 +52,10 @@ open class BaseViewModel<View: UIView>: NSObject, ViewModelProtocol {
       }
    }
 
+   deinit {
+      autostartedView = nil
+   }
+
    override public required init() {
       super.init()
    }

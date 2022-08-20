@@ -19,6 +19,12 @@ extension Stateable {
    public func applyState(_ state: State) {
       fatalError()
    }
+
+   @discardableResult
+   public func set(_ closure: (Self) -> Void) -> Self {
+      closure(self)
+      return self
+   }
 }
 
 extension Stateable2 {

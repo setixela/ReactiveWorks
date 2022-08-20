@@ -39,6 +39,7 @@ open class BaseSceneWorks<Temp: InitAnyObject, Asset: AssetRoot>: SceneWorks {
 
    deinit {
       UnsafeTemper.clearStore(for: Temp.self)
+
    }
 
    public static var store: Temp {
@@ -60,7 +61,7 @@ enum UnsafeTemper {
       let key = String(reflecting: type)
 
       guard let value = storage[key] as? T else {
-         fatalError()
+         return T()
       }
 
       return value

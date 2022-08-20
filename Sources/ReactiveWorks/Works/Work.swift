@@ -33,8 +33,19 @@ open class Work<In, Out>: Any {
    // Private
    private var finisher: ((Out) -> Void)?
    private var voidFinisher: VoidClosure?
+
+   private var succesStateFunc: LambdaProtocol?
+   private var failStateFunc: LambdaProtocol?
+
    private var genericFail: LambdaProtocol?
    private var nextWork: WorkWrappperProtocol?
+
+   private var breakinNextWork: WorkWrappperProtocol?
+
+   private var nextFailWork: WorkWrappperProtocol?
+
+   private var recoverWork: WorkWrappperProtocol?
+
    private var onAnyResultVoidClosure: VoidClosure?
 
    // Methods
@@ -57,18 +68,83 @@ open class Work<In, Out>: Any {
       onAnyResultVoidClosure?()
       voidFinisher?()
       finisher?(result)
+      succesStateFunc?.perform(result)
       nextWork?.perform(result)
+      breakinNextWork?.perform(())
    }
 
-   public func failThenNext<T>(_ value: T) {
-      onAnyResultVoidClosure?()
-      genericFail?.perform(value)
-      nextWork?.perform(value)
-   }
+//   public func failThenNext<T>(_ value: T) {
+//      onAnyResultVoidClosure?()
+//      failStateFunc?.perform(value)
+//      genericFail?.perform(value)
+//      nextFailWork?.perform(value)
+//      nextWork?.perform(value)
+//   }
 
    public func fail<T>(_ value: T) {
       onAnyResultVoidClosure?()
+      failStateFunc?.perform(value)
+      nextFailWork?.perform(value)
       genericFail?.perform(value)
+      recoverWork?.perform(value)
+   }
+}
+
+public extension Work {
+   @discardableResult func onSuccess<S>(_ delegate: ((S) -> Void)?, _ state: S) -> Self {
+      let closure: GenericClosure<Void> = { [delegate] _ in
+         DispatchQueue.main.async {
+            delegate?(state)
+         }
+      }
+
+      let lambda = Lambda(lambda: closure)
+      succesStateFunc = lambda
+
+      return self
+   }
+
+   @discardableResult func onSuccess<S>(_ delegate: ((S) -> Void)?,
+                                        _ stateFunc: @escaping (Out) -> S) -> Self
+   {
+      let closure: GenericClosure<Out> = { [delegate] result in
+         DispatchQueue.main.async {
+            delegate?(stateFunc(result))
+         }
+      }
+
+      let lambda = Lambda(lambda: closure)
+      succesStateFunc = lambda
+
+      return self
+   }
+
+   @discardableResult func onFail<S>(_ delegate: ((S) -> Void)?, _ state: S) -> Self {
+      let closure: GenericClosure<Void> = { [delegate] _ in
+         DispatchQueue.main.async {
+            delegate?(state)
+         }
+      }
+
+      let lambda = Lambda(lambda: closure)
+      failStateFunc = lambda
+
+      return self
+   }
+
+   @discardableResult func onFail<S, T>(_ delegate: ((S) -> Void)?,
+                                        _ stateFunc: @escaping (T) -> S) -> Self
+   {
+      let closure: GenericClosure<T> = { [delegate] failValue in
+         DispatchQueue.main.async {
+            delegate?(stateFunc(failValue))
+         }
+      }
+
+      let lambda = Lambda(lambda: closure)
+      failStateFunc = lambda
+
+      return self
    }
 }
 
@@ -76,6 +152,13 @@ public extension Work {
    @discardableResult func onSuccess(_ finisher: @escaping (Out) -> Void) -> Self {
       self.finisher = finisher
 
+      return self
+   }
+
+   @discardableResult
+   func onSuccessDo<Out2>(_ work: Work<Out, Out2>) -> Self {
+      work.doAsync()
+//      nextWork = WorkWrappper<Out, Out2>(work: work)
       return self
    }
 
@@ -87,6 +170,14 @@ public extension Work {
 
    @discardableResult func onFail<T>(_ failure: @escaping GenericClosure<T>) -> Self {
       genericFail = Lambda(lambda: failure)
+
+      return self
+   }
+
+   @discardableResult
+   func onFailDo<Out2>(_ work: Work<Out, Out2>) -> Self {
+      work.doAsync()
+      // nextFailWork = WorkWrappper<Out, Out2>(work: work)
 
       return self
    }
@@ -111,6 +202,28 @@ public extension Work {
    @discardableResult
    func doNext<Out2>(work: Work<Out, Out2>) -> Work<Out, Out2> {
       nextWork = WorkWrappper<Out, Out2>(work: work)
+
+      return work
+   }
+
+   @discardableResult
+   func doNext<Out2>(_ work: Work<Out, Out2>) -> Work<Out, Out2> {
+      nextWork = WorkWrappper<Out, Out2>(work: work)
+
+      return work
+   }
+
+   @discardableResult
+   func doRecover<Out2>(_ work: Work<Out, Out2>) -> Work<Out, Out2> {
+      recoverWork = WorkWrappper<Out, Out2>(work: work)
+
+      return work
+   }
+
+   // breaking and start void input task
+   @discardableResult
+   func doNext<Out2>(_ work: Work<Void, Out2>) -> Work<Void, Out2> {
+      breakinNextWork = WorkWrappper<Void, Out2>(work: work)
 
       return work
    }

@@ -18,6 +18,13 @@ public typealias BSM = BaseSceneModel
 
 public typealias VoidClosure = () -> Void
 public typealias GenericClosure<T> = (T) -> Void
+
+public typealias VariadicClosure1<A> = (A) -> Void
+public typealias VariadicClosure2<A,B> = (A,B) -> Void
+public typealias VariadicClosure3<A,B,C> = (A,B,C) -> Void
+public typealias VariadicClosure4<A,B,C,D> = (A,B,C,D) -> Void
+public typealias VariadicClosure5<A,B,C,D,E> = (A,B,C,D,E) -> Void
+
 public typealias Event<T> = (T) -> Void
 public typealias VoidEvent = VoidClosure
 

@@ -26,7 +26,6 @@ public typealias VariadicClosure4<A,B,C,D> = (A,B,C,D) -> Void
 public typealias VariadicClosure5<A,B,C,D,E> = (A,B,C,D,E) -> Void
 
 public typealias Event<T> = (T) -> Void
-public typealias VoidEvent = VoidClosure
 
 public protocol LambdaProtocol {
    func perform<AnyType>(_ value: AnyType)

@@ -15,7 +15,7 @@ enum NavType {
 }
 
 final class Router<Scene: InitProtocol>: RouterProtocol, Communicable {
-    var eventsStore: Events = .init()
+    var events: Events = .init()
 
     func start() {}
 

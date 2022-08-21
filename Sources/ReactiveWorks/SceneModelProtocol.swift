@@ -50,7 +50,7 @@ open class BaseSceneModel<
 
    public var inputValue: Input? { _inputValue as? Input }
 
-   public var eventsStore: Events = .init()
+   public var events: Events = .init()
 
    public init() {}
 

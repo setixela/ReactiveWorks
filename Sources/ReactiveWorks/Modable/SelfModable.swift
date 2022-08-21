@@ -15,13 +15,13 @@ public protocol WeakSelfied: InitProtocol {
    associatedtype WeakSelf
 }
 
-public protocol Modable: AnyObject {
+public protocol SelfModable: AnyObject {
    associatedtype Mode: WeakSelfied
 
    var modes: Mode { get set }
 }
 
-public extension Modable {
+public extension SelfModable {
    @discardableResult
    func onModeChanged(_ keypath: WritableKeyPath<Mode, Event<Mode.WeakSelf?>?>,
                       _ block: Event<Mode.WeakSelf?>?) -> Self where Mode.WeakSelf == Self
@@ -42,18 +42,18 @@ public extension Modable {
    }
 }
 
-public protocol SceneModeProtocol: InitProtocol {}
+public protocol ModeProtocol: InitProtocol {}
 
-public protocol SceneModable: AnyObject {
-   associatedtype Mode: SceneModeProtocol
+public protocol Modable: AnyObject {
+   associatedtype Mode: ModeProtocol
 
    var modes: Mode { get set }
 }
 
-public extension SceneModable {
+public extension Modable {
    @discardableResult
-   func onModeChanged(_ keypath: WritableKeyPath<Mode, VoidClosure?>,
-                      _ block: VoidClosure?) -> Self
+   func onModeChanged(_ keypath: WritableKeyPath<Mode, GenericClosure<Void>?>,
+                      _ block:  GenericClosure<Void>?) -> Self
    {
       modes[keyPath: keypath] = block
 
@@ -61,10 +61,10 @@ public extension SceneModable {
    }
 
    @discardableResult
-   func setMode(_ keypath: KeyPath<Mode, VoidClosure?>) -> Self {
+   func setMode(_ keypath: KeyPath<Mode, GenericClosure<Void>?>) -> Self {
       let mode = self.modes[keyPath: keypath]
       DispatchQueue.main.async {
-         mode?()
+         mode?(())
       }
 
       return self

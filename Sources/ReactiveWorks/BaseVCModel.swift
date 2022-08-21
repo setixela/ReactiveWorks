@@ -32,7 +32,7 @@ open class BaseVCModel: UIViewController, VCModelProtocol {
 
    public lazy var baseView: UIView = sceneModel.makeMainView()
 
-   public var eventsStore: VCEvent = .init()
+   public var events: VCEvent = .init()
 
    public required init(sceneModel: SceneModelProtocol) {
       self.sceneModel = sceneModel

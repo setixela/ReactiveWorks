@@ -28,7 +28,7 @@ public extension KeyPathSetable {
 public protocol Communicable: AnyObject {
    associatedtype Events: InitProtocol
 
-   var eventsStore: Events { get set }
+   var events: Events { get set }
 }
 
 public extension Communicable {
@@ -36,7 +36,7 @@ public extension Communicable {
    @discardableResult
    func sendEvent<T>(_ event: KeyPath<Events, Event<T>?>, payload: T) -> Self {
       guard
-         let lambda = eventsStore[keyPath: event]
+         let lambda = events[keyPath: event]
       else {
          return self
       }
@@ -56,7 +56,7 @@ public extension Communicable {
    @discardableResult
    func sendEvent(_ event: KeyPath<Events, Event<Void>?>) -> Self {
       guard
-         let lambda = eventsStore[keyPath: event]
+         let lambda = events[keyPath: event]
       else {
          return self
       }
@@ -70,7 +70,7 @@ public extension Communicable {
 
    @discardableResult
    func onEvent<T>(_ event: WritableKeyPath<Events, Event<T>?>, _ lambda: @escaping Event<T>) -> Self {
-      eventsStore[keyPath: event] = lambda
+      events[keyPath: event] = lambda
       return self
    }
 
@@ -82,7 +82,7 @@ public extension Communicable {
          work.success(result: value)
       }
       //
-      eventsStore[keyPath: event] = lambda
+      events[keyPath: event] = lambda
       return work
    }
 }

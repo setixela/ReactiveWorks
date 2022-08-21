@@ -116,29 +116,6 @@ public extension Work {
       return self
    }
 
-   @discardableResult
-   func onSuccessMixSaved<S, OutSaved>(_ delegate: ((S) -> Void)?,
-                                       _ stateFunc: @escaping ((Out, OutSaved)) -> S) -> Self
-   {
-      let closure: GenericClosure<Out> = { [weak self, delegate] result in
-         guard
-            let saved = self?.savedResultClosure?(),
-            let saved = saved as? OutSaved
-         else {
-            fatalError()
-         }
-
-         DispatchQueue.main.async {
-            delegate?(stateFunc((result, saved)))
-         }
-      }
-
-      let lambda = Lambda(lambda: closure)
-      succesStateFunc = lambda
-
-      return self
-   }
-
    @discardableResult func onFail<S>(_ delegate: ((S) -> Void)?, _ state: S) -> Self {
       let closure: GenericClosure<Void> = { [delegate] _ in
          DispatchQueue.main.async {
@@ -158,34 +135,6 @@ public extension Work {
       let closure: GenericClosure<T> = { [delegate] failValue in
          DispatchQueue.main.async {
             delegate?(stateFunc(failValue))
-         }
-      }
-
-      let lambda = Lambda(lambda: closure)
-      failStateFunc = lambda
-
-      return self
-   }
-
-   @discardableResult
-   func onFailMixSaved<S, OutSaved>(_ delegate: ((S) -> Void)?,
-                                    _ stateFunc: @escaping ((Out, OutSaved)) -> S) -> Self
-   {
-      let closure: GenericClosure<Out> = { [weak self, delegate] result in
-         guard
-            let saved = self?.savedResultClosure?()
-         else {
-            fatalError()
-         }
-
-         guard
-            let saved = saved as? OutSaved
-         else {
-            fatalError()
-         }
-
-         DispatchQueue.main.async {
-            delegate?(stateFunc((result, saved)))
          }
       }
 
@@ -251,6 +200,70 @@ public extension Work {
 
       return newWork
    }
+}
+
+public extension Work {
+   @discardableResult
+   func onSuccessMixSaved<S, OutSaved>(_ delegate: ((S) -> Void)?,
+                                       _ stateFunc: @escaping ((Out, OutSaved)) -> S) -> Self
+   {
+      let closure: GenericClosure<Out> = { [weak self, delegate] result in
+         guard
+            let saved = self?.savedResultClosure?(),
+            let saved = saved as? OutSaved
+         else {
+            fatalError()
+         }
+
+         DispatchQueue.main.async {
+            delegate?(stateFunc((result, saved)))
+         }
+      }
+
+      let lambda = Lambda(lambda: closure)
+      succesStateFunc = lambda
+
+      return self
+   }
+
+   @discardableResult
+   func onFailMixSaved<S, OutSaved>(_ delegate: ((S) -> Void)?,
+                                    _ stateFunc: @escaping ((Out, OutSaved)) -> S) -> Self
+   {
+      let closure: GenericClosure<Out> = { [weak self, delegate] result in
+         guard
+            let saved = self?.savedResultClosure?()
+         else {
+            fatalError()
+         }
+
+         guard
+            let saved = saved as? OutSaved
+         else {
+            fatalError()
+         }
+
+         DispatchQueue.main.async {
+            delegate?(stateFunc((result, saved)))
+         }
+      }
+
+      let lambda = Lambda(lambda: closure)
+      failStateFunc = lambda
+
+      return self
+   }
+
+//   @discardableResult
+//   func onFail<S, I, O>(_ delegate: ((S) -> Void)?,
+//                        _ work: Work<I, O>,
+//                        _ stateFunc: @escaping ((Out, S)) -> S) -> Self {
+//
+//      work
+//         .doAsync()
+//      
+//      return self
+//   }
 }
 
 // exte

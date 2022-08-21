@@ -46,12 +46,21 @@ open class Work<In, Out>: Any {
 
    private var recoverWork: WorkWrappperProtocol?
 
-   private var onAnyResultVoidClosure: VoidClosure?
+   // private var onAnyResultVoidClosure: VoidClosure?
+
+   private var savedResultClosure: (() -> Any?)?
+
+   private var loadWork: WorkWrappperProtocol?
+//   private var loadResultClosure: ((Any?) -> Void)?
 
    // Methods
-   public init(input: In?, _ closure: @escaping WorkClosure<In, Out>) {
+   public init(input: In?,
+               _ closure: @escaping WorkClosure<In, Out>,
+               _ savedResultClosure: (() -> Any?)? = nil)
+   {
       self.input = input
       self.closure = closure
+      self.savedResultClosure = savedResultClosure
    }
 
    public init(_ closure: @escaping WorkClosure<In, Out>) {
@@ -65,10 +74,13 @@ open class Work<In, Out>: Any {
    public func success(result: Out) {
       self.result = result
 
-      onAnyResultVoidClosure?()
+      // onAnyResultVoidClosure?()
       voidFinisher?()
       finisher?(result)
       succesStateFunc?.perform(result)
+//      if loadWork != nil, let value = savedResultClosure?() {
+//         loadWork?.perform(value)
+//      }
       nextWork?.perform(result)
       breakinNextWork?.perform(())
    }
@@ -82,7 +94,7 @@ open class Work<In, Out>: Any {
 //   }
 
    public func fail<T>(_ value: T) {
-      onAnyResultVoidClosure?()
+      // onAnyResultVoidClosure?()
       failStateFunc?.perform(value)
       nextFailWork?.perform(value)
       genericFail?.perform(value)
@@ -119,6 +131,29 @@ public extension Work {
       return self
    }
 
+   @discardableResult
+   func onSuccessMixSaved<S, OutSaved>(_ delegate: ((S) -> Void)?,
+                                       _ stateFunc: @escaping ((Out, OutSaved)) -> S) -> Self
+   {
+      let closure: GenericClosure<Out> = { [weak self, delegate] result in
+         guard
+            let saved = self?.savedResultClosure?(),
+            let saved = saved as? OutSaved
+         else {
+            fatalError()
+         }
+
+         DispatchQueue.main.async {
+            delegate?(stateFunc((result, saved)))
+         }
+      }
+
+      let lambda = Lambda(lambda: closure)
+      succesStateFunc = lambda
+
+      return self
+   }
+
    @discardableResult func onFail<S>(_ delegate: ((S) -> Void)?, _ state: S) -> Self {
       let closure: GenericClosure<Void> = { [delegate] _ in
          DispatchQueue.main.async {
@@ -146,19 +181,41 @@ public extension Work {
 
       return self
    }
-}
 
-public extension Work {
-   @discardableResult func onSuccess(_ finisher: @escaping (Out) -> Void) -> Self {
-      self.finisher = finisher
+   @discardableResult
+   func onFailMixSaved<S, OutSaved>(_ delegate: ((S) -> Void)?,
+                                    _ stateFunc: @escaping ((Out, OutSaved)) -> S) -> Self
+   {
+      let closure: GenericClosure<Out> = { [weak self, delegate] result in
+         guard
+            let saved = self?.savedResultClosure?()
+         else {
+            fatalError()
+         }
+
+         guard
+            let saved = saved as? OutSaved
+         else {
+            fatalError()
+         }
+
+         DispatchQueue.main.async {
+            delegate?(stateFunc((result, saved)))
+         }
+      }
+
+      let lambda = Lambda(lambda: closure)
+      failStateFunc = lambda
 
       return self
    }
+}
 
+public extension Work {
    @discardableResult
-   func onSuccessDo<Out2>(_ work: Work<Out, Out2>) -> Self {
-      work.doAsync()
-//      nextWork = WorkWrappper<Out, Out2>(work: work)
+   func onSuccess(_ finisher: @escaping (Out) -> Void) -> Self {
+      self.finisher = finisher
+
       return self
    }
 
@@ -182,11 +239,11 @@ public extension Work {
       return self
    }
 
-   @discardableResult func doNext(_ closure: @escaping VoidClosure) -> Self {
-      onAnyResultVoidClosure = closure
-
-      return self
-   }
+//   @discardableResult func doNext(_ closure: @escaping VoidClosure) -> Self {
+//      onAnyResultVoidClosure = closure
+//
+//      return self
+//   }
 }
 
 public extension Work {
@@ -197,10 +254,66 @@ public extension Work {
    }
 }
 
+public extension Work {
+   func doSaveResult() -> Self {
+      let saveClosure: () -> Out? = { [weak self] in
+         return self?.result
+      }
+
+      savedResultClosure = saveClosure
+
+      return self
+   }
+
+   func doLoadResult<OutSaved>() -> Work<Out, OutSaved> {
+      let newWork = Work<Out, OutSaved>() { [weak self] work in
+         guard let saved = self?.savedResultClosure?() as? OutSaved else {
+            fatalError()
+         }
+
+         work.success(result: saved)
+      }
+
+      newWork.savedResultClosure = savedResultClosure
+
+      nextWork = WorkWrappper<Out, OutSaved>(work: newWork)
+
+      return newWork
+   }
+
+//   func doNextAndMixWithSavedResult<OutSaved, Out2>(_ work: Work<Out, Out2>) -> Work<Out, (Out2, OutSaved)> {
+//      let newWork = Work<Out, (Out2, OutSaved)>()
+//
+//      newWork.closure = { [weak self] newWork in
+//         work
+//            .doAsync()
+//            .onSuccess {
+//               guard
+//                  let saved = self?.savedResultClosure?() as? OutSaved
+//               else {
+//                  newWork.fail(())
+//                  return
+//               }
+//               newWork.success(result: ($0, saved))
+//            }.onFail {
+//               newWork.fail(())
+//            }
+//      }
+//
+//      newWork.savedResultClosure = savedResultClosure
+//
+//      nextWork = WorkWrappper(work: newWork)
+//
+//      return newWork
+//   }
+}
+
 // exte
 public extension Work {
    @discardableResult
    func doNext<Out2>(work: Work<Out, Out2>) -> Work<Out, Out2> {
+      work.savedResultClosure = savedResultClosure
+
       nextWork = WorkWrappper<Out, Out2>(work: work)
 
       return work
@@ -208,6 +321,8 @@ public extension Work {
 
    @discardableResult
    func doNext<Out2>(_ work: Work<Out, Out2>) -> Work<Out, Out2> {
+      work.savedResultClosure = savedResultClosure
+
       nextWork = WorkWrappper<Out, Out2>(work: work)
 
       return work
@@ -215,14 +330,33 @@ public extension Work {
 
    @discardableResult
    func doRecover<Out2>(_ work: Work<Out, Out2>) -> Work<Out, Out2> {
+      work.savedResultClosure = savedResultClosure
+
       recoverWork = WorkWrappper<Out, Out2>(work: work)
 
       return work
    }
 
+   @discardableResult
+   func doRecover() -> Work<In, In> {
+      let newWork = Work<In, In>() { [weak self] work in
+         guard let input = self?.input else { fatalError() }
+
+         work.success(result: input)
+      }
+
+      newWork.savedResultClosure = savedResultClosure
+
+      recoverWork = WorkWrappper<In, In>(work: newWork)
+
+      return newWork
+   }
+
    // breaking and start void input task
    @discardableResult
-   func doNext<Out2>(_ work: Work<Void, Out2>) -> Work<Void, Out2> {
+   func doVoidNext<Out2>(_ work: Work<Void, Out2>) -> Work<Void, Out2> {
+      work.savedResultClosure = savedResultClosure
+
       breakinNextWork = WorkWrappper<Void, Out2>(work: work)
 
       return work
@@ -233,13 +367,18 @@ public extension Work {
       where Out == U.In
    {
       let work = usecase.work
+      work.savedResultClosure = savedResultClosure
+
       nextWork = WorkWrappper<U.In, U.Out>(work: work)
       return work
    }
 
    @discardableResult
    func doNext<Out2>(_ closure: @escaping WorkClosure<Out, Out2>) -> Work<Out, Out2> {
-      let newWork = Work<Out, Out2>(input: nil, closure)
+      let newWork = Work<Out, Out2>(input: nil,
+                                    closure,
+                                    savedResultClosure)
+
       nextWork = WorkWrappper<Out, Out2>(work: newWork)
 
       return newWork
@@ -255,15 +394,17 @@ public extension Work {
          // return .init()
       }
 
-      let work = Work<Worker.In, Worker.Out>(input: input, worker.doAsync(work:))
+      let work = Work<Worker.In, Worker.Out>(input: input,
+                                             worker.doAsync(work:),
+                                             savedResultClosure)
       nextWork = WorkWrappper<Worker.In, Worker.Out>(work: work)
 
       return work
    }
 
-   @discardableResult
    func doMap<T>(_ mapper: @escaping MapClosure<Out, T?>) -> Work<Out, T> {
       let work = Work<Out, T>()
+      work.savedResultClosure = savedResultClosure
       work.closure = { work in
          guard let input = work.input else {
             work.fail(())
@@ -282,9 +423,9 @@ public extension Work {
       return work
    }
 
-   @discardableResult
    func doMix<T: Any>(_ value: T?) -> Work<Out, (Out, T)> {
       let work = Work<Out, (Out, T)>()
+      work.savedResultClosure = savedResultClosure
       work.closure = { work in
          guard
             let value = value,
@@ -301,9 +442,9 @@ public extension Work {
       return work
    }
 
-   @discardableResult
    func doWeakMix<T: AnyObject>(_ value: T?) -> Work<Out, (Out, T)> {
       let work = Work<Out, (Out, T)>()
+      work.savedResultClosure = savedResultClosure
       weak var value = value
       work.closure = { work in
          guard
@@ -321,9 +462,9 @@ public extension Work {
       return work
    }
 
-   @discardableResult
    func doInput<T: Any>(_ input: T?) -> Work<Out, T> {
       let work = Work<Out, T>()
+      work.savedResultClosure = savedResultClosure
       work.closure = {
          guard let input = input else {
             $0.fail(())
@@ -337,11 +478,11 @@ public extension Work {
       return work
    }
 
-   @discardableResult
    func doWeakInput<T: AnyObject>(_ input: T?) -> Work<Out, T> {
       weak var input = input
 
       let work = Work<Out, T>()
+      work.savedResultClosure = savedResultClosure
       work.closure = {
          guard let input = input else {
             $0.fail(())
@@ -355,9 +496,9 @@ public extension Work {
       return work
    }
 
-   @discardableResult
    func doInput<T>(_ input: @escaping () -> T?) -> Work<Out, T> {
       let work = Work<Out, T>()
+      work.savedResultClosure = savedResultClosure
       work.closure = {
          guard let input = input() else {
             $0.fail(())
@@ -429,6 +570,7 @@ public struct WorkWrappper<T, U>: WorkWrappperProtocol where T: Any, U: Any {
          let value = value as? T
       else {
          print("Lambda payloads not conform: {\(value)} is not {\(T.self)}")
+         fatalError()
          return
       }
 

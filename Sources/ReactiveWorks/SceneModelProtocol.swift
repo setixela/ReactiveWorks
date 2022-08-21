@@ -55,7 +55,7 @@ open class BaseSceneModel<
    public init() {}
 
    open func start() {
-      print("Needs to override start()")
+
    }
 
    public func setInput(_ value: Any? = nil) {

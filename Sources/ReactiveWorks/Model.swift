@@ -13,7 +13,7 @@ public protocol ModelProtocol: AnyObject {
 
 open class BaseModel: NSObject, ModelProtocol {
    open func start() {
-      print("Needs to override start()")
+
    }
 
    public override required init() {

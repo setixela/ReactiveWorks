@@ -38,7 +38,6 @@ public extension Communicable {
       guard
          let lambda = eventsStore[keyPath: event]
       else {
-         print("Event KeyPath did not observed!:\n   \(event)\n   Value: \(payload)")
          return self
       }
 
@@ -59,7 +58,6 @@ public extension Communicable {
       guard
          let lambda = eventsStore[keyPath: event]
       else {
-         print("Void Event KeyPath did not observed!:\n   \(event) ")
          return self
       }
 
@@ -82,7 +80,6 @@ public extension Communicable {
       //
       let lambda: Event<T> = { value in
          work.success(result: value)
-         print("\n### WORK     \(work)\n")
       }
       //
       eventsStore[keyPath: event] = lambda

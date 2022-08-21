@@ -46,12 +46,9 @@ open class Work<In, Out>: Any {
 
    private var recoverWork: WorkWrappperProtocol?
 
-   // private var onAnyResultVoidClosure: VoidClosure?
-
    private var savedResultClosure: (() -> Any?)?
 
    private var loadWork: WorkWrappperProtocol?
-//   private var loadResultClosure: ((Any?) -> Void)?
 
    // Methods
    public init(input: In?,
@@ -74,27 +71,15 @@ open class Work<In, Out>: Any {
    public func success(result: Out) {
       self.result = result
 
-      // onAnyResultVoidClosure?()
       voidFinisher?()
       finisher?(result)
       succesStateFunc?.perform(result)
-//      if loadWork != nil, let value = savedResultClosure?() {
-//         loadWork?.perform(value)
-//      }
       nextWork?.perform(result)
       breakinNextWork?.perform(())
+      recoverWork?.perform(result)
    }
 
-//   public func failThenNext<T>(_ value: T) {
-//      onAnyResultVoidClosure?()
-//      failStateFunc?.perform(value)
-//      genericFail?.perform(value)
-//      nextFailWork?.perform(value)
-//      nextWork?.perform(value)
-//   }
-
    public func fail<T>(_ value: T) {
-      // onAnyResultVoidClosure?()
       failStateFunc?.perform(value)
       nextFailWork?.perform(value)
       genericFail?.perform(value)
@@ -230,20 +215,6 @@ public extension Work {
 
       return self
    }
-
-   @discardableResult
-   func onFailDo<Out2>(_ work: Work<Out, Out2>) -> Self {
-      work.doAsync()
-      // nextFailWork = WorkWrappper<Out, Out2>(work: work)
-
-      return self
-   }
-
-//   @discardableResult func doNext(_ closure: @escaping VoidClosure) -> Self {
-//      onAnyResultVoidClosure = closure
-//
-//      return self
-//   }
 }
 
 public extension Work {
@@ -257,7 +228,7 @@ public extension Work {
 public extension Work {
    func doSaveResult() -> Self {
       let saveClosure: () -> Out? = { [weak self] in
-         return self?.result
+         self?.result
       }
 
       savedResultClosure = saveClosure
@@ -280,32 +251,6 @@ public extension Work {
 
       return newWork
    }
-
-//   func doNextAndMixWithSavedResult<OutSaved, Out2>(_ work: Work<Out, Out2>) -> Work<Out, (Out2, OutSaved)> {
-//      let newWork = Work<Out, (Out2, OutSaved)>()
-//
-//      newWork.closure = { [weak self] newWork in
-//         work
-//            .doAsync()
-//            .onSuccess {
-//               guard
-//                  let saved = self?.savedResultClosure?() as? OutSaved
-//               else {
-//                  newWork.fail(())
-//                  return
-//               }
-//               newWork.success(result: ($0, saved))
-//            }.onFail {
-//               newWork.fail(())
-//            }
-//      }
-//
-//      newWork.savedResultClosure = savedResultClosure
-//
-//      nextWork = WorkWrappper(work: newWork)
-//
-//      return newWork
-//   }
 }
 
 // exte
@@ -338,16 +283,16 @@ public extension Work {
    }
 
    @discardableResult
-   func doRecover() -> Work<In, In> {
-      let newWork = Work<In, In>() { [weak self] work in
-         guard let input = self?.input else { fatalError() }
+   func doRecover() -> Work<In, Out> {
+      let newWork = Work<In, Out>() { [weak self] work in
+         guard let input = self?.input as? Out else { fatalError() }
 
          work.success(result: input)
       }
 
       newWork.savedResultClosure = savedResultClosure
 
-      recoverWork = WorkWrappper<In, In>(work: newWork)
+      recoverWork = WorkWrappper<In, Out>(work: newWork)
 
       return newWork
    }

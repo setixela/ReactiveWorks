@@ -74,6 +74,7 @@ open class Work<In, Out>: Any {
       voidFinisher?()
       finisher?(result)
       succesStateFunc?.perform(result)
+      succesStateFunc?.perform(())
       nextWork?.perform(result)
       breakinNextWork?.perform(())
       recoverWork?.perform(result)
@@ -261,7 +262,7 @@ public extension Work {
 //
 //      work
 //         .doAsync()
-//      
+//
 //      return self
 //   }
 }

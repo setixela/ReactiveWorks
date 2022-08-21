@@ -235,13 +235,13 @@ public extension Work {
          guard
             let saved = self?.savedResultClosure?()
          else {
-            fatalError()
+            return
          }
 
          guard
             let saved = saved as? OutSaved
          else {
-            fatalError()
+            return
          }
 
          DispatchQueue.main.async {

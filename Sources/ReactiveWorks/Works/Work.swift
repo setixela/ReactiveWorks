@@ -36,19 +36,15 @@ open class Work<In, Out>: Any {
 
    private var succesStateFunc: LambdaProtocol?
    private var failStateFunc: LambdaProtocol?
-
    private var genericFail: LambdaProtocol?
+
    private var nextWork: WorkWrappperProtocol?
-
    private var breakinNextWork: WorkWrappperProtocol?
-
    private var nextFailWork: WorkWrappperProtocol?
-
    private var recoverWork: WorkWrappperProtocol?
+   private var loadWork: WorkWrappperProtocol?
 
    private var savedResultClosure: (() -> Any?)?
-
-   private var loadWork: WorkWrappperProtocol?
 
    // Methods
    public init(input: In?,

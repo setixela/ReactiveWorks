@@ -24,6 +24,7 @@ public final class DefaultVCModel: BaseVCModel {
 
    override public func viewDidLoad() {
       super.viewDidLoad()
+      view.backgroundColor = .white
 
       NotificationCenter.default.addObserver(
          self,

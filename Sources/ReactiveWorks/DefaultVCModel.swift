@@ -36,7 +36,10 @@ public final class DefaultVCModel: BaseVCModel {
          name: UIResponder.keyboardWillHideNotification,
          object: nil)
 
+      navigationController?.navigationBar.isUserInteractionEnabled = false
+      
       sendEvent(\.viewDidLoad)
+
    }
 
    override public func viewWillAppear(_ animated: Bool) {

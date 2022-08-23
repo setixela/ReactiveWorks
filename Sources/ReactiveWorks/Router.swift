@@ -8,42 +8,46 @@
 import UIKit
 
 enum NavType {
-    case push
-    case present
-    case pop
-    case popToRoot
+   case push
+   case present
+   case pop
+   case popToRoot
+   case presentModally
 }
 
 final class Router<Scene: InitProtocol>: RouterProtocol, Communicable {
-    var events: Events = .init()
+   var events: Events = .init()
 
-    func start() {}
+   func start() {}
 
-    struct Events: InitProtocol {
-        var push: Event<UIViewController>?
-        var pop: Event<Void>?
-        var popToRoot: Event<Void>?
-        var present: Event<UIViewController>?
-    }
+   struct Events: InitProtocol {
+      var push: Event<UIViewController>?
+      var pop: Event<Void>?
+      var popToRoot: Event<Void>?
+      var present: Event<UIViewController>?
+      var presentModally: Event<UIViewController>?
+   }
 
-    func route(_ keypath: KeyPath<Scene, SceneModelProtocol>, navType: NavType, payload: Any? = nil) {
-        switch navType {
-        case .push:
-            sendEvent(\.push, payload: makeVC())
-        case .pop:
-            sendEvent(\.pop)
-        case .popToRoot:
-            sendEvent(\.popToRoot)
-        case .present:
-            sendEvent(\.present, payload: makeVC())
-        }
+   func route(_ keypath: KeyPath<Scene, SceneModelProtocol>, navType: NavType, payload: Any? = nil) {
+      switch navType {
+      case .push:
+         sendEvent(\.push, payload: makeVC())
+      case .pop:
+         sendEvent(\.pop)
+      case .popToRoot:
+         sendEvent(\.popToRoot)
+      case .present:
+         sendEvent(\.present, payload: makeVC())
+      case .presentModally:
+         sendEvent(\.presentModally, payload: makeVC())
+      }
 
-        // local func
-        func makeVC() -> UIViewController {
-            let sceneModel = Scene()[keyPath: keypath]
-            sceneModel.setInput(payload)
-            let vc = sceneModel.makeVC()
-            return vc
-        }
-    }
+      // local func
+      func makeVC() -> UIViewController {
+         let sceneModel = Scene()[keyPath: keypath]
+         sceneModel.setInput(payload)
+         let vc = sceneModel.makeVC()
+         return vc
+      }
+   }
 }

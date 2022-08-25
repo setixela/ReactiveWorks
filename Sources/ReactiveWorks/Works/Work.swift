@@ -5,17 +5,26 @@
 //  Created by Aleksandr Solovyev on 30.07.2022.
 //
 
+import CoreGraphics
 import Foundation
-import SwiftUI
 
 // MARK: - Aliases
 
 public typealias WorkClosure<In, Out> = (Work<In, Out>) -> Void
 public typealias MapClosure<In, Out> = (In) -> Out
 
+public typealias VoidWork<Out> = Work<Void, Out>
+public typealias StringWork<Out> = Work<String, Out>
+public typealias IntWork<Out> = Work<Int, Out>
+public typealias CGFloatWork<Out> = Work<CGFloat, Out>
+
+public protocol Finishible {
+   var isFinished: Bool { get }
+}
+
 // MARK: - Work
 
-open class Work<In, Out>: Any {
+open class Work<In, Out>: Any, Finishible {
    public var input: In?
 
    public var unsafeInput: In {
@@ -29,6 +38,8 @@ open class Work<In, Out>: Any {
    public var result: Out?
 
    public var closure: WorkClosure<In, Out>?
+
+   public private(set) var isFinished = false
 
    // Private
    private var finisher: ((Out) -> Void)?
@@ -74,6 +85,8 @@ open class Work<In, Out>: Any {
       nextWork?.perform(result)
       breakinNextWork?.perform(())
       recoverWork?.perform(result)
+
+      isFinished = true
    }
 
    public func fail<T>(_ value: T) {
@@ -81,6 +94,8 @@ open class Work<In, Out>: Any {
       nextFailWork?.perform(value)
       genericFail?.perform(value)
       recoverWork?.perform(value)
+
+      isFinished = true
    }
 }
 
@@ -158,6 +173,27 @@ public extension Work {
 
    @discardableResult func onFail<T>(_ failure: @escaping GenericClosure<T>) -> Self {
       genericFail = Lambda(lambda: failure)
+
+      return self
+   }
+
+   @discardableResult
+   func onSuccessMixSaved<OutSaved>(_ stateFunc: @escaping (Out, OutSaved) -> Void) -> Self {
+      let closure: GenericClosure<Out> = { [weak self] result in
+         guard
+            let saved = self?.savedResultClosure?(),
+            let saved = saved as? OutSaved
+         else {
+            fatalError()
+         }
+
+         DispatchQueue.main.async {
+            stateFunc(result, saved)
+         }
+      }
+
+      let lambda = Lambda(lambda: closure)
+      succesStateFunc = lambda
 
       return self
    }
@@ -250,17 +286,6 @@ public extension Work {
 
       return self
    }
-
-//   @discardableResult
-//   func onFail<S, I, O>(_ delegate: ((S) -> Void)?,
-//                        _ work: Work<I, O>,
-//                        _ stateFunc: @escaping ((Out, S)) -> S) -> Self {
-//
-//      work
-//         .doAsync()
-//
-//      return self
-//   }
 }
 
 // exte
@@ -526,7 +551,6 @@ public struct WorkWrappper<T, U>: WorkWrappperProtocol where T: Any, U: Any {
       else {
          print("Lambda payloads not conform: {\(value)} is not {\(T.self)}")
          fatalError()
-         return
       }
 
       work.input = value
@@ -549,11 +573,30 @@ public final class Retainer {
    public init() {}
 
    public func retain(_ some: AnyHashable) {
+      cleanIfNeeded()
       retained.update(with: some)
+      if retained.count > 100 {
+         log("100")
+      }
    }
 
    deinit {
+      retained.forEach {_ in
+         log("By Retainer on DEINIT", "RELEASED WORK")
+      }
       retained.removeAll()
+   }
+
+   private func cleanIfNeeded() {
+      let cleaned = retained.filter {
+         let isFinished = ($0 as? Finishible)?.isFinished == true
+         if isFinished {
+            log("By Retainer ON ADD WORK", "RELEASED WORK")
+         }
+         return !isFinished
+      }
+
+      retained = cleaned
    }
 }
 

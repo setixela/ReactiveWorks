@@ -11,6 +11,15 @@ public protocol UseCaseProtocol {
    associatedtype In
    associatedtype Out
 
-   var work: Work<In, Out> { get }
+   typealias WRK = Work<In, Out>
+
+   var work: WRK { get }
 }
 
+public extension UseCaseProtocol {
+   func retainedWork(_ retainer: Retainer) -> Work<In, Out> {
+      let work = self.work
+      retainer.retain(work)
+      return work
+   }
+}

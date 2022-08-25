@@ -9,43 +9,31 @@ import Foundation
 
 public typealias InitAnyObject = AnyObject & InitProtocol
 
-public protocol SceneWorks: InitProtocol, Assetable {
-   associatedtype Temp: InitAnyObject
-
-   static var store: Temp { get }
-}
-
-public extension SceneWorks {
-   @discardableResult
-   func doAsync<In, Out>(_ keypath: KeyPath<Self, Work<In, Out>>) -> Work<In, Out> {
-      let work = self[keyPath: keypath]
-      return work
-   }
-}
-
-public protocol WorkableModel {
-   associatedtype Works: SceneWorks
-
-   var works: Works { get }
-}
-
-open class BaseSceneWorks<Temp: InitAnyObject, Asset: AssetRoot>: SceneWorks {
-
+open class BaseSceneWorks<Temp: InitAnyObject, Asset: AssetRoot>: TempStorage {
    public lazy var retainer = Retainer()
-   
+
    public required init() {
       UnsafeTemper.initStore(for: Temp.self)
    }
 
    deinit {
       UnsafeTemper.clearStore(for: Temp.self)
-
    }
 
    public static var store: Temp {
       UnsafeTemper.store(for: Temp.self)
    }
 }
+
+// MARK: - Temp single type storage
+
+public protocol TempStorage: InitProtocol, Assetable {
+   associatedtype Temp: InitAnyObject
+
+   static var store: Temp { get }
+}
+
+// TODO: - need to change conception
 
 enum UnsafeTemper {
    private static var storage: [String: InitAnyObject] = [:]

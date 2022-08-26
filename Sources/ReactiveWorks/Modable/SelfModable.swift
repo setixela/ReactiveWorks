@@ -6,7 +6,7 @@
 //
 
 func log(_ object: Any, _ slf: Any? = nil) {
-   print("\n ##### (\((slf != nil) ? slf! : "")) |-> \(object)\n\n")
+   print("\n ##### (\((slf != nil) ? slf! : "")) |-> \(object)\n")
 }
 
 import Foundation

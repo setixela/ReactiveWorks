@@ -34,7 +34,7 @@ public protocol DesignRoot: InitProtocol {
    associatedtype Text: InitProtocol
    associatedtype Color: InitProtocol
    associatedtype Icon: InitProtocol
-   associatedtype Font: InitProtocol
+//   associatedtype Font: InitProtocol
    associatedtype Label: InitProtocol
    associatedtype Button: InitProtocol
 
@@ -47,7 +47,7 @@ public extension DesignRoot {
    static var text: Text { .init() }
    static var color: Color { .init() }
    static var icon: Icon { .init() }
-   static var font: Font { .init() }
+//   static var font: Font { .init() }
    static var label: Label { .init() }
    static var button: Button { .init() }
 

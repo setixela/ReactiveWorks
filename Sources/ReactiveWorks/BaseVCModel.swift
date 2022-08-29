@@ -17,6 +17,7 @@ public struct VCEvent: InitProtocol {
    public var setLeftBarItems: Event<[UIBarButtonItem]>?
    public var setRightBarItems: Event<[UIBarButtonItem]>?
 
+   public var dismiss: Event<Void>?
    //
    public init() {}
 }

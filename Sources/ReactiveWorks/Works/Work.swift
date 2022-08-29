@@ -581,8 +581,8 @@ public final class Retainer {
    }
 
    deinit {
-      retained.forEach {_ in
-         log("By Retainer on DEINIT", "RELEASED WORK")
+      retained.forEach {
+         log("RELEASED WORK", $0)
       }
       retained.removeAll()
    }
@@ -591,7 +591,7 @@ public final class Retainer {
       let cleaned = retained.filter {
          let isFinished = ($0 as? Finishible)?.isFinished == true
          if isFinished {
-            log("By Retainer ON ADD WORK", "RELEASED WORK")
+            log("RELEASED WORK", $0)
          }
          return !isFinished
       }

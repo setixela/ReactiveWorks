@@ -20,6 +20,9 @@ public final class DefaultVCModel: BaseVCModel {
       .onEvent(\.setRightBarItems) { [weak self] items in
          self?.navigationItem.rightBarButtonItems = items
       }
+      .onEvent(\.dismiss) { [weak self] in
+         self?.dismiss(animated: true)
+      }
    }
 
    override public func viewDidLoad() {
@@ -38,7 +41,6 @@ public final class DefaultVCModel: BaseVCModel {
          object: nil)
       navigationController?.navigationBar.isUserInteractionEnabled = false
       sendEvent(\.viewDidLoad)
-
    }
 
    override public func viewWillAppear(_ animated: Bool) {

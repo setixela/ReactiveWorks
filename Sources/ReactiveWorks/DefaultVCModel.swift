@@ -8,6 +8,12 @@
 import UIKit
 
 public final class DefaultVCModel: BaseVCModel {
+   private lazy var tapGesture = UITapGestureRecognizer(target: self,
+                                                        action: #selector(hideKeyboard))
+
+   private var isKeyboardShown = false
+   private var baseHeight: CGFloat = 0
+
    required init(sceneModel: SceneModelProtocol) {
       super.init(sceneModel: sceneModel)
 
@@ -29,16 +35,6 @@ public final class DefaultVCModel: BaseVCModel {
       super.viewDidLoad()
       view.backgroundColor = .white
 
-      NotificationCenter.default.addObserver(
-         self,
-         selector: #selector(self.keyboardWillShow),
-         name: UIResponder.keyboardWillShowNotification,
-         object: nil)
-      NotificationCenter.default.addObserver(
-         self,
-         selector: #selector(self.keyboardWillHide),
-         name: UIResponder.keyboardWillHideNotification,
-         object: nil)
       navigationController?.navigationBar.isUserInteractionEnabled = false
       sendEvent(\.viewDidLoad)
    }
@@ -49,26 +45,91 @@ public final class DefaultVCModel: BaseVCModel {
       navigationController?.navigationBar.isUserInteractionEnabled = false
       navigationController?.navigationBar.backgroundColor = .clear
 
+      NotificationCenter.default.addObserver(
+         self,
+         selector: #selector(keyboardWillShow),
+         name: UIResponder.keyboardWillShowNotification,
+         object: view.window)
+      NotificationCenter.default.addObserver(
+         self,
+         selector: #selector(keyboardWillHide),
+         name: UIResponder.keyboardWillHideNotification,
+         object: view.window)
+
       sendEvent(\.viewWillAppear)
    }
 
    override public func viewWillDisappear(_ animated: Bool) {
       super.viewWillDisappear(animated)
 
+      NotificationCenter.default.removeObserver(
+         self,
+         name: UIResponder.keyboardWillShowNotification,
+         object: view.window)
+      NotificationCenter.default.removeObserver(
+         self,
+         name: UIResponder.keyboardWillHideNotification,
+         object: view.window)
+
+      hideKeyboard()
+
       sendEvent(\.viewWillDissappear)
    }
 
    @objc func keyboardWillShow(notification: NSNotification) {
-      if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-         if self.view.frame.origin.y == 0 {
-            self.view.frame.origin.y -= keyboardSize.height / 3.5
+      guard !isKeyboardShown else { return }
+
+      view.addGestureRecognizer(tapGesture)
+
+//      let maxY = view.subviews
+//         .flatMap { $0.subviews.flatMap { $0.subviews.map { $0 } } }
+//         .filter { $0 is UIButton || $0 is UITextView || $0 is UITextField }
+//         .reduce(CGFloat(0)) { partialResult, button in
+//            let gPoint = button.convert(button.bounds, to: self.view)
+//            let maxY = gPoint.origin.y + button.frame.size.height
+//            let result = partialResult < maxY
+//               ? maxY
+//               : partialResult
+//            return result
+//         }
+//
+//      let viewHeight = view.frame.height
+      let keysHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?
+         .cgRectValue.height ?? 0
+//      let keysTop = viewHeight - keysHeight
+//
+//      let diff = keysTop - maxY
+//
+//      if diff < 0 {
+         baseHeight = view.frame.size.height
+         UIView.animate(withDuration: 0.3) {
+            self.view.frame.size.height -= keysHeight
+            self.view.layoutIfNeeded()
          }
-      }
+//      }
+
+      isKeyboardShown = true
    }
 
    @objc func keyboardWillHide(notification: NSNotification) {
-      if self.view.frame.origin.y != 0 {
-         self.view.frame.origin.y = 0
+      guard isKeyboardShown else { return }
+
+      view.removeGestureRecognizer(tapGesture)
+      view.frame.size.height = baseHeight
+      isKeyboardShown = false
+   }
+
+   @objc func hideKeyboard() {
+      view.endEditing(true)
+   }
+}
+
+extension UIView {
+   var rootSuperview: UIView {
+      var view = self
+      while let s = view.superview {
+         view = s
       }
+      return view
    }
 }

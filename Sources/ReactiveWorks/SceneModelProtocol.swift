@@ -41,7 +41,7 @@ open class BaseSceneModel<
    MainViewModel: ViewModelProtocol,
    Asset: AssetRoot,
    Input
->: SceneModel {
+>: NSObject, SceneModel {
    private var _inputValue: Any?
 
    public lazy var mainVM = MainViewModel()
@@ -51,8 +51,6 @@ open class BaseSceneModel<
    public var inputValue: Input? { _inputValue as? Input }
 
    public var events: Events = .init()
-
-   public init() {}
 
    open func start() {
 

@@ -12,10 +12,12 @@ public protocol AssetRoot {
    associatedtype Service: InitProtocol
    associatedtype Design: DesignRoot
 
-   associatedtype Router: InitProtocol
+   associatedtype Router: NavigateProtocol
 
    typealias Asset = Self
    typealias Text = Design.Text
+
+   static var router: Router? { get set }
 }
 
 public extension AssetRoot {
@@ -25,7 +27,7 @@ public extension AssetRoot {
 
    static var text: Text { Design.text }
 
-   static var router: Router { .init() }
+  // static var router: Router { .init() }
 }
 
 //

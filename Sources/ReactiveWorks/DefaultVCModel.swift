@@ -77,9 +77,14 @@ public final class DefaultVCModel: BaseVCModel {
    }
 
    @objc func keyboardWillShow(notification: NSNotification) {
-      guard !isKeyboardShown else { return }
+     // guard !isKeyboardShown else { return }
 
-      view.addGestureRecognizer(tapGesture)
+      var time = 0.0
+      if isKeyboardShown == false {
+         baseHeight = view.frame.size.height
+         view.addGestureRecognizer(tapGesture)
+         time = 0.3
+      }
 
 //      let maxY = view.subviews
 //         .flatMap { $0.subviews.flatMap { $0.subviews.map { $0 } } }
@@ -101,11 +106,11 @@ public final class DefaultVCModel: BaseVCModel {
 //      let diff = keysTop - maxY
 //
 //      if diff < 0 {
-         baseHeight = view.frame.size.height
-         UIView.animate(withDuration: 0.3) {
-            self.view.frame.size.height -= keysHeight
-            self.view.layoutIfNeeded()
-         }
+
+      UIView.animate(withDuration: time) {
+         self.view.frame.size.height = self.baseHeight - keysHeight
+         self.view.layoutIfNeeded()
+      }
 //      }
 
       isKeyboardShown = true

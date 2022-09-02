@@ -43,6 +43,8 @@ public protocol DesignRoot: InitProtocol {
    associatedtype State: InitProtocol
 
    associatedtype Params: InitProtocol
+   //
+   associatedtype Model: InitProtocol
 }
 
 public extension DesignRoot {
@@ -56,4 +58,6 @@ public extension DesignRoot {
    static var state: State { .init() }
 
    static var params: Params { .init() }
+   //
+   static var model: Model { .init() }
 }

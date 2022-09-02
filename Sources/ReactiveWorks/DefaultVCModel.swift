@@ -84,7 +84,6 @@ public final class DefaultVCModel: BaseVCModel {
    }
 
    @objc func keyboardWillShow(notification: NSNotification) {
-      // guard !isKeyboardShown else { return }
 
       var time = 0.0
       if isKeyboardShown == false {
@@ -93,33 +92,14 @@ public final class DefaultVCModel: BaseVCModel {
          time = 0.3
       }
 
-//      let maxY = view.subviews
-//         .flatMap { $0.subviews.flatMap { $0.subviews.map { $0 } } }
-//         .filter { $0 is UIButton || $0 is UITextView || $0 is UITextField }
-//         .reduce(CGFloat(0)) { partialResult, button in
-//            let gPoint = button.convert(button.bounds, to: self.view)
-//            let maxY = gPoint.origin.y + button.frame.size.height
-//            let result = partialResult < maxY
-//               ? maxY
-//               : partialResult
-//            return result
-//         }
-//
-//      let viewHeight = view.frame.height
       let keysHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?
          .cgRectValue.height ?? 0
-//      let keysTop = viewHeight - keysHeight
-//
-//      let diff = keysTop - maxY
-//
-//      if diff < 0 {
 
       UIView.animate(withDuration: time) {
          self.view.rootSuperview.frame.size.height = self.baseHeight - keysHeight
          self.view.layoutIfNeeded()
          self.view.rootSuperview.layoutIfNeeded()
       }
-//      }
 
       isKeyboardShown = true
    }

@@ -581,18 +581,12 @@ public final class Retainer {
    }
 
    deinit {
-      retained.forEach {
-         log("RELEASED WORK", $0)
-      }
       retained.removeAll()
    }
 
    private func cleanIfNeeded() {
       let cleaned = retained.filter {
          let isFinished = ($0 as? Finishible)?.isFinished == true
-         if isFinished {
-            log("RELEASED WORK", $0)
-         }
          return !isFinished
       }
 

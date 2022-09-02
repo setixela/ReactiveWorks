@@ -14,6 +14,8 @@ public struct VCEvent: InitProtocol {
 
    // setup
    public var setTitle: Event<String>?
+   public var setNavBarTintColor: Event<UIColor>?
+   public var setTitleAlpha: Event<CGFloat>?
    public var setLeftBarItems: Event<[UIBarButtonItem]>?
    public var setRightBarItems: Event<[UIBarButtonItem]>?
 

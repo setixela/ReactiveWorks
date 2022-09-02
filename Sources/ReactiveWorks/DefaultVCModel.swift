@@ -20,6 +20,13 @@ public final class DefaultVCModel: BaseVCModel {
       onEvent(\.setTitle) { [weak self] title in
          self?.title = title
       }
+      .onEvent(\.setNavBarTintColor) { [weak self] color in
+         let textAttributes = [NSAttributedString.Key.foregroundColor: color]
+         self?.navigationController?.navigationBar.titleTextAttributes = textAttributes
+      }
+      .onEvent(\.setTitleAlpha) { [weak self] alpha in
+         self?.navigationItem.titleView?.alpha = alpha
+      }
       .onEvent(\.setLeftBarItems) { [weak self] items in
          self?.navigationItem.leftBarButtonItems = items
       }
@@ -77,7 +84,7 @@ public final class DefaultVCModel: BaseVCModel {
    }
 
    @objc func keyboardWillShow(notification: NSNotification) {
-     // guard !isKeyboardShown else { return }
+      // guard !isKeyboardShown else { return }
 
       var time = 0.0
       if isKeyboardShown == false {
@@ -110,6 +117,7 @@ public final class DefaultVCModel: BaseVCModel {
       UIView.animate(withDuration: time) {
          self.view.frame.size.height = self.baseHeight - keysHeight
          self.view.layoutIfNeeded()
+         self.view.rootSuperview.layoutIfNeeded()
       }
 //      }
 
@@ -124,12 +132,12 @@ public final class DefaultVCModel: BaseVCModel {
       isKeyboardShown = false
    }
 
-   @objc func hideKeyboard() {
+    @objc public func hideKeyboard() {
       view.endEditing(true)
    }
 }
 
-extension UIView {
+public extension UIView {
    var rootSuperview: UIView {
       var view = self
       while let s = view.superview {

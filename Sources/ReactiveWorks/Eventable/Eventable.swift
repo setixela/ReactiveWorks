@@ -28,6 +28,32 @@ public extension Eventable {
    }
 
    @discardableResult
+   func on<S: AnyObject>(_ slf: S, _ eventKey: Key<Void>, _ closure: @escaping (S) -> Void) -> Self {
+      let hash = eventKey.hashValue
+      log(hash)
+      let clos = { [weak slf] in
+         guard let slf = slf else { return }
+         closure(slf)
+      }
+      let lambda = Lambda(lambda: clos)
+      events[hash] = lambda
+      return self
+   }
+
+   @discardableResult
+   func on<T,S: AnyObject>(_ slf: S, _ eventKey: Key<T>, _ closure: @escaping (S,T) -> Void) -> Self {
+      let hash = eventKey.hashValue
+      log(hash)
+      let clos = { [weak slf] (value: T) in
+         guard let slf = slf else { return }
+         closure(slf, value)
+      }
+      let lambda = Lambda(lambda: clos)
+      events[hash] = lambda
+      return self
+   }
+
+   @discardableResult
    func on<T>(_ eventKey: Key<T>) -> Work<Void, T> {
       let hash = eventKey.hashValue
       log(hash)

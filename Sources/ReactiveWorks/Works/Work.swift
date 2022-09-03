@@ -81,7 +81,6 @@ open class Work<In, Out>: Any, Finishible {
       voidFinisher?()
       finisher?(result)
       succesStateFunc?.perform(result)
-      succesStateFunc?.perform(())
       nextWork?.perform(result)
       breakinNextWork?.perform(())
       recoverWork?.perform(result)

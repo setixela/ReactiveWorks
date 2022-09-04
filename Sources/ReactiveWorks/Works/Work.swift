@@ -73,7 +73,11 @@ open class Work<In, Out>: Any, Finishible {
    private var voidFinisher: VoidClosure?
 
    private var succesStateFunc: LambdaProtocol?
+   private var successStateVoidFunc: Lambda<Void>?
+
    private var failStateFunc: LambdaProtocol?
+   private var failStateVoidFunc: Lambda<Void>?
+
    private var genericFail: LambdaProtocol?
 
    private var nextWork: WorkWrappperProtocol?
@@ -110,6 +114,7 @@ open class Work<In, Out>: Any, Finishible {
       voidFinisher?()
       finisher?(result)
       succesStateFunc?.perform(result)
+      successStateVoidFunc?.perform(())
       nextWork?.perform(result)
       breakinNextWork?.perform(())
 
@@ -127,6 +132,7 @@ open class Work<In, Out>: Any, Finishible {
       genericFail?.perform(value)
       recoverWork?.perform(input)
       failStateFunc?.perform(value)
+      failStateVoidFunc?.perform(())
 
       isFinished = true
 
@@ -138,14 +144,14 @@ open class Work<In, Out>: Any, Finishible {
 
 public extension Work {
    @discardableResult func onSuccess<S>(_ delegate: ((S) -> Void)?, _ state: S) -> Self {
-      let closure: GenericClosure<Void> = { [delegate] _ in
+      let closure: GenericClosure<Void> = { [delegate] result in
          DispatchQueue.main.async {
             delegate?(state)
          }
       }
 
       let lambda = Lambda(lambda: closure)
-      succesStateFunc = lambda
+      successStateVoidFunc = lambda
 
       return self
    }
@@ -173,7 +179,7 @@ public extension Work {
       }
 
       let lambda = Lambda(lambda: closure)
-      failStateFunc = lambda
+      failStateVoidFunc = lambda
 
       return self
    }

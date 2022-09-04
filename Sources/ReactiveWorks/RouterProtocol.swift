@@ -12,7 +12,4 @@ public protocol NavigateProtocol {
    func start()
 }
 
-public protocol RouterProtocol: NavigateProtocol{
-//    associatedtype Scene: InitProtocol
-//    func route(_ keypath: KeyPath<Scene, SceneModelProtocol>, navType: NavType, payload: Any?)
-}
+public protocol RouterProtocol: NavigateProtocol{}

@@ -41,16 +41,13 @@ public final class DefaultVCModel: BaseVCModel {
    override public func viewDidLoad() {
       super.viewDidLoad()
       view.backgroundColor = .white
+      navigationController?.navigationBar.backgroundColor = .clear
 
-      navigationController?.navigationBar.isUserInteractionEnabled = false
       sendEvent(\.viewDidLoad)
    }
 
    override public func viewWillAppear(_ animated: Bool) {
       super.viewWillAppear(animated)
-
-      navigationController?.navigationBar.isUserInteractionEnabled = false
-      navigationController?.navigationBar.backgroundColor = .clear
 
       NotificationCenter.default.addObserver(
          self,
@@ -64,6 +61,10 @@ public final class DefaultVCModel: BaseVCModel {
          object: view.window)
 
       sendEvent(\.viewWillAppear)
+
+//      navigationController?.navigationBar.isExclusiveTouch = false
+//      navigationController?.navigationBar.isUserInteractionEnabled = false
+//      navigationController?.navigationBar.subviews.forEach { if $0 is UINavigationBarContentView { $0.isUserInteractionEnabled = false } }
    }
 
    override public func viewWillDisappear(_ animated: Bool) {
@@ -84,7 +85,6 @@ public final class DefaultVCModel: BaseVCModel {
    }
 
    @objc func keyboardWillShow(notification: NSNotification) {
-
       var time = 0.0
       if isKeyboardShown == false {
          baseHeight = view.frame.size.height
@@ -112,7 +112,7 @@ public final class DefaultVCModel: BaseVCModel {
       isKeyboardShown = false
    }
 
-    @objc public func hideKeyboard() {
+   @objc public func hideKeyboard() {
       view.endEditing(true)
    }
 }
@@ -124,5 +124,44 @@ public extension UIView {
          view = s
       }
       return view
+   }
+}
+
+/// Passes through all touch events to views behind it, except when the
+/// touch occurs in a contained UIControl or view with a gesture
+/// recognizer attached
+extension UINavigationBar {
+   override open func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+      guard nestedInteractiveViews(in: self, contain: point) else { return false }
+      return super.point(inside: point, with: event)
+   }
+
+   private func nestedInteractiveViews(in view: UIView, contain point: CGPoint) -> Bool {
+      if view.isPotentiallyInteractive, view.bounds.contains(convert(point, to: view)) {
+         return true
+      }
+
+      for subview in view.subviews {
+         if nestedInteractiveViews(in: subview, contain: point) {
+            return true
+         }
+      }
+
+      return false
+   }
+}
+
+private extension UIView {
+   var isPotentiallyInteractive: Bool {
+      guard isUserInteractionEnabled else { return false }
+      return (isControl || doesContainGestureRecognizer)
+   }
+
+   var isControl: Bool {
+      return self is UIControl
+   }
+
+   var doesContainGestureRecognizer: Bool {
+      return !(gestureRecognizers?.isEmpty ?? true)
    }
 }

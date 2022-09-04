@@ -58,6 +58,7 @@ public extension Eventable {
       let hash = eventKey.hashValue
       log(hash)
       let work = Work<Void, T>()
+      work.type = .event
       //
       let closure: Event<T> = { value in
          work.success(result: value)

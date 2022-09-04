@@ -40,6 +40,7 @@ public enum WorkType: String {
    case recover
    case recoverNext
    case initVoid
+   case event
 }
 
 extension Work: CustomStringConvertible {
@@ -49,7 +50,7 @@ extension Work: CustomStringConvertible {
 }
 
 open class Work<In, Out>: Any, Finishible {
-   public private(set) var type: WorkType = .default
+   public var type: WorkType = .default
 
    public var input: In?
 
@@ -113,6 +114,10 @@ open class Work<In, Out>: Any, Finishible {
       breakinNextWork?.perform(())
 
       isFinished = true
+
+      if Config.isLog {
+         print("\nWork Succeed! - type: \(self.type),\n result: \(result),\n In: \(In.self), Out: \(Out.self)\n")
+      }
    }
 
    public func fail<T>(_ value: T) {
@@ -124,6 +129,10 @@ open class Work<In, Out>: Any, Finishible {
       failStateFunc?.perform(value)
 
       isFinished = true
+
+      if Config.isLog {
+         print("\nWork Error! - type: \(self.type),\n result: \(value),\n In: \(In.self), Out: \(Out.self)\n")
+      }
    }
 }
 
@@ -237,9 +246,7 @@ public extension Work {
 
 public extension Work {
    func doSaveResult() -> Self {
-      log(self, "do")
       let saveClosure: () -> Out = { [weak self] in
-         log(self, "on")
          guard let result = self?.result else {
             fatalError()
          }

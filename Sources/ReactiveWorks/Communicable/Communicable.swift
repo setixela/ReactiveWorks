@@ -77,6 +77,7 @@ public extension Communicable {
    @discardableResult
    func onEvent<T>(_ event: WritableKeyPath<Events, Event<T>?>) -> Work<Void, T> {
       let work = Work<Void, T>()
+      work.type = .event
       //
       let lambda: Event<T> = { value in
          work.success(result: value)

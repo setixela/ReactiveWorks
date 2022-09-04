@@ -43,7 +43,6 @@ public struct Lambda<T>: LambdaProtocol where T: Any {
       guard let value = value as? T else {
          print("Lambda payloads not conform: {\(value.self)} is not {\(T.self)}")
          fatalError()
-         return
       }
 
       lambda(value)

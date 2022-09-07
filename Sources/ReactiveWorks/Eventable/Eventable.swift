@@ -74,13 +74,13 @@ public extension Eventable {
       let hash = eventKey.hashValue
       log(hash)
       guard
-         let lambda = events[hash]!
+         let lambda = events[hash]
       else {
          return self
       }
 
       DispatchQueue.main.async {
-         lambda.perform(())
+         lambda?.perform(())
       }
 
       return self
@@ -91,13 +91,13 @@ public extension Eventable {
       let hash = eventKey.hashValue
       log(hash)
       guard
-         let lambda = events[hash]!
+         let lambda = events[hash]
       else {
          return self
       }
 
       DispatchQueue.main.async {
-         lambda.perform(payload)
+         lambda?.perform(payload)
       }
 
       return self

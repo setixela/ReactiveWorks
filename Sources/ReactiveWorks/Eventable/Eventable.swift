@@ -9,12 +9,14 @@ import Foundation
 
 // MARK: - Reinventing Eventable
 
+public typealias EventsStore = [Int: LambdaProtocol?]
+
 public protocol Eventable: AnyObject {
    associatedtype Events: InitProtocol
 
    typealias Key<T> = KeyPath<Events, T?>
 
-   var events: [Int: LambdaProtocol?] { get set }
+   var events: EventsStore { get set }
 }
 
 public extension Eventable {

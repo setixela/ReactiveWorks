@@ -10,6 +10,7 @@ import UIKit
 // Associatedtype View Erasing protocol
 public protocol UIViewModel: ModelProtocol {
    var uiView: UIView { get }
+   var isAutoreleaseView: Bool { get set }
 }
 
 public protocol ViewModelProtocol: UIViewModel {
@@ -18,7 +19,6 @@ public protocol ViewModelProtocol: UIViewModel {
    var view: View { get }
 
    var autostartedView: View? { get set }
-   var isAutoreleaseView: Bool { get set }
 
    init()
 }
@@ -68,7 +68,7 @@ open class BaseViewModel<View: UIView>: NSObject, ViewModelProtocol {
    open func start() {}
 
    public func setupView(_ closure: GenericClosure<View>) {
-      closure(self.view)
+      closure(view)
    }
 }
 

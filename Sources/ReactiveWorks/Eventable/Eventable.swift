@@ -23,7 +23,6 @@ public extension Eventable {
    @discardableResult
    func on<T>(_ eventKey: Key<T>, _ closure: @escaping Event<T>) -> Self {
       let hash = eventKey.hashValue
-      log(hash)
       let lambda = Lambda(lambda: closure)
       events[hash] = lambda
       return self
@@ -32,7 +31,6 @@ public extension Eventable {
    @discardableResult
    func on<S: AnyObject>( _ eventKey: Key<Void>, weak slf: S, _ closure: @escaping (S) -> Void) -> Self {
       let hash = eventKey.hashValue
-      log(hash)
       let clos = { [weak slf] in
          guard let slf = slf else { return }
          closure(slf)
@@ -45,7 +43,6 @@ public extension Eventable {
    @discardableResult
    func on<T,S: AnyObject>(_ eventKey: Key<T>, weak slf: S, _ closure: @escaping (S,T) -> Void) -> Self {
       let hash = eventKey.hashValue
-      log(hash)
       let clos = { [weak slf] (value: T) in
          guard let slf = slf else { return }
          closure(slf, value)
@@ -58,7 +55,6 @@ public extension Eventable {
    @discardableResult
    func on<T>(_ eventKey: Key<T>) -> Work<Void, T> {
       let hash = eventKey.hashValue
-      log(hash)
       let work = Work<Void, T>()
       work.type = .event
       //
@@ -74,7 +70,6 @@ public extension Eventable {
    @discardableResult
    func send(_ eventKey: Key<Void>) -> Self{
       let hash = eventKey.hashValue
-      log(hash)
       guard
          let lambda = events[hash]
       else {
@@ -91,7 +86,6 @@ public extension Eventable {
    @discardableResult
    func send<T>(_ eventKey: Key<T>, _ payload: T) -> Self {
       let hash = eventKey.hashValue
-      log(hash)
       guard
          let lambda = events[hash]
       else {

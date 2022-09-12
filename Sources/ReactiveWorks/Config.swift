@@ -10,5 +10,5 @@ import Foundation
 struct Config {
    static let isDebugView = false
 
-   static let isLog = true
+   static let isLog = false
 }

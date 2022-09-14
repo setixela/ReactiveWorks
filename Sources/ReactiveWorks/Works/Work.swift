@@ -101,6 +101,11 @@ open class Work<In, Out>: Any, Finishible {
       self.closure = closure
    }
 
+   public init(retainedBy: Retainer, _ closure: @escaping WorkClosure<In, Out>) {
+      self.closure = closure
+      retainedBy.retain(self)
+   }
+
    public init(input: In? = nil) {
       self.input = input
    }
@@ -208,6 +213,18 @@ public extension Work {
       return self
    }
 
+   @discardableResult
+   func onSuccess<S: AnyObject>(_ weakSelf: S, _ finisher: @escaping (S, Out) -> Void) -> Self  {
+      let clos = { [weak weakSelf] in
+         guard let slf = weakSelf else { return }
+         finisher(slf, $0)
+      }
+
+      self.finisher = clos
+
+      return self
+   }
+
    @discardableResult func onSuccess(_ voidFinisher: @escaping () -> Void) -> Self {
       self.voidFinisher = voidFinisher
 
@@ -216,6 +233,18 @@ public extension Work {
 
    @discardableResult func onFail<T>(_ failure: @escaping GenericClosure<T>) -> Self {
       genericFail = Lambda(lambda: failure)
+
+      return self
+   }
+
+   @discardableResult
+   func onFail<S: AnyObject>(_ weakSelf: S, _ failure: @escaping (S) -> Void) -> Self  {
+      let clos = { [weak weakSelf] in
+         guard let slf = weakSelf else { return }
+         failure(slf)
+      }
+
+      self.genericFail = Lambda(lambda: clos)
 
       return self
    }

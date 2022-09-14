@@ -215,9 +215,9 @@ public extension Work {
 
    @discardableResult
    func onSuccess<S: AnyObject>(_ weakSelf: S, _ finisher: @escaping (S, Out) -> Void) -> Self  {
-      let clos = { [weak weakSelf] in
+      let clos = { [weak weakSelf] (result: Out) in
          guard let slf = weakSelf else { return }
-         finisher(slf, $0)
+         finisher(slf, result)
       }
 
       self.finisher = clos
@@ -239,7 +239,7 @@ public extension Work {
 
    @discardableResult
    func onFail<S: AnyObject>(_ weakSelf: S, _ failure: @escaping (S) -> Void) -> Self  {
-      let clos = { [weak weakSelf] in
+      let clos = { [weak weakSelf] (result: Out) in
          guard let slf = weakSelf else { return }
          failure(slf)
       }

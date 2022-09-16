@@ -110,7 +110,7 @@ open class Work<In, Out>: Any, Finishible {
       self.input = input
    }
 
-   public func success(result: Out) {
+   public func success(result: Out = ()) {
       self.result = result
 
       if case .recover = type {
@@ -130,7 +130,7 @@ open class Work<In, Out>: Any, Finishible {
       }
    }
 
-   public func fail<T>(_ value: T) {
+   public func fail<T>(_ value: T = ()) {
       if case .recover = type {
          print()
       }
@@ -472,12 +472,12 @@ public extension Work {
       work.savedResultClosure = savedResultClosure
       work.closure = { work in
          guard let input = work.input else {
-            work.fail(())
+            work.fail()
             return
          }
 
          guard let result = mapper(input) else {
-            work.fail(())
+            work.fail()
             return
          }
 
@@ -497,7 +497,7 @@ public extension Work {
             let value = value,
             let input = work.input
          else {
-            work.fail(())
+            work.fail()
             return
          }
 
@@ -520,7 +520,7 @@ public extension Work {
             let value = value,
             let input = work.input
          else {
-            work.fail(())
+            work.fail()
             return
          }
 
@@ -537,7 +537,7 @@ public extension Work {
       work.type = .input
       work.closure = {
          guard let input = input else {
-            $0.fail(())
+            $0.fail()
             return
          }
 
@@ -556,7 +556,7 @@ public extension Work {
       work.type = .weakInput
       work.closure = {
          guard let input = input else {
-            $0.fail(())
+            $0.fail()
             return
          }
 
@@ -573,7 +573,7 @@ public extension Work {
       work.type = .closureInput
       work.closure = {
          guard let input = input() else {
-            $0.fail(())
+            $0.fail()
             return
          }
          $0.success(result: input)

@@ -22,7 +22,7 @@ public protocol SceneModel: SceneModelProtocol {
 }
 
 public struct SceneEvent<Input>: InitProtocol {
-   public var input: Event<Input>?
+   public var input: Input?
 
    public init() {}
 }
@@ -50,11 +50,9 @@ open class BaseSceneModel<
 
    public var inputValue: Input? { _inputValue as? Input }
 
-   public var events: Events = .init()
+   public var events: EventsStore = .init()
 
-   open func start() {
-
-   }
+   open func start() {}
 
    public func setInput(_ value: Any? = nil) {
       _inputValue = value
@@ -71,10 +69,13 @@ public extension BaseSceneModel {
    func makeMainView() -> UIView {
       let view = mainVM.uiView
       start()
+      if let inputValue {
+         send(\.input, inputValue)
+      }
       return view
    }
 }
 
-extension BaseSceneModel: Communicable, Assetable {
+extension BaseSceneModel: Eventable, Assetable {
    public typealias Events = SceneEvent<Input>
 }

@@ -110,6 +110,10 @@ open class Work<In, Out>: Any, Finishible {
       self.input = input
    }
 
+   public func success(_ result: Out) {
+      success(result: result)
+   }
+
    public func success(result: Out = ()) {
       self.result = result
 
@@ -126,7 +130,7 @@ open class Work<In, Out>: Any, Finishible {
       isFinished = true
 
       if Config.isLog {
-         print("\nWork Succeed! - type: \(self.type),\n result: \(result),\n In: \(In.self), Out: \(Out.self)\n")
+         print("\nWork Succeed! - type: \(type),\n result: \(result),\n In: \(In.self), Out: \(Out.self)\n")
       }
    }
 
@@ -142,14 +146,14 @@ open class Work<In, Out>: Any, Finishible {
       isFinished = true
 
       if Config.isLog {
-         print("\nWork Error! - type: \(self.type),\n result: \(value),\n In: \(In.self), Out: \(Out.self)\n")
+         print("\nWork Error! - type: \(type),\n result: \(value),\n In: \(In.self), Out: \(Out.self)\n")
       }
    }
 }
 
 public extension Work {
    @discardableResult func onSuccess<S>(_ delegate: ((S) -> Void)?, _ state: S) -> Self {
-      let closure: GenericClosure<Void> = { [delegate] result in
+      let closure: GenericClosure<Void> = { [delegate] _ in
          DispatchQueue.main.async {
             delegate?(state)
          }
@@ -214,7 +218,7 @@ public extension Work {
    }
 
    @discardableResult
-   func onSuccess<S: AnyObject>(_ weakSelf: S, _ finisher: @escaping (S, Out) -> Void) -> Self  {
+   func onSuccess<S: AnyObject>(_ weakSelf: S, _ finisher: @escaping (S, Out) -> Void) -> Self {
       let clos = { [weak weakSelf] (result: Out) in
          guard let slf = weakSelf else { return }
          finisher(slf, result)
@@ -238,13 +242,13 @@ public extension Work {
    }
 
    @discardableResult
-   func onFail<S: AnyObject>(_ weakSelf: S, _ failure: @escaping (S) -> Void) -> Self  {
-      let clos = { [weak weakSelf] (result: Out) in
+   func onFail<S: AnyObject>(_ weakSelf: S, _ failure: @escaping (S) -> Void) -> Self {
+      let clos = { [weak weakSelf] (_: Out) in
          guard let slf = weakSelf else { return }
          failure(slf)
       }
 
-      self.genericFail = Lambda(lambda: clos)
+      genericFail = Lambda(lambda: clos)
 
       return self
    }
@@ -395,7 +399,7 @@ public extension Work {
    @discardableResult
    func doRecover() -> Work<In, Out> where In == Out {
       let newWork = Work<In, Out>() { [weak self] work in
-     //    work.result = work.input
+         //    work.result = work.input
          // guard let result = work?.input else { fatalError() }
          guard let input = self?.unsafeInput else { fatalError() }
 

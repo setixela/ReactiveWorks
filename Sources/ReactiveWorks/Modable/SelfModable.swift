@@ -16,24 +16,24 @@ public protocol WeakSelfied: InitProtocol {
 }
 
 public protocol SelfModable: AnyObject {
-   associatedtype Mode: WeakSelfied
+   associatedtype SelfMode: WeakSelfied
 
-   var modes: Mode { get set }
+   var selfMode: SelfMode { get set }
 }
 
 public extension SelfModable {
    @discardableResult
-   func onModeChanged(_ keypath: WritableKeyPath<Mode, Event<Mode.WeakSelf?>?>,
-                      _ block: Event<Mode.WeakSelf?>?) -> Self where Mode.WeakSelf == Self
+   func onSelfModeChanged(_ keypath: WritableKeyPath<SelfMode, Event<SelfMode.WeakSelf?>?>,
+                      _ block: Event<SelfMode.WeakSelf?>?) -> Self where SelfMode.WeakSelf == Self
    {
-      modes[keyPath: keypath] = block
+      selfMode[keyPath: keypath] = block
 
       return self
    }
 
    @discardableResult
-   func setMode(_ keypath: KeyPath<Mode, Event<Mode.WeakSelf?>?>) -> Self where Mode.WeakSelf == Self {
-      let mode = self.modes[keyPath: keypath]
+   func setSelfMode(_ keypath: KeyPath<SelfMode, Event<SelfMode.WeakSelf?>?>) -> Self where SelfMode.WeakSelf == Self {
+      let mode = self.selfMode[keyPath: keypath]
       DispatchQueue.main.async { [weak self] in
          mode?(self)
       }
@@ -70,3 +70,5 @@ public extension Modable {
       return self
    }
 }
+
+

@@ -42,7 +42,7 @@ public struct Lambda<T>: LambdaProtocol where T: Any {
    public func perform<AnyType>(_ value: AnyType) where AnyType: Any {
       guard let value = value as? T else {
          print("Lambda payloads not conform: {\(value.self)} is not {\(T.self)}")
-         assert(false)
+         //assert(false)
          return
       }
 

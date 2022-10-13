@@ -365,15 +365,6 @@ public extension Work {
 
 // exte
 public extension Work {
-   @discardableResult
-   func doNext<Out2>(work: Work<Out, Out2>) -> Work<Out, Out2> {
-      work.savedResultClosure = savedResultClosure
-      work.type = .nextWork
-
-      nextWork = WorkWrappper<Out, Out2>(work: work)
-
-      return work
-   }
 
    @discardableResult
    func doNext<Out2>(_ work: Work<Out, Out2>) -> Work<Out, Out2> {

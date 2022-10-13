@@ -23,6 +23,7 @@ public protocol SceneModel: SceneModelProtocol {
 
 public struct SceneEvent<Input>: InitProtocol {
    public var input: Input?
+   public var finished: Void?
 
    public init() {}
 }

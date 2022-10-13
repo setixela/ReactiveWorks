@@ -20,6 +20,8 @@ public protocol ViewModelProtocol: UIViewModel {
 
    var autostartedView: View? { get set }
 
+   var retainer: Retainer { get }
+
    init()
 }
 
@@ -34,6 +36,8 @@ public extension UIViewModel where Self: ViewModelProtocol {
 }
 
 open class BaseViewModel<View: UIView>: NSObject, ViewModelProtocol {
+   public lazy var retainer = Retainer()
+
    private weak var weakView: View?
 
    // will be cleaned after presenting view

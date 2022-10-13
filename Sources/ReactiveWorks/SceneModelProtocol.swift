@@ -58,10 +58,16 @@ open class BaseSceneModel<
 
    public var finisher: Work<Bool, Bool>?
 
+   public lazy var retainer = Retainer()
+
    open func start() {}
 
    public func setInput(_ value: Any? = nil) {
       _inputValue = value
+   }
+
+   deinit {
+      finisher = nil
    }
 }
 

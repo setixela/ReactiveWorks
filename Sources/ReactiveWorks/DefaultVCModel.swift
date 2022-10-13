@@ -123,7 +123,7 @@ public extension UIView {
       while let s = view.superview {
          view = s
       }
-      return view
+      return self
    }
 }
 

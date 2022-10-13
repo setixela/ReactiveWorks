@@ -9,6 +9,8 @@ public protocol InitProtocol {
    init()
 }
 
+public protocol InitClassProtocol: InitProtocol, AnyObject {}
+
 public protocol BuilderProtocol: InitProtocol {
    associatedtype Builder
 

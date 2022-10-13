@@ -11,6 +11,8 @@ public protocol SceneModelProtocol: ModelProtocol {
    func makeVC() -> UIViewController
    func makeMainView() -> UIView
    func setInput(_ value: Any?)
+
+   var finisher: Work<Bool, Bool>? { get set }
 }
 
 public protocol SceneModel: SceneModelProtocol {
@@ -43,6 +45,7 @@ open class BaseSceneModel<
    Asset: AssetRoot,
    Input
 >: NSObject, SceneModel {
+
    private var _inputValue: Any?
 
    public lazy var mainVM = MainViewModel()
@@ -52,6 +55,8 @@ open class BaseSceneModel<
    public var inputValue: Input? { _inputValue as? Input }
 
    public var events: EventsStore = .init()
+
+   public var finisher: Work<Bool, Bool>?
 
    open func start() {}
 

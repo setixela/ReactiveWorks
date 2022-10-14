@@ -96,7 +96,7 @@ public final class DefaultVCModel: BaseVCModel {
          .cgRectValue.height ?? 0
 
       UIView.animate(withDuration: time) {
-         self.view.rootSuperview.frame.size.height = self.baseHeight - keysHeight
+         self.view.rootSuperviewPlusOne.frame.size.height = self.baseHeight - keysHeight
          self.view.layoutIfNeeded()
          self.view.rootSuperview.layoutIfNeeded()
       }
@@ -108,7 +108,7 @@ public final class DefaultVCModel: BaseVCModel {
       guard isKeyboardShown else { return }
 
       view.removeGestureRecognizer(tapGesture)
-      view.rootSuperview.frame.size.height = baseHeight
+      view.rootSuperviewPlusOne.frame.size.height = baseHeight
       isKeyboardShown = false
    }
 

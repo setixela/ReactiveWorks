@@ -123,6 +123,14 @@ public extension UIView {
       while let s = view.superview {
          view = s
       }
+      return view
+   }
+
+   var rootSuperviewPlusOne: UIView {
+      var view = self
+      while let s = view.superview {
+         view = s
+      }
       return self
    }
 }

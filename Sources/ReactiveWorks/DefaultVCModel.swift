@@ -8,10 +8,13 @@
 import UIKit
 
 public final class DefaultVCModel: BaseVCModel {
-   private lazy var tapGesture = UITapGestureRecognizer(target: self,
-                                                        action: #selector(hideKeyboard))
+   private lazy var tapGesture = {
+      let gest = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
+      gest.cancelsTouchesInView = true
+      return gest
+   }()
 
-   private var isKeyboardShown = false
+   private static var isKeyboardShown = false
    private var baseHeight: CGFloat = 0
 
    required init(sceneModel: SceneModelProtocol) {
@@ -62,6 +65,7 @@ public final class DefaultVCModel: BaseVCModel {
 
       sendEvent(\.viewWillAppear)
 
+      baseHeight = UIView.keyWindow.frame.height
 //      navigationController?.navigationBar.isExclusiveTouch = false
 //      navigationController?.navigationBar.isUserInteractionEnabled = false
 //      navigationController?.navigationBar.subviews.forEach { if $0 is UINavigationBarContentView { $0.isUserInteractionEnabled = false } }
@@ -85,39 +89,46 @@ public final class DefaultVCModel: BaseVCModel {
    }
 
    @objc func keyboardWillShow(notification: NSNotification) {
-      var time = 0.0
-      if isKeyboardShown == false {
-         baseHeight = view.frame.size.height
-         view.addGestureRecognizer(tapGesture)
-         time = 0.3
-      }
+      let time = 0.3
 
       let keysHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?
          .cgRectValue.height ?? 0
 
-      UIView.animate(withDuration: time) {
-         self.view.rootSuperviewPlusOne.frame.size.height = self.baseHeight - keysHeight
-         self.view.layoutIfNeeded()
-         self.view.rootSuperview.layoutIfNeeded()
+      guard !DefaultVCModel.isKeyboardShown else {
+         UIView.keyWindow.frame.size.height = baseHeight - keysHeight
+         return
       }
 
-      isKeyboardShown = true
+      baseHeight = UIView.keyWindow.frame.size.height
+
+      DefaultVCModel.isKeyboardShown = true
+      UIView.keyWindow.addGestureRecognizer(tapGesture)
+      UIView.animate(withDuration: time) {
+         UIView.keyWindow.frame.size.height = self.baseHeight - keysHeight
+         UIView.keyWindow.layoutIfNeeded()
+         self.view.layoutIfNeeded()
+      }
    }
 
    @objc func keyboardWillHide(notification: NSNotification) {
-      guard isKeyboardShown else { return }
+      guard DefaultVCModel.isKeyboardShown else { return }
 
-      view.removeGestureRecognizer(tapGesture)
-      view.rootSuperviewPlusOne.frame.size.height = baseHeight
-      isKeyboardShown = false
+      UIView.keyWindow.removeGestureRecognizer(tapGesture)
+      UIView.keyWindow.frame.size.height = baseHeight
+      DefaultVCModel.isKeyboardShown = false
    }
 
    @objc public func hideKeyboard() {
+      UIView.keyWindow.removeGestureRecognizer(tapGesture)
       view.endEditing(true)
    }
 }
 
 public extension UIView {
+   static var keyWindow: UIView {
+      UIApplication.shared.windows.first(where: { $0.isKeyWindow }) ?? UIView()
+   }
+
    var rootSuperview: UIView {
       var view = self
       while let s = view.superview {
@@ -166,10 +177,10 @@ private extension UIView {
    }
 
    var isControl: Bool {
-      return self is UIControl
+      self is UIControl
    }
 
    var doesContainGestureRecognizer: Bool {
-      return !(gestureRecognizers?.isEmpty ?? true)
+      !(gestureRecognizers?.isEmpty ?? true)
    }
 }

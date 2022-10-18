@@ -11,8 +11,9 @@ public protocol SceneModelProtocol: ModelProtocol {
    func makeVC() -> UIViewController
    func makeMainView() -> UIView
    func setInput(_ value: Any?)
+   func dismiss(animated: Bool)
 
-   var finisher: Work<Bool, Bool>? { get set }
+   var finisher: GenericClosure<Bool>? { get set }
 }
 
 public protocol SceneModel: SceneModelProtocol {
@@ -45,7 +46,6 @@ open class BaseSceneModel<
    Asset: AssetRoot,
    Input
 >: NSObject, SceneModel {
-
    private var _inputValue: Any?
 
    public lazy var mainVM = MainViewModel()
@@ -56,18 +56,42 @@ open class BaseSceneModel<
 
    public var events: EventsStore = .init()
 
-   public var finisher: Work<Bool, Bool>?
+   public var finisher: GenericClosure<Bool>?
 
    public lazy var retainer = Retainer()
 
-   open func start() {}
+   private var isDismissCalled = false
+
+   open func start() {
+      vcModel?.on(\.dismiss, self) {
+         if !$0.isDismissCalled {
+            $0.finisher?(false)
+         }
+      }
+   }
 
    public func setInput(_ value: Any? = nil) {
       _inputValue = value
    }
 
+   public func dismiss(animated: Bool = true) {
+      isDismissCalled = true
+      vcModel?.dismiss(animated: animated)
+   }
+
+   public func finishSucces() {
+      finisher?(true)
+      finisher = nil
+   }
+
+   public func finishCanceled() {
+      finisher?(false)
+      finisher = nil
+   }
+
    deinit {
       finisher = nil
+      print("DEINIT SceneModel")
    }
 }
 

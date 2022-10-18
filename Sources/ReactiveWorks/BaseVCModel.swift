@@ -8,23 +8,23 @@
 import UIKit
 
 public struct VCEvent: InitProtocol {
-   public var viewDidLoad: Event<Void>?
-   public var viewWillAppear: Event<Void>?
-   public var viewWillDissappear: Event<Void>?
+   public var viewDidLoad: Void?
+   public var viewWillAppear: Void?
+   public var viewWillDissappear: Void?
 
    // setup
-   public var setTitle: Event<String>?
-   public var setNavBarTintColor: Event<UIColor>?
-   public var setTitleAlpha: Event<CGFloat>?
-   public var setLeftBarItems: Event<[UIBarButtonItem]>?
-   public var setRightBarItems: Event<[UIBarButtonItem]>?
+   public var setTitle: String?
+   public var setNavBarTintColor: UIColor?
+   public var setTitleAlpha: CGFloat?
+   public var setLeftBarItems: [UIBarButtonItem]?
+   public var setRightBarItems: [UIBarButtonItem]?
 
-   public var dismiss: Event<Void>?
+   public var dismiss: Void?
    //
    public init() {}
 }
 
-public protocol VCModelProtocol: UIViewController, Communicable where Events == VCEvent {
+public protocol VCModelProtocol: UIViewController, Eventable where Events == VCEvent {
    var sceneModel: SceneModelProtocol { get }
 
    init(sceneModel: SceneModelProtocol)
@@ -35,7 +35,7 @@ open class BaseVCModel: UIViewController, VCModelProtocol {
 
    public lazy var baseView: UIView = sceneModel.makeMainView()
 
-   public var events: VCEvent = .init()
+   public var events: EventsStore = .init()
 
    public required init(sceneModel: SceneModelProtocol) {
       self.sceneModel = sceneModel

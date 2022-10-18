@@ -20,24 +20,21 @@ public final class DefaultVCModel: BaseVCModel {
    required init(sceneModel: SceneModelProtocol) {
       super.init(sceneModel: sceneModel)
 
-      onEvent(\.setTitle) { [weak self] title in
+      on(\.setTitle) { [weak self] title in
          self?.title = title
       }
-      .onEvent(\.setNavBarTintColor) { [weak self] color in
+      .on(\.setNavBarTintColor) { [weak self] color in
          let textAttributes = [NSAttributedString.Key.foregroundColor: color]
          self?.navigationController?.navigationBar.titleTextAttributes = textAttributes
       }
-      .onEvent(\.setTitleAlpha) { [weak self] alpha in
+      .on(\.setTitleAlpha) { [weak self] alpha in
          self?.navigationItem.titleView?.alpha = alpha
       }
-      .onEvent(\.setLeftBarItems) { [weak self] items in
+      .on(\.setLeftBarItems) { [weak self] items in
          self?.navigationItem.leftBarButtonItems = items
       }
-      .onEvent(\.setRightBarItems) { [weak self] items in
+      .on(\.setRightBarItems) { [weak self] items in
          self?.navigationItem.rightBarButtonItems = items
-      }
-      .onEvent(\.dismiss) { [weak self] in
-         self?.dismiss(animated: true)
       }
    }
 
@@ -46,7 +43,7 @@ public final class DefaultVCModel: BaseVCModel {
       view.backgroundColor = .white
       navigationController?.navigationBar.backgroundColor = .clear
 
-      sendEvent(\.viewDidLoad)
+      send(\.viewDidLoad)
    }
 
    override public func viewWillAppear(_ animated: Bool) {
@@ -63,12 +60,9 @@ public final class DefaultVCModel: BaseVCModel {
          name: UIResponder.keyboardWillHideNotification,
          object: view.window)
 
-      sendEvent(\.viewWillAppear)
+      send(\.viewWillAppear)
 
       baseHeight = UIView.keyWindow.frame.height
-//      navigationController?.navigationBar.isExclusiveTouch = false
-//      navigationController?.navigationBar.isUserInteractionEnabled = false
-//      navigationController?.navigationBar.subviews.forEach { if $0 is UINavigationBarContentView { $0.isUserInteractionEnabled = false } }
    }
 
    override public func viewWillDisappear(_ animated: Bool) {
@@ -85,7 +79,11 @@ public final class DefaultVCModel: BaseVCModel {
 
       hideKeyboard()
 
-      sendEvent(\.viewWillDissappear)
+      send(\.viewWillDissappear)
+
+      if isBeingDismissed {
+         send(\.dismiss)
+      }
    }
 
    @objc func keyboardWillShow(notification: NSNotification) {

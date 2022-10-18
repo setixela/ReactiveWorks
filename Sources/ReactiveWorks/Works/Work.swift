@@ -72,7 +72,7 @@ open class Work<In, Out>: Any, Finishible {
    private var finisher: ((Out) -> Void)?
    private var voidFinisher: VoidClosure?
 
-   private var succesStateFunc: LambdaProtocol?
+   private var successStateFunc: LambdaProtocol?
    private var successStateVoidFunc: Lambda<Void>?
 
    private var failStateFunc: LambdaProtocol?
@@ -122,7 +122,7 @@ open class Work<In, Out>: Any, Finishible {
       }
       voidFinisher?()
       finisher?(result)
-      succesStateFunc?.perform(result)
+      successStateFunc?.perform(result)
       successStateVoidFunc?.perform(())
       nextWork?.perform(result)
       breakinNextWork?.perform(())
@@ -175,7 +175,7 @@ public extension Work {
       }
 
       let lambda = Lambda(lambda: closure)
-      succesStateFunc = lambda
+      successStateFunc = lambda
 
       return self
    }
@@ -269,7 +269,7 @@ public extension Work {
       }
 
       let lambda = Lambda(lambda: closure)
-      succesStateFunc = lambda
+      successStateFunc = lambda
 
       return self
    }
@@ -334,7 +334,7 @@ public extension Work {
       }
 
       let lambda = Lambda(lambda: closure)
-      succesStateFunc = lambda
+      successStateFunc = lambda
 
       return self
    }
@@ -663,7 +663,7 @@ public final class Retainer {
       cleanIfNeeded()
       retained.update(with: some)
       if retained.count > 100 {
-         log("100")
+         assertionFailure()
       }
    }
 

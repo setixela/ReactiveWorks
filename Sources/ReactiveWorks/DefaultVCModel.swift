@@ -44,6 +44,7 @@ public final class DefaultVCModel: BaseVCModel {
       navigationController?.navigationBar.backgroundColor = .clear
 
       send(\.viewDidLoad)
+      send(\.updateInputAfterLoad)
    }
 
    override public func viewWillAppear(_ animated: Bool) {

@@ -40,6 +40,7 @@ public enum WorkType: String {
    case recover
    case recoverNext
    case initVoid
+   case initVoidClosure
    case event
 }
 
@@ -81,7 +82,7 @@ open class Work<In, Out>: Any, Finishible {
    private var genericFail: LambdaProtocol?
 
    private var nextWork: WorkWrappperProtocol?
-   private var breakinNextWork: WorkWrappperProtocol?
+   private var voidNextWork: WorkWrappperProtocol?
    private var recoverWork: WorkWrappperProtocol?
    private var loadWork: WorkWrappperProtocol?
 
@@ -120,12 +121,15 @@ open class Work<In, Out>: Any, Finishible {
       if case .recover = type {
          print()
       }
+      //
       voidFinisher?()
       finisher?(result)
+      //
       successStateFunc?.perform(result)
       successStateVoidFunc?.perform(())
+      //
       nextWork?.perform(result)
-      breakinNextWork?.perform(())
+      voidNextWork?.perform(())
 
       isFinished = true
 
@@ -412,9 +416,23 @@ public extension Work {
       work.savedResultClosure = savedResultClosure
       work.type = .initVoid
 
-      breakinNextWork = WorkWrappper<Void, Out2>(work: work)
+      voidNextWork = WorkWrappper<Void, Out2>(work: work)
 
       return work
+   }
+
+   // breaking and start void input task
+   @discardableResult
+   func doVoidNext<Out2>(_ closure: @escaping WorkClosure<Void, Out2>) -> Work<Void, Out2> {
+      let newWork = Work<Void, Out2>(input: nil,
+                                    closure,
+                                    savedResultClosure)
+
+      newWork.type = .initVoidClosure
+
+      nextWork = WorkWrappper<Void, Out2>(work: newWork)
+
+      return newWork
    }
 
    @discardableResult

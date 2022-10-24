@@ -10,7 +10,7 @@ import UIKit
 public final class DefaultVCModel: BaseVCModel {
    private lazy var tapGesture = {
       let gest = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
-      gest.cancelsTouchesInView = true
+      gest.cancelsTouchesInView = false
       return gest
    }()
 

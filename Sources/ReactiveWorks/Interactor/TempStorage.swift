@@ -7,24 +7,6 @@
 
 import Foundation
 
-public typealias InitAnyObject = AnyObject & InitProtocol
-
-open class BaseSceneWorks<Temp: InitAnyObject, Asset: AssetRoot>: TempStorage {
-   public lazy var retainer = Retainer()
-
-   public required init() {
-      UnsafeTemper.initStore(for: Temp.self)
-   }
-
-   deinit {
-      UnsafeTemper.clearStore(for: Temp.self)
-   }
-
-   public static var store: Temp {
-      UnsafeTemper.store(for: Temp.self)
-   }
-}
-
 // MARK: - Temp single type storage
 
 public protocol TempStorage: InitProtocol, Assetable {

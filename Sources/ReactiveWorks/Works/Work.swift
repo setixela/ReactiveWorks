@@ -685,6 +685,10 @@ public final class Retainer {
       }
    }
 
+   public func cleanAll() {
+      retained.removeAll()
+   }
+
    deinit {
       retained.removeAll()
    }

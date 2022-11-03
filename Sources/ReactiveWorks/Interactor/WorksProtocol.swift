@@ -9,7 +9,7 @@ import Foundation
 
 public typealias InitAnyObject = AnyObject & InitProtocol
 
-public protocol WorksProtocol {
+public protocol WorksProtocol: AnyObject {
    var retainer: Retainer { get }
 }
 

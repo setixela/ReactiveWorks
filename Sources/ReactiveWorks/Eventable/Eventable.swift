@@ -53,21 +53,6 @@ public extension Eventable {
    }
 
    @discardableResult
-   func on<T>(_ eventKey: Key<T>) -> Work<Void, T> {
-      let hash = eventKey.hashValue
-      let work = Work<Void, T>()
-      work.type = .event
-      //
-      let closure: Event<T> = { value in
-         work.success(result: value)
-      }
-      //
-      events[hash] = Lambda(lambda: closure)
-
-      return work
-   }
-
-   @discardableResult
    func send(_ eventKey: Key<Void>) -> Self{
       let hash = eventKey.hashValue
       guard

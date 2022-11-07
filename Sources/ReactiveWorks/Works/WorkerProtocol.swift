@@ -27,15 +27,8 @@ public extension WorkerProtocol {
       let work = Wrk(input: input)
       work.closure = doAsync(work:)
       DispatchQueue.main.async {
-         work.closure?(work)
+         work.doSync(input)
       }
-      return work
-   }
-
-   func doSync(_ input: In) -> Wrk {
-      let work = Wrk(input: input)
-      work.closure = doAsync(work:)
-      work.closure?(work)
       return work
    }
 }

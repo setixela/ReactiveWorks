@@ -96,6 +96,8 @@ open class Work<In, Out>: Any, Finishible {
    private var cancellables: [Cancellable] = []
    private var cancelClosure: VoidClosure?
 
+   private var isWorking = false
+
    // Methods
    public init(input: In?,
                _ closure: @escaping WorkClosure<In, Out>,
@@ -124,16 +126,11 @@ open class Work<In, Out>: Any, Finishible {
    }
 
    public func success(result: Out = ()) {
-      guard isCancelled == false else {
-         isCancelled = false
-         return
-      }
+      isWorking = false
 
       self.result = result
 
-      if case .recover = type {
-         print()
-      }
+      if checkCancel() { return }
       //
       voidFinisher?()
       finisher?(result)
@@ -152,10 +149,9 @@ open class Work<In, Out>: Any, Finishible {
    }
 
    public func fail<T>(_ value: T = ()) {
-      guard isCancelled == false else {
-         isCancelled = false
-         return
-      }
+      isWorking = false
+
+      if checkCancel() { return }
 
       genericFail?.perform(value)
       recoverWork?.perform(input)
@@ -168,11 +164,24 @@ open class Work<In, Out>: Any, Finishible {
          print("\nWork Error! - type: \(type),\n result: \(value),\n In: \(In.self), Out: \(Out.self)\n")
       }
    }
+
+   private func checkCancel() -> Bool {
+      if isCancelled {
+         isCancelled = false
+         isWorking = false
+         return true
+      }
+
+      return false
+   }
 }
 
 extension Work: Cancellable {
    public func cancel() {
-      isCancelled = true
+      if isWorking {
+         isCancelled = true
+         isWorking = false
+      }
       //
       nextWork?.cancel()
       voidNextWork?.cancel()
@@ -180,19 +189,7 @@ extension Work: Cancellable {
 }
 
 public extension Work {
-//   @discardableResult
-//   func doCancel(_ cancellable: Cancellable) -> Self {
-//      cancellables.append(cancellable)
-//      if cancelClosure == nil {
-//         cancelClosure = { [weak self] in
-//            self?.cancellables.forEach { $0.cancel() }
-//         }
-//      }
-//      return self
-//   }
-
-   @discardableResult
-   func doCancel(_ cancellable: Cancellable ...) -> Self {
+   @discardableResult func doCancel(_ cancellable: Cancellable ...) -> Self {
       cancellables.append(contentsOf: cancellable)
       if cancelClosure == nil {
          cancelClosure = { [weak self] in
@@ -646,37 +643,27 @@ public extension Work {
 
 public extension Work {
    @discardableResult
-   func doSync() -> Out {
+   func doSync(_ input: In? = nil) -> Out? {
+      cancelClosure?()
+      isWorking = true
+      self.input = input ?? self.input
       closure?(self)
 
-      return result ?? { fatalError() }()
+      return result
    }
 
    @discardableResult
-   func doSync(_ input: In?) -> Out {
-      self.input = input
-      closure?(self)
-
-      return result ?? { fatalError() }()
+   func doSyncWithResult(_ result: Out) -> Out {
+      cancelClosure?()
+      isWorking = true
+      success(result: result)
+      return result
    }
 
    @discardableResult
-   func doAsync() -> Self {
+   func doAsync(_ input: In? = nil) -> Self {
       DispatchQueue.main.async { [weak self] in
-         guard let self = self else { return }
-
-         self.closure?(self)
-      }
-      return self
-   }
-
-   @discardableResult
-   func doAsync(_ input: In?) -> Self {
-      self.input = input
-      DispatchQueue.main.async { [weak self] in
-         guard let self = self else { return }
-
-         self.closure?(self)
+         self?.doSync(input)
       }
       return self
    }
@@ -706,13 +693,7 @@ public struct WorkWrappper<T, U>: WorkWrappperProtocol where T: Any, U: Any {
          fatalError()
       }
 
-      work.input = value
-
-      guard let closure = work.closure else {
-         return
-      }
-
-      closure(work)
+      work.doSync(value)
    }
 
    public func cancel() {

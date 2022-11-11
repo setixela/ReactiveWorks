@@ -13,6 +13,8 @@ public protocol WorksProtocol: AnyObject {
    var retainer: Retainer { get }
 }
 
+public protocol StoringWorksProtocol: WorksProtocol, TempStorage {}
+
 open class BaseSceneWorks<Temp: InitAnyObject, Asset: AssetRoot>: WorksProtocol, TempStorage {
    public lazy var retainer = Retainer()
 

@@ -348,8 +348,18 @@ public extension Work {
 
    func doLoadResult<OutSaved>() -> Work<Out, OutSaved> {
       let newWork = Work<Out, OutSaved>() { [weak self] work in
-         guard let saved = self?.savedResultClosure?() as? OutSaved else {
-            fatalError()
+         guard let savedResultClosure = self?.savedResultClosure else {
+            assertionFailure("savedResultClosure is nil")
+            work.fail()
+            return
+         }
+
+         let savedValue = savedResultClosure()
+
+         guard let saved = savedValue as? OutSaved else {
+            assertionFailure("saved value is not \(OutSaved.self)")
+            work.fail()
+            return
          }
 
          work.success(result: saved)

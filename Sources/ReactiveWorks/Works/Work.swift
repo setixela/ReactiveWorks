@@ -380,11 +380,16 @@ public extension Work {
                                        _ stateFunc: @escaping ((Out, OutSaved)) -> S) -> Self
    {
       let closure: GenericClosure<Out> = { [weak self, delegate] result in
-         guard
-            let saved = self?.savedResultClosure?(),
-            let saved = saved as? OutSaved
-         else {
-            fatalError()
+         guard let savedResultClosure = self?.savedResultClosure else {
+            assertionFailure("savedResultClosure is nil")
+            return
+         }
+
+         let savedValue = savedResultClosure()
+
+         guard let saved = savedValue as? OutSaved else {
+            assertionFailure("saved value is not \(OutSaved.self)")
+            return
          }
 
          DispatchQueue.main.async {
@@ -403,11 +408,16 @@ public extension Work {
                                     _ stateFunc: @escaping ((Out, OutSaved)) -> S) -> Self
    {
       let closure: GenericClosure<Out> = { [weak self, delegate] result in
-         guard
-            let value = self?.savedResultClosure?(),
-            let saved = value as? OutSaved
-         else {
-            fatalError()
+         guard let savedResultClosure = self?.savedResultClosure else {
+            assertionFailure("savedResultClosure is nil")
+            return
+         }
+
+         let savedValue = savedResultClosure()
+
+         guard let saved = savedValue as? OutSaved else {
+            assertionFailure("saved value is not \(OutSaved.self)")
+            return
          }
 
          DispatchQueue.main.async {

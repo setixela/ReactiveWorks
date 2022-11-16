@@ -45,6 +45,9 @@ public final class DefaultVCModel: BaseVCModel {
 
       send(\.viewDidLoad)
       send(\.updateInputAfterLoad)
+
+      // TODO: - Implement with design system
+      navigationController?.navigationBar.barStyle = .black
    }
 
    override public func viewWillAppear(_ animated: Bool) {

@@ -124,6 +124,16 @@ public final class DefaultVCModel: BaseVCModel {
       UIView.keyWindow.removeGestureRecognizer(tapGesture)
       view.endEditing(true)
    }
+
+   public override func becomeFirstResponder() -> Bool {
+      return true
+   }
+
+   public override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?){
+      if motion == .motionShake {
+         send(\.motionEnded, motion)
+      }
+   }
 }
 
 public extension UIView {

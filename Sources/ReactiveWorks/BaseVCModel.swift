@@ -21,6 +21,8 @@ public struct VCEvent: InitProtocol {
    public var setRightBarItems: [UIBarButtonItem]?
 
    public var dismiss: Void?
+
+   public var motionEnded: UIEvent.EventSubtype?
    //
    public init() {}
 }

@@ -13,13 +13,6 @@ public struct VCEvent: InitProtocol {
    public var viewWillAppear: Void?
    public var viewWillDissappear: Void?
 
-   // setup
-   public var setTitle: String?
-   public var setNavBarTintColor: UIColor?
-   public var setTitleAlpha: CGFloat?
-   public var setLeftBarItems: [UIBarButtonItem]?
-   public var setRightBarItems: [UIBarButtonItem]?
-
    public var dismiss: Void?
 
    public var motionEnded: UIEvent.EventSubtype?

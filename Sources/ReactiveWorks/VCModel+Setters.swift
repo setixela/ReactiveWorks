@@ -19,4 +19,30 @@ public extension VCModelProtocol {
       navigationItem.titleView = value.uiView
       return self
    }
+
+   @discardableResult func title(_ value: String) -> Self {
+      title = value
+      return self
+   }
+
+   @discardableResult func titleColor(_ value: UIColor) -> Self {
+      let textAttributes = [NSAttributedString.Key.foregroundColor: value]
+      navigationController?.navigationBar.titleTextAttributes = textAttributes
+      return self
+   }
+
+   @discardableResult func titleAlpha(_ value: CGFloat) -> Self {
+      navigationItem.titleView?.alpha = value
+      return self
+   }
+
+   @discardableResult func leftBarItems(_ value: [UIBarButtonItem]) -> Self {
+      navigationItem.leftBarButtonItems = value
+      return self
+   }
+
+   @discardableResult func rightBarItems(_ value: [UIBarButtonItem]) -> Self {
+      navigationItem.rightBarButtonItems = value
+      return self
+   }
 }

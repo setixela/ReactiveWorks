@@ -19,23 +19,6 @@ public final class DefaultVCModel: BaseVCModel {
 
    required init(sceneModel: SceneModelProtocol) {
       super.init(sceneModel: sceneModel)
-
-      on(\.setTitle) { [weak self] title in
-         self?.title = title
-      }
-      .on(\.setNavBarTintColor) { [weak self] color in
-         let textAttributes = [NSAttributedString.Key.foregroundColor: color]
-         self?.navigationController?.navigationBar.titleTextAttributes = textAttributes
-      }
-      .on(\.setTitleAlpha) { [weak self] alpha in
-         self?.navigationItem.titleView?.alpha = alpha
-      }
-      .on(\.setLeftBarItems) { [weak self] items in
-         self?.navigationItem.leftBarButtonItems = items
-      }
-      .on(\.setRightBarItems) { [weak self] items in
-         self?.navigationItem.rightBarButtonItems = items
-      }
    }
 
    override public func viewDidLoad() {

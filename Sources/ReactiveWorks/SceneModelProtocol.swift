@@ -16,7 +16,37 @@ public protocol SceneModelProtocol: ModelProtocol {
    var finisher: GenericClosure<Bool>? { get set }
 }
 
-public protocol SceneModel: SceneModelProtocol {
+public protocol SceneInputProtocol: AnyObject {
+   associatedtype Input
+}
+
+open class BaseScene<In>: NSObject, SceneInputProtocol, SceneModelProtocol {
+   open func makeVC() -> UIViewController {
+      fatalError()
+   }
+
+   open func makeMainView() -> UIView {
+      fatalError()
+   }
+
+   open func setInput(_ value: Any?) {
+      fatalError()
+   }
+
+   open func dismiss(animated: Bool) {
+      fatalError()
+   }
+
+   open var finisher: GenericClosure<Bool>?
+
+   open func start() {
+
+   }
+
+   public typealias Input = In
+}
+
+public protocol SceneModel: SceneModelProtocol, SceneInputProtocol {
    associatedtype VCModel: VCModelProtocol
    associatedtype MainViewModel: ViewModelProtocol
 
@@ -45,7 +75,7 @@ open class BaseSceneModel<
    MainViewModel: ViewModelProtocol,
    Asset: AssetRoot,
    Input
->: NSObject, SceneModel {
+>: BaseScene<Input>, SceneModel {
    private var _inputValue: Any?
 
    public lazy var mainVM = MainViewModel()
@@ -56,13 +86,13 @@ open class BaseSceneModel<
 
    public var events: EventsStore = .init()
 
-   public var finisher: GenericClosure<Bool>?
+//   public var finisher: GenericClosure<Bool>?
 
    public lazy var retainer = Retainer()
 
    private var isDismissCalled = false
 
-   open func start() {
+   open override func start() {
       vcModel?.on(\.dismiss, self) {
          if !$0.isDismissCalled {
             $0.finisher?(false)
@@ -70,11 +100,11 @@ open class BaseSceneModel<
       }
    }
 
-   public func setInput(_ value: Any? = nil) {
+   public override func setInput(_ value: Any? = nil) {
       _inputValue = value
    }
 
-   public func dismiss(animated: Bool = true) {
+   public override func dismiss(animated: Bool = true) {
       isDismissCalled = true
       vcModel?.dismiss(animated: animated)
    }
@@ -93,16 +123,14 @@ open class BaseSceneModel<
       finisher = nil
       print("DEINIT SceneModel")
    }
-}
 
-public extension BaseSceneModel {
-   func makeVC() -> UIViewController {
+   public override func makeVC() -> UIViewController {
       let model = VCModel(sceneModel: self)
       vcModel = model
       return model
    }
 
-   func makeMainView() -> UIView {
+   public override func makeMainView() -> UIView {
       let view = mainVM.uiView
       start()
       if let inputValue {

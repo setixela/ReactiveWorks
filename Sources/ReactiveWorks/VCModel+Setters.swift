@@ -45,4 +45,15 @@ public extension VCModelProtocol {
       navigationItem.rightBarButtonItems = value
       return self
    }
+
+   @discardableResult func barStyle(_ value: UIBarStyle) -> Self {
+      navigationController?.navigationBar.barStyle = value
+      return self
+   }
+
+   @discardableResult func statusBarStyle(_ value: UIStatusBarStyle) -> Self {
+      currentStatusBarStyle = value
+      setNeedsStatusBarAppearanceUpdate()
+      return self
+   }
 }

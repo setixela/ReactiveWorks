@@ -53,6 +53,7 @@ public extension VCModelProtocol {
 
    @discardableResult func navBarTintColor(_ value: UIColor) -> Self {
       navigationController?.navigationBar.barTintColor = value
+      navigationController?.navigationBar.tintColor = value
       return self
    }
 

@@ -26,6 +26,8 @@ public final class DefaultVCModel: BaseVCModel {
       view.backgroundColor = .white
       navigationController?.navigationBar.backgroundColor = .clear
 
+      clearBackButton()
+
       send(\.viewDidLoad)
       send(\.updateInputAfterLoad)
    }

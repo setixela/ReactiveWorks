@@ -22,7 +22,7 @@ public struct VCEvent: InitProtocol {
 
 public protocol VCModelProtocol: UIViewController, Eventable where Events == VCEvent {
    var sceneModel: SceneModelProtocol { get }
-   var currentStatusBarStyle: UIStatusBarStyle { get set }
+   var currentStatusBarStyle: UIStatusBarStyle? { get set }
 
    init(sceneModel: SceneModelProtocol)
 }
@@ -34,10 +34,10 @@ open class BaseVCModel: UIViewController, VCModelProtocol {
 
    public var events: EventsStore = .init()
 
-   public var currentStatusBarStyle = UIStatusBarStyle.default
+   public var currentStatusBarStyle: UIStatusBarStyle?
 
    override open var preferredStatusBarStyle: UIStatusBarStyle {
-      currentStatusBarStyle
+      currentStatusBarStyle ?? .default
    }
 
    public required init(sceneModel: SceneModelProtocol) {

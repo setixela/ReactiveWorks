@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Aleksandr Solovyev on 01.09.2022.
 //
@@ -29,7 +29,7 @@ public extension Eventable {
    }
 
    @discardableResult
-   func on<S: AnyObject>( _ eventKey: Key<Void>, _ slf: S, _ closure: @escaping (S) -> Void) -> Self {
+   func on<S: AnyObject>(_ eventKey: Key<Void>, _ slf: S, _ closure: @escaping (S) -> Void) -> Self {
       let hash = eventKey.hashValue
       let clos = { [weak slf] in
          guard let slf = slf else { return }
@@ -41,7 +41,7 @@ public extension Eventable {
    }
 
    @discardableResult
-   func on<T,S: AnyObject>(_ eventKey: Key<T>, _ slf: S, _ closure: @escaping (S,T) -> Void) -> Self {
+   func on<T, S: AnyObject>(_ eventKey: Key<T>, _ slf: S, _ closure: @escaping (S, T) -> Void) -> Self {
       let hash = eventKey.hashValue
       let clos = { [weak slf] (value: T) in
          guard let slf = slf else { return }
@@ -53,7 +53,7 @@ public extension Eventable {
    }
 
    @discardableResult
-   func send(_ eventKey: Key<Void>) -> Self{
+   func send(_ eventKey: Key<Void>) -> Self {
       let hash = eventKey.hashValue
       guard
          let lambda = events[hash]
@@ -61,9 +61,7 @@ public extension Eventable {
          return self
       }
 
-      DispatchQueue.main.async {
-         lambda?.perform(())
-      }
+      lambda?.perform(())
 
       return self
    }
@@ -77,9 +75,7 @@ public extension Eventable {
          return self
       }
 
-      DispatchQueue.main.async {
-         lambda?.perform(payload)
-      }
+      lambda?.perform(payload)
 
       return self
    }

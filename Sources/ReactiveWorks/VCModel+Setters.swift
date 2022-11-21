@@ -62,4 +62,14 @@ public extension VCModelProtocol {
       setNeedsStatusBarAppearanceUpdate()
       return self
    }
+
+   @discardableResult func navBarTranslucent(_ value: Bool) -> Self {
+      navigationController?.navigationBar.isTranslucent = value
+      return self
+   }
+
+   @discardableResult func navBarBackColor(_ value: UIColor) -> Self {
+      navigationController?.navigationBar.backgroundColor = value
+      return self
+   }
 }

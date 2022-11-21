@@ -51,6 +51,11 @@ public extension VCModelProtocol {
       return self
    }
 
+   @discardableResult func navBarTintColor(_ value: UIColor) -> Self {
+      navigationController?.navigationBar.barTintColor = value
+      return self
+   }
+
    @discardableResult func statusBarStyle(_ value: UIStatusBarStyle) -> Self {
       currentStatusBarStyle = value
       setNeedsStatusBarAppearanceUpdate()

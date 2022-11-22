@@ -22,12 +22,21 @@ public struct VCEvent: InitProtocol {
 
 public protocol VCModelProtocol: UIViewController, Eventable where Events == VCEvent {
    var sceneModel: SceneModelProtocol { get }
+   //
    var currentStatusBarStyle: UIStatusBarStyle? { get set }
+   var currentBarStyle: UIBarStyle? { get set }
+   var currentBarTintColor: UIColor? { get set }
+   var currentTitleColor: UIColor? { get set }
+   var currentBarTranslucent: Bool? { get set }
+   var currentBarBackColor: UIColor? { get set }
+   var currentTitleAlpha: CGFloat? { get set }
 
    init(sceneModel: SceneModelProtocol)
 }
 
 open class BaseVCModel: UIViewController, VCModelProtocol {
+
+
    public let sceneModel: SceneModelProtocol
 
    public lazy var baseView: UIView = sceneModel.makeMainView()
@@ -35,6 +44,12 @@ open class BaseVCModel: UIViewController, VCModelProtocol {
    public var events: EventsStore = .init()
 
    public var currentStatusBarStyle: UIStatusBarStyle?
+   public var currentBarStyle: UIBarStyle?
+   public var currentBarTintColor: UIColor?
+   public var currentTitleColor: UIColor?
+   public var currentBarTranslucent: Bool?
+   public var currentBarBackColor: UIColor?
+   public var currentTitleAlpha: CGFloat?
 
    override open var preferredStatusBarStyle: UIStatusBarStyle {
       currentStatusBarStyle ?? .default

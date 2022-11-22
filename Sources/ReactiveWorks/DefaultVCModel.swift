@@ -87,6 +87,7 @@ public final class DefaultVCModel: BaseVCModel {
 
       DefaultVCModel.isKeyboardShown = true
       UIView.keyWindow.addGestureRecognizer(tapGesture)
+      UIView.keyWindow.isUserInteractionEnabled = true
       UIView.animate(withDuration: time) {
          UIView.keyWindow.frame.size.height = self.baseHeight - keysHeight
          UIView.keyWindow.layoutIfNeeded()
@@ -104,7 +105,7 @@ public final class DefaultVCModel: BaseVCModel {
 
    @objc public func hideKeyboard() {
       UIView.keyWindow.removeGestureRecognizer(tapGesture)
-      view.endEditing(true)
+      UIView.keyWindow.endEditing(true)
    }
 
    public override func becomeFirstResponder() -> Bool {

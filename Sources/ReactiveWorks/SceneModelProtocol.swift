@@ -134,7 +134,7 @@ open class BaseSceneModel<
       let view = mainVM.uiView
       start()
       if let inputValue {
-         send(\.input, inputValue)
+         //send(\.input, inputValue)
          vcModel?.on(\.updateInputAfterLoad, self) {
             $0.send(\.input, inputValue)
          }

@@ -51,6 +51,12 @@ public final class DefaultVCModel: BaseVCModel {
       baseHeight = UIView.keyWindow.frame.height
    }
 
+   override public func viewDidAppear(_ animated: Bool) {
+      super.viewDidAppear(animated)
+
+      send(\.viewDidAppear)
+   }
+
    override public func viewWillDisappear(_ animated: Bool) {
       super.viewWillDisappear(animated)
 
@@ -98,12 +104,15 @@ public final class DefaultVCModel: BaseVCModel {
    @objc func keyboardWillHide(notification: NSNotification) {
       guard DefaultVCModel.isKeyboardShown else { return }
 
-      UIView.keyWindow.removeGestureRecognizer(tapGesture)
       UIView.keyWindow.frame.size.height = baseHeight
-      DefaultVCModel.isKeyboardShown = false
+      hideKeyboard()
    }
 
    @objc public func hideKeyboard() {
+      guard DefaultVCModel.isKeyboardShown else { return }
+
+      DefaultVCModel.isKeyboardShown = false
+
       UIView.keyWindow.removeGestureRecognizer(tapGesture)
       UIView.keyWindow.endEditing(true)
    }

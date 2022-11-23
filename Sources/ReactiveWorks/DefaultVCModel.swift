@@ -104,15 +104,12 @@ public final class DefaultVCModel: BaseVCModel {
    @objc func keyboardWillHide(notification: NSNotification) {
       guard DefaultVCModel.isKeyboardShown else { return }
 
+      UIView.keyWindow.removeGestureRecognizer(tapGesture)
       UIView.keyWindow.frame.size.height = baseHeight
-      hideKeyboard()
+      DefaultVCModel.isKeyboardShown = false
    }
 
    @objc public func hideKeyboard() {
-      guard DefaultVCModel.isKeyboardShown else { return }
-
-      DefaultVCModel.isKeyboardShown = false
-
       UIView.keyWindow.removeGestureRecognizer(tapGesture)
       UIView.keyWindow.endEditing(true)
    }

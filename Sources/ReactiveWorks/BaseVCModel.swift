@@ -36,8 +36,6 @@ public protocol VCModelProtocol: UIViewController, Eventable where Events == VCE
 }
 
 open class BaseVCModel: UIViewController, VCModelProtocol {
-
-
    public let sceneModel: SceneModelProtocol
 
    public lazy var baseView: UIView = sceneModel.makeMainView()

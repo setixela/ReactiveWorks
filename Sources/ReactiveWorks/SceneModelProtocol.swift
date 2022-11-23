@@ -39,9 +39,7 @@ open class BaseScene<In>: NSObject, SceneInputProtocol, SceneModelProtocol {
 
    open var finisher: GenericClosure<Bool>?
 
-   open func start() {
-
-   }
+   open func start() {}
 
    public typealias Input = In
 }
@@ -86,13 +84,11 @@ open class BaseSceneModel<
 
    public var events: EventsStore = .init()
 
-//   public var finisher: GenericClosure<Bool>?
-
    public lazy var retainer = Retainer()
 
    private var isDismissCalled = false
 
-   open override func start() {
+   override open func start() {
       vcModel?.on(\.dismiss, self) {
          if !$0.isDismissCalled {
             $0.finisher?(false)
@@ -100,11 +96,11 @@ open class BaseSceneModel<
       }
    }
 
-   public override func setInput(_ value: Any? = nil) {
+   override public func setInput(_ value: Any? = nil) {
       _inputValue = value
    }
 
-   public override func dismiss(animated: Bool = true) {
+   override public func dismiss(animated: Bool = true) {
       isDismissCalled = true
       vcModel?.dismiss(animated: animated)
    }
@@ -124,17 +120,16 @@ open class BaseSceneModel<
       print("DEINIT SceneModel")
    }
 
-   public override func makeVC() -> UIViewController {
+   override public func makeVC() -> UIViewController {
       let model = VCModel(sceneModel: self)
       vcModel = model
       return model
    }
 
-   public override func makeMainView() -> UIView {
+   override public func makeMainView() -> UIView {
       let view = mainVM.uiView
       start()
       if let inputValue {
-         //send(\.input, inputValue)
          vcModel?.on(\.updateInputAfterLoad, self) {
             $0.send(\.input, inputValue)
          }

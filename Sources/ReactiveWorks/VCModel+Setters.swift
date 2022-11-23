@@ -22,6 +22,7 @@ public extension VCModelProtocol {
 
    @discardableResult func title(_ value: String) -> Self {
       title = value
+      navigationController?.navigationBar.setNeedsLayout()
       return self
    }
 
@@ -29,6 +30,7 @@ public extension VCModelProtocol {
       currentTitleColor = value
       let textAttributes = [NSAttributedString.Key.foregroundColor: value]
       navigationController?.navigationBar.titleTextAttributes = textAttributes
+      navigationController?.navigationBar.setNeedsLayout()
       return self
    }
 
@@ -45,6 +47,7 @@ public extension VCModelProtocol {
    @discardableResult func barStyle(_ value: UIBarStyle) -> Self {
       currentBarStyle = value
       navigationController?.navigationBar.barStyle = value
+      navigationController?.navigationBar.setNeedsLayout()
       return self
    }
 
@@ -52,30 +55,35 @@ public extension VCModelProtocol {
       currentBarTintColor = value
       navigationController?.navigationBar.barTintColor = value
       navigationController?.navigationBar.tintColor = value
+      navigationController?.navigationBar.setNeedsLayout()
       return self
    }
 
    @discardableResult func statusBarStyle(_ value: UIStatusBarStyle) -> Self {
       currentStatusBarStyle = value
       setNeedsStatusBarAppearanceUpdate()
+      navigationController?.navigationBar.setNeedsLayout()
       return self
    }
 
    @discardableResult func navBarTranslucent(_ value: Bool) -> Self {
       currentBarTranslucent = value
       navigationController?.navigationBar.isTranslucent = value
+      navigationController?.navigationBar.setNeedsLayout()
       return self
    }
 
    @discardableResult func navBarBackColor(_ value: UIColor) -> Self {
       currentBarBackColor = value
       navigationController?.navigationBar.backgroundColor = value
+      navigationController?.navigationBar.setNeedsLayout()
       return self
    }
 
    @discardableResult func titleAlpha(_ value: CGFloat) -> Self {
       currentTitleAlpha = value
       navigationItem.titleView?.alpha = value
+      navigationController?.navigationBar.setNeedsLayout()
       return self
    }
 }

@@ -15,7 +15,7 @@ public protocol WorksProtocol: AnyObject {
 
 public protocol StoringWorksProtocol: WorksProtocol, TempStorage {}
 
-open class BaseSceneWorks<Temp: InitAnyObject, Asset: AssetRoot>: WorksProtocol, TempStorage {
+open class BaseWorks<Temp: InitAnyObject, Asset: AssetRoot>: WorksProtocol, TempStorage {
    public lazy var retainer = Retainer()
 
    public required init() {

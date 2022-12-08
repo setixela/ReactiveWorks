@@ -13,6 +13,7 @@ public protocol SceneModelProtocol: ModelProtocol {
    func setInput(_ value: Any?)
    func dismiss(animated: Bool)
 
+   var completion: GenericClosure<Any?>? { get set }
    var finisher: GenericClosure<Bool>? { get set }
 }
 
@@ -37,6 +38,7 @@ open class BaseScene<In>: NSObject, SceneInputProtocol, SceneModelProtocol {
       fatalError()
    }
 
+   public var completion: GenericClosure<Any?>?
    open var finisher: GenericClosure<Bool>?
 
    open func start() {}

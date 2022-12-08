@@ -13,7 +13,6 @@ import Foundation
 public typealias WorkClosure<In, Out> = (Work<In, Out>) -> Void
 public typealias MapClosure<In, Out> = (In) -> Out
 
-public typealias VoidWork<Out> = Work<Void, Out>
 public typealias StringWork<Out> = Work<String, Out>
 public typealias IntWork<Out> = Work<Int, Out>
 public typealias CGFloatWork<Out> = Work<CGFloat, Out>

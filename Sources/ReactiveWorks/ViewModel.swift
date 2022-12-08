@@ -23,6 +23,14 @@ public protocol ViewModelProtocol: UIViewModel {
    init()
 }
 
+public extension ViewModelProtocol {
+   init(_ closure: GenericClosure<Self>) {
+      self.init()
+
+      closure(self)
+   }
+}
+
 public extension UIViewModel where Self: ViewModelProtocol {
    var uiView: UIView {
       let vuew = myView()

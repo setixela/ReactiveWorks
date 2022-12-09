@@ -8,7 +8,6 @@
 import UIKit
 
 public struct VCEvent: InitProtocol {
-   public var viewDidLoad: Void?
    public var updateInputAfterLoad: Void?
    public var viewWillAppear: Void?
    public var viewDidAppear: Void?

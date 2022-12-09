@@ -138,7 +138,6 @@ open class BaseSceneModel<
 
    override public func makeMainView() -> UIView {
       let view = mainVM.uiView
-      start()
       if let inputValue {
          vcModel?.on(\.updateInputAfterLoad, self) {
             $0.send(\.input, inputValue)

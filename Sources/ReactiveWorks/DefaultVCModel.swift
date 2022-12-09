@@ -28,7 +28,8 @@ public final class DefaultVCModel: BaseVCModel {
 
       clearBackButton()
 
-      send(\.viewDidLoad)
+      sceneModel.start()
+
       send(\.updateInputAfterLoad)
    }
 

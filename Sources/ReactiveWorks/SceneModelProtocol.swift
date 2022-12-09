@@ -26,7 +26,6 @@ public protocol SceneOutputProtocol: AnyObject {
 }
 
 open class BaseScene<In, Out>: NSObject, SceneInputProtocol, SceneModelProtocol, SceneOutputProtocol {
-
    open func makeVC() -> UIViewController {
       fatalError()
    }
@@ -150,3 +149,29 @@ open class BaseSceneModel<
 extension BaseSceneModel: Eventable, Assetable {
    public typealias Events = SceneEvent<Input>
 }
+
+// MARK: - Paramitrized Scene
+
+public protocol InOutParams {
+   associatedtype Input
+   associatedtype Output
+}
+
+public protocol SceneModelParams {
+   associatedtype VCModel: VCModelProtocol
+   associatedtype MainViewModel: ViewModelProtocol
+}
+
+public protocol SceneParams {
+   associatedtype Asset: AssetRoot
+   associatedtype Models: SceneModelParams
+   associatedtype InOut: InOutParams
+}
+
+open class BaseParamsScene<Params: SceneParams>: BaseSceneModel<
+   Params.Models.VCModel,
+   Params.Models.MainViewModel,
+   Params.Asset,
+   Params.InOut.Input,
+   Params.InOut.Output
+> {}

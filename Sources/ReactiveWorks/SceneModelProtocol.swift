@@ -13,7 +13,6 @@ public protocol SceneModelProtocol: ModelProtocol {
    func setInput(_ value: Any?)
    func dismiss(animated: Bool)
 
-   var completion: GenericClosure<Any?>? { get set }
    var finisher: GenericClosure<Bool>? { get set }
 }
 
@@ -21,7 +20,13 @@ public protocol SceneInputProtocol: AnyObject {
    associatedtype Input
 }
 
-open class BaseScene<In>: NSObject, SceneInputProtocol, SceneModelProtocol {
+public protocol SceneOutputProtocol: AnyObject {
+   associatedtype Output: Any
+   var completion: GenericClosure<Output>? { get set }
+}
+
+open class BaseScene<In, Out>: NSObject, SceneInputProtocol, SceneModelProtocol, SceneOutputProtocol {
+
    open func makeVC() -> UIViewController {
       fatalError()
    }
@@ -38,12 +43,14 @@ open class BaseScene<In>: NSObject, SceneInputProtocol, SceneModelProtocol {
       fatalError()
    }
 
-   public var completion: GenericClosure<Any?>?
    open var finisher: GenericClosure<Bool>?
+
+   public var completion: GenericClosure<Out>?
 
    open func start() {}
 
    public typealias Input = In
+   public typealias Output = Out
 }
 
 public protocol SceneModel: SceneModelProtocol, SceneInputProtocol {
@@ -74,8 +81,9 @@ open class BaseSceneModel<
    VCModel: VCModelProtocol,
    MainViewModel: ViewModelProtocol,
    Asset: AssetRoot,
-   Input
->: BaseScene<Input>, SceneModel {
+   Input,
+   Output
+>: BaseScene<Input, Output>, SceneModel {
    private var _inputValue: Any?
 
    public lazy var mainVM = MainViewModel()

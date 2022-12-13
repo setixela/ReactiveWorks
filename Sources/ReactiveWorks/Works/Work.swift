@@ -277,6 +277,18 @@ public extension Work {
       return self
    }
 
+   @discardableResult
+   func onSuccess<S: AnyObject>(_ weakSelf: S, _ finisher: @escaping (S) -> Void) -> Self {
+      let clos = { [weak weakSelf] in
+         guard let slf = weakSelf else { return }
+         finisher(slf)
+      }
+
+      self.voidFinisher = clos
+
+      return self
+   }
+
    @discardableResult func onSuccess(_ voidFinisher: @escaping () -> Void) -> Self {
       self.voidFinisher = voidFinisher
 

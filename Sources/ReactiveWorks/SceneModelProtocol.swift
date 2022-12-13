@@ -12,8 +12,6 @@ public protocol SceneModelProtocol: ModelProtocol {
    func makeMainView() -> UIView
    func setInput(_ value: Any?)
    func dismiss(animated: Bool)
-
-   var finisher: GenericClosure<Bool>? { get set }
 }
 
 public protocol SceneInputProtocol: AnyObject {
@@ -22,7 +20,7 @@ public protocol SceneInputProtocol: AnyObject {
 
 public protocol SceneOutputProtocol: AnyObject {
    associatedtype Output: Any
-   var completion: GenericClosure<Output>? { get set }
+   var finishWork: Work<Void, Output>? { get set }
 }
 
 open class BaseScene<In, Out>: NSObject, SceneInputProtocol, SceneModelProtocol, SceneOutputProtocol {
@@ -42,9 +40,7 @@ open class BaseScene<In, Out>: NSObject, SceneInputProtocol, SceneModelProtocol,
       fatalError()
    }
 
-   open var finisher: GenericClosure<Bool>?
-
-   public var completion: GenericClosure<Out>?
+   public var finishWork: Work<Void, Out>?
 
    open func start() {}
 
@@ -62,7 +58,6 @@ public protocol SceneModel: SceneModelProtocol, SceneInputProtocol {
 
 public struct SceneEvent<Input>: InitProtocol {
    public var input: Input?
-   public var finished: Void?
 
    public init() {}
 }
@@ -100,7 +95,7 @@ open class BaseSceneModel<
    override open func start() {
       vcModel?.on(\.dismiss, self) {
          if !$0.isDismissCalled {
-            $0.finisher?(false)
+            $0.finishWork?.fail()
          }
       }
    }
@@ -114,18 +109,20 @@ open class BaseSceneModel<
       vcModel?.dismiss(animated: animated)
    }
 
-   public func finishSucces() {
-      finisher?(true)
-      finisher = nil
+   public func finishSucces(_ value: Output) {
+      finishWork?.success(value)
+   }
+
+   public func finishSucces() where Output == Void {
+      finishWork?.success()
    }
 
    public func finishCanceled() {
-      finisher?(false)
-      finisher = nil
+      finishWork?.fail()
    }
 
    deinit {
-      finisher = nil
+      finishWork = nil
       print("DEINIT SceneModel")
    }
 

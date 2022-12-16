@@ -45,6 +45,8 @@ public enum WorkType: String {
    case initVoid
    case initVoidClosure
    case event
+   case anywayVoid
+   case anywayClosure
 }
 
 extension Work: CustomStringConvertible {
@@ -88,6 +90,7 @@ open class Work<In, Out>: Any, Finishible {
    private var voidNextWork: WorkWrappperProtocol?
    private var recoverWork: WorkWrappperProtocol?
    private var loadWork: WorkWrappperProtocol?
+   private var anywayWork: WorkWrappperProtocol?
 
    private var savedResultClosure: (() -> Any)?
 
@@ -139,6 +142,8 @@ open class Work<In, Out>: Any, Finishible {
       //
       nextWork?.perform(result)
       voidNextWork?.perform(())
+      //
+      anywayWork?.perform(())
 
       isFinished = true
 
@@ -156,6 +161,7 @@ open class Work<In, Out>: Any, Finishible {
       recoverWork?.perform(input)
       failStateFunc?.perform(value)
       failStateVoidFunc?.perform(())
+      anywayWork?.perform(())
 
       isFinished = true
 
@@ -506,6 +512,31 @@ public extension Work {
       newWork.type = .initVoidClosure
 
       nextWork = WorkWrappper<Void, Out2>(work: newWork)
+
+      return newWork
+   }
+
+   // Anyway start void input task
+   @discardableResult
+   func doAnyway<Out2>(_ work: Work<Void, Out2>) -> Work<Void, Out2> {
+      work.savedResultClosure = savedResultClosure
+      work.type = .anywayVoid
+
+      anywayWork = WorkWrappper<Void, Out2>(work: work)
+
+      return work
+   }
+
+   // breaking and start void input task
+   @discardableResult
+   func doAnyway<Out2>(_ closure: @escaping WorkClosure<Void, Out2>) -> Work<Void, Out2> {
+      let newWork = Work<Void, Out2>(input: nil,
+                                     closure,
+                                     savedResultClosure)
+
+      newWork.type = .anywayClosure
+
+      anywayWork = WorkWrappper<Void, Out2>(work: newWork)
 
       return newWork
    }

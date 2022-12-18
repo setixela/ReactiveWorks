@@ -206,10 +206,12 @@ public extension Work {
 }
 
 public extension Work {
-   @discardableResult func onSuccess<S>(_ delegate: ((S) -> Void)?, _ state: S) -> Self {
+   @discardableResult func onSuccess<S>(_ delegate: ((S) -> Void)?, _ states: S...) -> Self {
       let closure: GenericClosure<Void> = { [delegate] _ in
          DispatchQueue.main.async {
-            delegate?(state)
+            states.forEach {
+               delegate?($0)
+            }
          }
       }
 
@@ -225,6 +227,23 @@ public extension Work {
       let closure: GenericClosure<Out> = { [delegate] result in
          DispatchQueue.main.async {
             delegate?(stateFunc(result))
+         }
+      }
+
+      let lambda = Lambda(lambda: closure)
+      successStateFunc = lambda
+
+      return self
+   }
+
+   @discardableResult func onSuccess<S>(_ delegate: ((S) -> Void)?,
+                                        _ stateFunc: @escaping (Out) -> [S]) -> Self
+   {
+      let closure: GenericClosure<Out> = { [delegate] result in
+         DispatchQueue.main.async {
+            stateFunc(result).forEach {
+               delegate?($0)
+            }
          }
       }
 

@@ -793,7 +793,6 @@ public extension Work {
       isWorking = true
       self.input = input ?? self.input
       closure?(self)
-      anywayWork?.perform(())
 
       return result
    }

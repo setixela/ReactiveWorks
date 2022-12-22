@@ -5,6 +5,12 @@
 //  Created by Aleksandr Solovyev on 30.07.2022.
 //
 
+/*
+
+ This looks like a class for managing asynchronous tasks in a Swift program. The Work class appears to be a generic class that takes two type parameters, In and Out, which represent the input type and output type for a given task. The class has several properties, such as type, input, result, and closure, as well as several methods for handling the success or failure of a task and chaining tasks together. The class also conforms to the Finishible and Cancellable protocols, which suggest that it has functionality for determining whether a task is finished and for cancelling a task. It's not clear from the code snippet what the specific use case for this class is, but it seems to be designed to provide a flexible and organized way to manage asynchronous tasks in a Swift program.
+
+ */
+
 import CoreGraphics
 import Foundation
 
@@ -47,6 +53,7 @@ public enum WorkType: String {
    case event
    case anywayVoid
    case anywayClosure
+   case anywayInput
 }
 
 extension Work: CustomStringConvertible {
@@ -206,20 +213,6 @@ public extension Work {
 }
 
 public extension Work {
-   @discardableResult func onSuccess<S>(_ delegate: ((S) -> Void)?, _ states: S...) -> Self {
-      let closure: GenericClosure<Void> = { [delegate] _ in
-         DispatchQueue.main.async {
-            states.forEach {
-               delegate?($0)
-            }
-         }
-      }
-
-      let lambda = Lambda(lambda: closure)
-      successStateVoidFunc = lambda
-
-      return self
-   }
 
    @discardableResult func onSuccess<S>(_ delegate: ((S) -> Void)?,
                                         _ stateFunc: @escaping (Out) -> S) -> Self
@@ -227,23 +220,6 @@ public extension Work {
       let closure: GenericClosure<Out> = { [delegate] result in
          DispatchQueue.main.async {
             delegate?(stateFunc(result))
-         }
-      }
-
-      let lambda = Lambda(lambda: closure)
-      successStateFunc = lambda
-
-      return self
-   }
-
-   @discardableResult func onSuccess<S>(_ delegate: ((S) -> Void)?,
-                                        _ stateFunc: @escaping (Out) -> [S]) -> Self
-   {
-      let closure: GenericClosure<Out> = { [delegate] result in
-         DispatchQueue.main.async {
-            stateFunc(result).forEach {
-               delegate?($0)
-            }
          }
       }
 
@@ -272,6 +248,75 @@ public extension Work {
       let closure: GenericClosure<T> = { [delegate] failValue in
          DispatchQueue.main.async {
             delegate?(stateFunc(failValue))
+         }
+      }
+
+      let lambda = Lambda(lambda: closure)
+      failStateFunc = lambda
+
+      return self
+   }
+}
+
+// MARK: - Variadic states
+
+public extension Work {
+
+   @discardableResult func onSuccess<S>(_ delegate: ((S) -> Void)?, _ states: S...) -> Self {
+      let closure: GenericClosure<Void> = { [delegate] _ in
+         DispatchQueue.main.async {
+            states.forEach {
+               delegate?($0)
+            }
+         }
+      }
+
+      let lambda = Lambda(lambda: closure)
+      successStateVoidFunc = lambda
+
+      return self
+   }
+
+   @discardableResult func onSuccess<S>(_ delegate: ((S) -> Void)?,
+                                        _ stateFunc: @escaping (Out) -> [S]) -> Self
+   {
+      let closure: GenericClosure<Out> = { [delegate] result in
+         DispatchQueue.main.async {
+            stateFunc(result).forEach {
+               delegate?($0)
+            }
+         }
+      }
+
+      let lambda = Lambda(lambda: closure)
+      successStateFunc = lambda
+
+      return self
+   }
+
+   @discardableResult func onFail<S>(_ delegate: ((S) -> Void)?, _ states: S...) -> Self {
+      let closure: GenericClosure<Void> = { [delegate] _ in
+         DispatchQueue.main.async {
+            states.forEach {
+               delegate?($0)
+            }
+         }
+      }
+
+      let lambda = Lambda(lambda: closure)
+      failStateVoidFunc = lambda
+
+      return self
+   }
+
+   @discardableResult func onFail<S, T>(_ delegate: ((S) -> Void)?,
+                                        _ stateFunc: @escaping (T) -> [S]) -> Self
+   {
+      let closure: GenericClosure<T> = { [delegate] failValue in
+         DispatchQueue.main.async {
+            stateFunc(failValue).forEach {
+               delegate?($0)
+            }
          }
       }
 
@@ -535,13 +580,32 @@ public extension Work {
       return newWork
    }
 
-   // Anyway start void input task
+   // Anyway start void input task , input: Worker.In? = nil
    @discardableResult
    func doAnyway<Out2>(_ work: Work<Void, Out2>) -> Work<Void, Out2> {
       work.savedResultClosure = savedResultClosure
       work.type = .anywayVoid
 
       anywayWork = WorkWrappper<Void, Out2>(work: work)
+
+      return work
+   }
+
+   @discardableResult
+   func doAnywayInput<T>(_ input: T?) -> Work<Void, T> {
+      let work = Work<Void, T>()
+      work.savedResultClosure = savedResultClosure
+      work.type = .anywayVoid
+      work.closure = {
+         guard let input = input else {
+            $0.fail()
+            return
+         }
+
+         $0.success(result: input)
+      }
+
+      anywayWork = WorkWrappper<Void, T>(work: work)
 
       return work
    }
@@ -729,6 +793,7 @@ public extension Work {
       isWorking = true
       self.input = input ?? self.input
       closure?(self)
+      anywayWork?.perform(())
 
       return result
    }

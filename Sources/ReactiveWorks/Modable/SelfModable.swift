@@ -23,7 +23,7 @@ public protocol SelfModable: AnyObject {
 
 public extension SelfModable {
    @discardableResult
-   func onSelfModeChanged(_ keypath: WritableKeyPath<SelfMode, Event<SelfMode.WeakSelf?>?>,
+   func onModeChanged(_ keypath: WritableKeyPath<SelfMode, Event<SelfMode.WeakSelf?>?>,
                       _ block: Event<SelfMode.WeakSelf?>?) -> Self where SelfMode.WeakSelf == Self
    {
       selfMode[keyPath: keypath] = block
@@ -32,7 +32,7 @@ public extension SelfModable {
    }
 
    @discardableResult
-   func setSelfMode(_ keypath: KeyPath<SelfMode, Event<SelfMode.WeakSelf?>?>) -> Self where SelfMode.WeakSelf == Self {
+   func setMode(_ keypath: KeyPath<SelfMode, Event<SelfMode.WeakSelf?>?>) -> Self where SelfMode.WeakSelf == Self {
       let mode = self.selfMode[keyPath: keypath]
       DispatchQueue.main.async { [weak self] in
          mode?(self)

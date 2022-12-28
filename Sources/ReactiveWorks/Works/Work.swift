@@ -651,6 +651,12 @@ public extension Work {
    }
 
    @discardableResult
+   func doNext<Worker: WorkerProtocol>(_ worker: Worker?, input: Worker.In? = nil)
+   -> Work<Worker.In, Worker.Out> where Out == Worker.In {
+       doNext(worker: worker, input: input)
+   }
+
+   @discardableResult
    func doNext<Worker>(worker: Worker?, input: Worker.In? = nil)
       -> Work<Worker.In, Worker.Out>
       where Worker: WorkerProtocol, Out == Worker.In

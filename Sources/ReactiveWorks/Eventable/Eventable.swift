@@ -79,4 +79,8 @@ public extension Eventable {
 
       return self
    }
+
+   func hasSubcriberForEvent<T>(_ eventKey: Key<T>) -> Bool {
+      events[eventKey.hashValue] != nil
+   }
 }

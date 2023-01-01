@@ -80,6 +80,7 @@ open class Work<In, Out>: Any, Finishible {
    public var closure: WorkClosure<In, Out>?
 
    public private(set) var isFinished = false
+   public private (set) var isCancelled = false
 
    // Private
    private var finisher: ((Out) -> Void)?
@@ -101,7 +102,6 @@ open class Work<In, Out>: Any, Finishible {
 
    private var savedResultClosure: (() -> Any)?
 
-   private var isCancelled = false
    private var cancellables: [Cancellable] = []
    private var cancelClosure: VoidClosure?
 
@@ -801,6 +801,7 @@ public extension Work {
    func doSync(_ input: In? = nil) -> Out? {
       cancelClosure?()
       isWorking = true
+      isCancelled = false
       self.input = input ?? self.input
       closure?(self)
 
@@ -911,23 +912,5 @@ public extension Hashable where Self: AnyObject {
 
    static func == (lhs: Self, rhs: Self) -> Bool {
       ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
-   }
-}
-
-public extension DispatchQueue {
-   static var globalBackground: DispatchQueue {
-      DispatchQueue.global(qos: .background)
-   }
-
-   static var globalUtility: DispatchQueue {
-      DispatchQueue.global(qos: .utility)
-   }
-
-   static var globalInteractive: DispatchQueue {
-      DispatchQueue.global(qos: .userInteractive)
-   }
-
-   static var globalInitiated: DispatchQueue {
-      DispatchQueue.global(qos: .userInitiated)
    }
 }

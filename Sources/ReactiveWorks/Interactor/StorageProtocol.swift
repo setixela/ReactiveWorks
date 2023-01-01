@@ -9,10 +9,10 @@ import Foundation
 
 // MARK: - Temp single type storage
 
-public protocol TempStorage: InitProtocol, Assetable {
-   associatedtype Temp: InitAnyObject
+public protocol StorageProtocol: InitProtocol, Assetable {
+   associatedtype Store: InitAnyObject
 
-   static var store: Temp { get }
+   static var store: Store { get }
 }
 
 // TODO: - need to change conception

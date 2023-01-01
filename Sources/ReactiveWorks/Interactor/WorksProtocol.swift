@@ -13,20 +13,20 @@ public protocol WorksProtocol: AnyObject {
    var retainer: Retainer { get }
 }
 
-public protocol StoringWorksProtocol: WorksProtocol, TempStorage {}
+public protocol StoringWorksProtocol: WorksProtocol, StorageProtocol {}
 
-open class BaseWorks<Temp: InitAnyObject, Asset: AssetRoot>: WorksProtocol, TempStorage {
+open class BaseWorks<Store: InitAnyObject, Asset: AssetRoot>: WorksProtocol, StorageProtocol {
    public lazy var retainer = Retainer()
 
    public required init() {
-      UnsafeTemper.initStore(for: Temp.self)
+      UnsafeTemper.initStore(for: Store.self)
    }
 
    deinit {
-      UnsafeTemper.clearStore(for: Temp.self)
+      UnsafeTemper.clearStore(for: Store.self)
    }
 
-   public static var store: Temp {
-      UnsafeTemper.store(for: Temp.self)
+   public static var store: Store {
+      UnsafeTemper.store(for: Store.self)
    }
 }

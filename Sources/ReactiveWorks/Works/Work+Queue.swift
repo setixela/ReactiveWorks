@@ -9,8 +9,14 @@ import Foundation
 
 public extension Work {
    @discardableResult
-   func finishQueue(_ queue: DispatchQueue) -> Self {
-      self.finishQueue = queue
+   func finishOnQueue(_ queue: DispatchQueue) -> Self {
+      finishQueue = queue
+      return self
+   }
+
+   @discardableResult
+   func doOnQueue(_ queue: DispatchQueue) -> Self {
+      doQueue = queue
       return self
    }
 }

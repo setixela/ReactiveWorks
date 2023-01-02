@@ -80,7 +80,7 @@ open class Work<In, Out>: Any, Finishible {
    public var closure: WorkClosure<In, Out>?
 
    public private(set) var isFinished = false
-   public private (set) var isCancelled = false
+   public private(set) var isCancelled = false
 
    // Private
    private var finisher: ((Out) -> Void)?
@@ -107,8 +107,8 @@ open class Work<In, Out>: Any, Finishible {
 
    private var isWorking = false
 
-   lazy var doQueue = DispatchQueue.main
-   lazy var finishQueue = DispatchQueue.main
+   public internal(set) var doQueue: DispatchQueue?
+   public internal(set) lazy var finishQueue = DispatchQueue.main
 
    // Methods
    public init(input: In?,
@@ -138,10 +138,6 @@ open class Work<In, Out>: Any, Finishible {
    }
 
    public func success(result: Out = ()) {
-      #if DEBUG
-         print("Thread: \(Thread.current)")
-      #endif
-
       isWorking = false
 
       self.result = result
@@ -436,7 +432,7 @@ public extension Work {
       return self
    }
 
-   func doLoadResult<OutSaved>(on: DispatchQueue = .main) -> Work<Out, OutSaved> {
+   func doLoadResult<OutSaved>(on: DispatchQueue? = nil) -> Work<Out, OutSaved> {
       let newWork = Work<Out, OutSaved>() { [weak self] work in
          guard let savedResultClosure = self?.savedResultClosure else {
             assertionFailure("savedResultClosure is nil")
@@ -457,8 +453,9 @@ public extension Work {
 
       newWork.type = .loadSaved
       newWork.savedResultClosure = savedResultClosure
+      newWork.doQueue = on ?? doQueue
 
-      nextWork = WorkWrappper<Out, OutSaved>(work: newWork, on: on)
+      nextWork = WorkWrappper<Out, OutSaved>(work: newWork)
 
       return newWork
    }
@@ -526,28 +523,30 @@ public extension Work {
 
 public extension Work {
    @discardableResult
-   func doNext<Out2>(_ work: Work<Out, Out2>, on: DispatchQueue = .main) -> Work<Out, Out2> {
+   func doNext<Out2>(_ work: Work<Out, Out2>, on: DispatchQueue? = nil) -> Work<Out, Out2> {
       work.savedResultClosure = savedResultClosure
       work.type = .nextWork
+      work.doQueue = on ?? doQueue
 
-      nextWork = WorkWrappper<Out, Out2>(work: work, on: on)
+      nextWork = WorkWrappper<Out, Out2>(work: work)
 
       return work
    }
 
    @discardableResult
-   func doRecover<Out2>(_ work: Work<Out, Out2>, on: DispatchQueue = .main) -> Work<Out, Out2> {
+   func doRecover<Out2>(_ work: Work<Out, Out2>, on: DispatchQueue? = nil) -> Work<Out, Out2> {
       work.savedResultClosure = savedResultClosure
       work.type = .recoverNext
+      work.doQueue = on ?? doQueue
 
-      recoverWork = WorkWrappper<Out, Out2>(work: work, on: on)
+      recoverWork = WorkWrappper<Out, Out2>(work: work)
       nextWork = recoverWork
 
       return work
    }
 
    @discardableResult
-   func doRecover(on: DispatchQueue = .main) -> Work<In, Out> where In == Out {
+   func doRecover(on: DispatchQueue? = nil) -> Work<In, Out> where In == Out {
       let newWork = Work<In, Out>() { [weak self] work in
          //    work.result = work.input
          // guard let result = work?.input else { fatalError() }
@@ -558,8 +557,9 @@ public extension Work {
 
       newWork.type = .recover
       newWork.savedResultClosure = savedResultClosure
+      newWork.doQueue = on ?? doQueue
 
-      recoverWork = WorkWrappper<In, Out>(work: newWork, on: on)
+      recoverWork = WorkWrappper<In, Out>(work: newWork)
       nextWork = recoverWork
 
       return newWork
@@ -567,42 +567,44 @@ public extension Work {
 
    // breaking and start void input task
    @discardableResult
-   func doVoidNext<Out2>(_ work: Work<Void, Out2>, on: DispatchQueue = .main) -> Work<Void, Out2> {
+   func doVoidNext<Out2>(_ work: Work<Void, Out2>, on: DispatchQueue? = nil) -> Work<Void, Out2> {
       work.savedResultClosure = savedResultClosure
       work.type = .initVoid
+      work.doQueue = on ?? doQueue
 
-      voidNextWork = WorkWrappper<Void, Out2>(work: work, on: on)
+      voidNextWork = WorkWrappper<Void, Out2>(work: work)
 
       return work
    }
 
    // breaking and start void input task
    @discardableResult
-   func doVoidNext<Out2>(on: DispatchQueue = .main, _ closure: @escaping WorkClosure<Void, Out2>) -> Work<Void, Out2> {
+   func doVoidNext<Out2>(on: DispatchQueue? = nil, _ closure: @escaping WorkClosure<Void, Out2>) -> Work<Void, Out2> {
       let newWork = Work<Void, Out2>(input: nil,
                                      closure,
                                      savedResultClosure)
 
       newWork.type = .initVoidClosure
-
-      nextWork = WorkWrappper<Void, Out2>(work: newWork, on: on)
+      newWork.doQueue = on ?? doQueue
+      nextWork = WorkWrappper<Void, Out2>(work: newWork)
 
       return newWork
    }
 
    // Anyway start void input task , input: Worker.In? = nil
    @discardableResult
-   func doAnyway<Out2>(_ work: Work<Void, Out2>, on: DispatchQueue = .main) -> Work<Void, Out2> {
+   func doAnyway<Out2>(_ work: Work<Void, Out2>, on: DispatchQueue? = nil) -> Work<Void, Out2> {
       work.savedResultClosure = savedResultClosure
       work.type = .anywayVoid
+      work.doQueue = on ?? doQueue
 
-      anywayWork = WorkWrappper<Void, Out2>(work: work, on: on)
+      anywayWork = WorkWrappper<Void, Out2>(work: work)
 
       return work
    }
 
    @discardableResult
-   func doAnywayInput<T>(_ input: T?, on: DispatchQueue = .main) -> Work<Void, T> {
+   func doAnywayInput<T>(_ input: T?, on: DispatchQueue? = nil) -> Work<Void, T> {
       let work = Work<Void, T>()
       work.savedResultClosure = savedResultClosure
       work.type = .anywayVoid
@@ -615,53 +617,54 @@ public extension Work {
          $0.success(result: input)
       }
 
-      anywayWork = WorkWrappper<Void, T>(work: work, on: on)
+      work.doQueue = on ?? doQueue
+      anywayWork = WorkWrappper<Void, T>(work: work)
 
       return work
    }
 
    // breaking and start void input task
    @discardableResult
-   func doAnyway<Out2>(on: DispatchQueue = .main, _ closure: @escaping WorkClosure<Void, Out2>) -> Work<Void, Out2> {
+   func doAnyway<Out2>(on: DispatchQueue? = nil, _ closure: @escaping WorkClosure<Void, Out2>) -> Work<Void, Out2> {
       let newWork = Work<Void, Out2>(input: nil,
                                      closure,
                                      savedResultClosure)
 
       newWork.type = .anywayClosure
-
-      anywayWork = WorkWrappper<Void, Out2>(work: newWork, on: on)
+      newWork.doQueue = on ?? doQueue
+      anywayWork = WorkWrappper<Void, Out2>(work: newWork)
 
       return newWork
    }
 
    @discardableResult
-   func doNext<U: UseCaseProtocol>(_ usecase: U, on: DispatchQueue = .main) -> Work<U.In, U.Out>
+   func doNext<U: UseCaseProtocol>(_ usecase: U, on: DispatchQueue? = nil) -> Work<U.In, U.Out>
       where Out == U.In
    {
       let work = usecase.work
 
       work.type = .nextUsecase
       work.savedResultClosure = savedResultClosure
-
-      nextWork = WorkWrappper<U.In, U.Out>(work: work, on: on)
+      work.doQueue = on ?? doQueue
+      nextWork = WorkWrappper<U.In, U.Out>(work: work)
       return work
    }
 
    @discardableResult
-   func doNext<Out2>(on: DispatchQueue = .main, _ closure: @escaping WorkClosure<Out, Out2>) -> Work<Out, Out2> {
+   func doNext<Out2>(on: DispatchQueue? = nil, _ closure: @escaping WorkClosure<Out, Out2>) -> Work<Out, Out2> {
       let newWork = Work<Out, Out2>(input: nil,
                                     closure,
                                     savedResultClosure)
 
       newWork.type = .nextClosure
-
-      nextWork = WorkWrappper<Out, Out2>(work: newWork, on: on)
+      newWork.doQueue = on ?? doQueue
+      nextWork = WorkWrappper<Out, Out2>(work: newWork)
 
       return newWork
    }
 
    @discardableResult
-   func doNext<Worker>(_ worker: Worker?, input: Worker.In? = nil, on: DispatchQueue = .main)
+   func doNext<Worker>(_ worker: Worker?, input: Worker.In? = nil, on: DispatchQueue? = nil)
       -> Work<Worker.In, Worker.Out>
       where Worker: WorkerProtocol, Out == Worker.In
    {
@@ -674,12 +677,13 @@ public extension Work {
                                              worker.doAsync(work:),
                                              savedResultClosure)
       work.type = .nextWorker
-      nextWork = WorkWrappper<Worker.In, Worker.Out>(work: work, on: on)
+      work.doQueue = on ?? doQueue
+      nextWork = WorkWrappper<Worker.In, Worker.Out>(work: work)
 
       return work
    }
 
-   func doMap<T>(on: DispatchQueue = .main, _ mapper: @escaping MapClosure<Out, T?>) -> Work<Out, T> {
+   func doMap<T>(on: DispatchQueue? = nil, _ mapper: @escaping MapClosure<Out, T?>) -> Work<Out, T> {
       let work = Work<Out, T>()
       work.savedResultClosure = savedResultClosure
       work.closure = { work in
@@ -696,14 +700,16 @@ public extension Work {
          work.success(result: result)
       }
       work.type = .mapper
-      nextWork = WorkWrappper(work: work, on: on)
+      work.doQueue = on ?? doQueue
+      nextWork = WorkWrappper(work: work)
 
       return work
    }
 
-   func doMix<T: Any>(_ value: T?, on: DispatchQueue = .main) -> Work<Out, (Out, T)> {
+   func doMix<T: Any>(_ value: T?, on: DispatchQueue? = nil) -> Work<Out, (Out, T)> {
       let work = Work<Out, (Out, T)>()
       work.savedResultClosure = savedResultClosure
+      work.doQueue = on ?? doQueue
       work.closure = { work in
          guard
             let value = value,
@@ -716,15 +722,16 @@ public extension Work {
          work.success(result: (input, value))
       }
       work.type = .mixer
-      nextWork = WorkWrappper(work: work, on: on)
+      nextWork = WorkWrappper(work: work)
 
       return work
    }
 
-   func doWeakMix<T: AnyObject>(_ value: T?, on: DispatchQueue = .main) -> Work<Out, (Out, T)> {
+   func doWeakMix<T: AnyObject>(_ value: T?, on: DispatchQueue? = nil) -> Work<Out, (Out, T)> {
       let work = Work<Out, (Out, T)>()
       work.savedResultClosure = savedResultClosure
       work.type = .weakMixer
+      work.doQueue = on ?? doQueue
 
       weak var value = value
       work.closure = { work in
@@ -738,15 +745,16 @@ public extension Work {
 
          work.success(result: (input, value))
       }
-      nextWork = WorkWrappper(work: work, on: on)
+      nextWork = WorkWrappper(work: work)
 
       return work
    }
 
-   func doInput<T: Any>(_ input: T?, on: DispatchQueue = .main) -> Work<Out, T> {
+   func doInput<T: Any>(_ input: T?, on: DispatchQueue? = nil) -> Work<Out, T> {
       let work = Work<Out, T>()
       work.savedResultClosure = savedResultClosure
       work.type = .input
+      work.doQueue = on ?? doQueue
       work.closure = {
          guard let input = input else {
             $0.fail()
@@ -755,17 +763,18 @@ public extension Work {
 
          $0.success(result: input)
       }
-      nextWork = WorkWrappper(work: work, on: on)
+      nextWork = WorkWrappper(work: work)
 
       return work
    }
 
-   func doWeakInput<T: AnyObject>(_ input: T?, on: DispatchQueue = .main) -> Work<Out, T> {
+   func doWeakInput<T: AnyObject>(_ input: T?, on: DispatchQueue? = nil) -> Work<Out, T> {
       weak var input = input
 
       let work = Work<Out, T>()
       work.savedResultClosure = savedResultClosure
       work.type = .weakInput
+      work.doQueue = on ?? doQueue
       work.closure = {
          guard let input = input else {
             $0.fail()
@@ -774,15 +783,16 @@ public extension Work {
 
          $0.success(result: input)
       }
-      nextWork = WorkWrappper(work: work, on: on)
+      nextWork = WorkWrappper(work: work)
 
       return work
    }
 
-   func doInput<T>(on: DispatchQueue = .main, _ input: @escaping () -> T?) -> Work<Out, T> {
+   func doInput<T>(on: DispatchQueue? = nil, _ input: @escaping () -> T?) -> Work<Out, T> {
       let work = Work<Out, T>()
       work.savedResultClosure = savedResultClosure
       work.type = .closureInput
+      work.doQueue = on ?? doQueue
       work.closure = {
          guard let input = input() else {
             $0.fail()
@@ -790,7 +800,7 @@ public extension Work {
          }
          $0.success(result: input)
       }
-      nextWork = WorkWrappper(work: work, on: on)
+      nextWork = WorkWrappper(work: work)
 
       return work
    }
@@ -817,8 +827,11 @@ public extension Work {
    }
 
    @discardableResult
-   func doAsync(_ input: In? = nil, on: DispatchQueue = .main) -> Self {
-      on.async { [weak self] in
+   func doAsync(_ input: In? = nil, on: DispatchQueue? = nil) -> Self {
+      (on ?? doQueue ?? .main).async { [weak self] in
+         #if DEBUG
+            print("Thread: \(Thread.current)")
+         #endif
          self?.doSync(input)
       }
       return self
@@ -833,77 +846,7 @@ extension Work {
    }
 }
 
-// MARK: - Erasing Work Wrapper
-
-public protocol WorkWrappperProtocol {
-   func perform<AnyType>(_ value: AnyType)
-   func cancel()
-}
-
-public struct WorkWrappper<T, U>: WorkWrappperProtocol where T: Any, U: Any {
-   public func perform<AnyType>(_ value: AnyType) where AnyType: Any {
-      guard
-         let value = value as? T
-      else {
-         print("Lambda payloads not conform: {\(value)} is not {\(T.self)}")
-         fatalError()
-      }
-
-      if onQueue == .main {
-         work.doSync(value)
-      } else {
-         onQueue.async {
-            work.doSync(value)
-         }
-      }
-   }
-
-   public func cancel() {
-      work.cancel()
-   }
-
-   let work: Work<T, U>
-
-   private let onQueue: DispatchQueue
-
-   init(work: Work<T, U>, on queue: DispatchQueue) {
-      self.work = work
-      self.onQueue = queue
-   }
-}
-
 extension Work: Hashable {}
-
-public final class Retainer {
-   private lazy var retained: Set<AnyHashable> = []
-
-   public init() {}
-
-   public func retain(_ some: AnyHashable) {
-      cleanIfNeeded()
-      retained.update(with: some)
-      if retained.count > 100 {
-         assertionFailure()
-      }
-   }
-
-   public func cleanAll() {
-      retained.removeAll()
-   }
-
-   deinit {
-      retained.removeAll()
-   }
-
-   private func cleanIfNeeded() {
-      let cleaned = retained.filter {
-         let isFinished = ($0 as? Finishible)?.isFinished == true
-         return !isFinished
-      }
-
-      retained = cleaned
-   }
-}
 
 public extension Hashable where Self: AnyObject {
    func hash(into hasher: inout Hasher) {

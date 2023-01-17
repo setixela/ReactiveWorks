@@ -144,6 +144,7 @@ open class Work<In, Out>: Any, Finishible {
 
       if checkCancel() { return }
       //
+
       voidFinisher?()
       finisher?(result)
       //
@@ -335,16 +336,22 @@ public extension Work {
 public extension Work {
    @discardableResult
    func onSuccess(_ finisher: @escaping (Out) -> Void) -> Self {
-      self.finisher = finisher
+      self.finisher = { [weak self] value in
+         self?.finishQueue.async {
+            finisher(value)
+         }
+      }
 
       return self
    }
 
    @discardableResult
    func onSuccess<S: AnyObject>(_ weakSelf: S, _ finisher: @escaping (S, Out) -> Void) -> Self {
-      let clos = { [weak weakSelf] (result: Out) in
+      let clos = { [weak weakSelf, weak self] (result: Out) in
          guard let slf = weakSelf else { return }
-         finisher(slf, result)
+         self?.finishQueue.async {
+            finisher(slf, result)
+         }
       }
 
       self.finisher = clos
@@ -354,9 +361,12 @@ public extension Work {
 
    @discardableResult
    func onSuccess<S: AnyObject>(_ weakSelf: S, _ finisher: @escaping (S) -> Void) -> Self {
-      let clos = { [weak weakSelf] in
+      let clos = { [weak weakSelf, weak self] in
          guard let slf = weakSelf else { return }
-         finisher(slf)
+
+         self?.finishQueue.async {
+            finisher(slf)
+         }
       }
 
       voidFinisher = clos
@@ -365,7 +375,11 @@ public extension Work {
    }
 
    @discardableResult func onSuccess(_ voidFinisher: @escaping () -> Void) -> Self {
-      self.voidFinisher = voidFinisher
+      self.voidFinisher = { [weak self] in
+         self?.finishQueue.async {
+            voidFinisher()
+         }
+      }
 
       return self
    }

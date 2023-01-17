@@ -33,10 +33,9 @@ public extension SelfModable {
 
    @discardableResult
    func setMode(_ keypath: KeyPath<SelfMode, Event<SelfMode.WeakSelf?>?>) -> Self where SelfMode.WeakSelf == Self {
-      let mode = self.selfMode[keyPath: keypath]
-      DispatchQueue.main.async { [weak self] in
-         mode?(self)
-      }
+      let mode = selfMode[keyPath: keypath]
+
+      mode?(self)
 
       return self
    }
@@ -53,7 +52,7 @@ public protocol Modable: AnyObject {
 public extension Modable {
    @discardableResult
    func onModeChanged(_ keypath: WritableKeyPath<Mode, GenericClosure<Void>?>,
-                      _ block:  GenericClosure<Void>?) -> Self
+                      _ block: GenericClosure<Void>?) -> Self
    {
       modes[keyPath: keypath] = block
 
@@ -62,13 +61,10 @@ public extension Modable {
 
    @discardableResult
    func setMode(_ keypath: KeyPath<Mode, GenericClosure<Void>?>) -> Self {
-      let mode = self.modes[keyPath: keypath]
-      DispatchQueue.main.async {
-         mode?(())
-      }
+      let mode = modes[keyPath: keypath]
+
+      mode?(())
 
       return self
    }
 }
-
-

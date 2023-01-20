@@ -73,6 +73,16 @@ public protocol Stateable2: Stateable {
 }
 
 public extension Stateable2 {
+   init(_ states2: State2...) {
+      self.init(states2)
+   }
+
+   init(_ states2: [State2]) {
+      self.init()
+
+      states2.forEach { applyState($0) }
+   }
+
    @discardableResult
    func set(_ state: State2) -> Self {
       applyState(state)

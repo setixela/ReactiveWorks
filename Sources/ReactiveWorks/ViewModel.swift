@@ -41,13 +41,23 @@ public extension UIViewModel where Self: ViewModelProtocol {
    }
 }
 
-open class BaseViewModel<View: UIView>: NSObject, ViewModelProtocol {
+public protocol ViewModelStorageView: UIView {
+   var viewModel: UIViewModel? { get set }
+}
 
+public extension BaseViewModel where View: ViewModelStorageView {
+   func storeViewModelInView() {
+      view.viewModel = self
+   }
+}
+
+open class BaseViewModel<View: UIView>: NSObject, ViewModelProtocol {
    private weak var weakView: View?
 
    // will be cleaned after presenting view
    public var autostartedView: View?
    public var isAutoreleaseView = false
+
 
    public var view: View {
       if let view = weakView {

@@ -282,7 +282,7 @@ public extension Work {
 
       return self
    }
-
+    
    @discardableResult func onSuccess<S>(_ delegate: ((S) -> Void)?,
                                         _ stateFunc: @escaping (Out) -> [S]) -> Self
    {
@@ -297,6 +297,21 @@ public extension Work {
       let lambda = Lambda(lambda: closure)
       successStateFunc = lambda
 
+      return self
+   }
+    
+   @discardableResult func onSuccess<S>(_ delegate: ((S) -> Void)?,
+                                        _ stateFunc: @escaping (Out, ((S) -> Void)?) -> Void) -> Self
+   {
+      let closure: GenericClosure<Out> = { [weak self, delegate] result in
+         self?.finishQueue.async {
+            stateFunc(result, delegate)
+         }
+      }
+      
+      let lambda = Lambda(lambda: closure)
+      successStateFunc = lambda
+      
       return self
    }
 
@@ -329,6 +344,21 @@ public extension Work {
       let lambda = Lambda(lambda: closure)
       failStateFunc = lambda
 
+      return self
+   }
+   
+   @discardableResult func onFail<S, T>(_ delegate: ((S) -> Void)?,
+                                        _ stateFunc: @escaping (T, ((S) -> Void)?) -> Void) -> Self
+   {
+      let closure: GenericClosure<T> = { [weak self, delegate] failValue in
+         self?.finishQueue.async {
+            stateFunc(failValue, delegate)
+         }
+      }
+      
+      let lambda = Lambda(lambda: closure)
+      failStateFunc = lambda
+      
       return self
    }
 }

@@ -37,7 +37,7 @@ public extension UIViewModel where Self: ViewModelProtocol {
       if Config.isDebugView {
          vuew.backgroundColor = .random
       }
-      return myView()
+      return vuew
    }
 }
 
@@ -45,8 +45,25 @@ public protocol ViewModelStorageView: UIView {
    var viewModel: UIViewModel? { get set }
 }
 
+extension ViewModelProtocol {
+   func myView() -> UIView {
+      autoreleased()
+   }
+
+   private func autoreleased() -> UIView {
+      if isAutoreleaseView, let readyView = autostartedView {
+         autostartedView = nil
+
+         return readyView
+      }
+      view.layoutIfNeeded()
+
+      return view
+   }
+}
+
 public extension BaseViewModel where View: ViewModelStorageView {
-   func storeViewModelInView() {
+   func setNeedsStoreModelInView() {
       view.viewModel = self
    }
 }
@@ -58,7 +75,6 @@ open class BaseViewModel<View: UIView>: NSObject, ViewModelProtocol {
    public var autostartedView: View?
    public var isAutoreleaseView = false
 
-
    public var view: View {
       if let view = weakView {
          return view
@@ -67,6 +83,7 @@ open class BaseViewModel<View: UIView>: NSObject, ViewModelProtocol {
          weakView = view
          autostartedView = view
          start()
+
          return view
       }
    }

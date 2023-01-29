@@ -68,10 +68,15 @@ extension Work: CustomStringConvertible {
     }
 }
 
-open class Work<In, Out>: Any, Finishible {
+public protocol WorkProtocol {
+    associatedtype In
+    associatedtype Out
+}
+
+open class Work<In, Out>: Any, WorkProtocol, Finishible {
     public internal(set) var type: WorkType = .default
 
-    public private(set) var input: In?
+    public internal(set) var input: In?
 
     public var unsafeInput: In {
         guard let input = input else {
@@ -81,7 +86,7 @@ open class Work<In, Out>: Any, Finishible {
         return input
     }
 
-    public private(set) var result: Out?
+    public var result: Out?
 
     public var closure: WorkClosure<In, Out>?
 
@@ -304,100 +309,5 @@ public extension Hashable where Self: AnyObject {
 
     static func == (lhs: Self, rhs: Self) -> Bool {
         ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
-    }
-}
-
-public extension Work {
-    convenience init<Val, Res>(inputs: In,
-                               on: DispatchQueue? = nil,
-                               _ workClosure: @escaping WorkClosure<Val, Res>)
-        where In == [Val], Out == [Res]
-    {
-        self.init()
-
-        let inputs = inputs
-
-        input = inputs
-        type = .initGroupClosure
-        doQueue = on ?? doQueue
-
-        var results: [Res] = []
-        let count = inputs.count
-
-        closure = { work in
-
-            let index = 0
-            let localWork = Work<Val, Res>()
-            localWork.closure = workClosure
-            localWork.input = inputs[index]
-
-            performWork(localWork, index: index) {
-                work.success($0)
-            }
-        }
-        
-        // MARK: - Local recursive funcs
-
-        // local func
-        func performWork(_ work: Work<Val, Res>, index: Int, callback: @escaping (Out) -> Void) {
-            work
-                .doAsync()
-                .onSuccess { [weak self] in
-                    results.append($0)
-
-                    self?.signalFunc?.perform(($0, index))
-
-                    if index < count - 1 {
-                        let input = inputs[index]
-                        work.input = input
-                        performWork(work, index: index + 1, callback: callback)
-                    } else {
-                        callback(results)
-                    }
-                }
-                .onFail {
-                    if index < count - 1 {
-                        let input = inputs[index]
-                        work.input = input
-                        performWork(work, index: index + 1, callback: callback)
-                    } else {
-                        callback(results)
-                    }
-                }
-        }
-
-        // local func for optional array
-        func performWork(_ work: Work<Val, Res>, index: Int, callback: @escaping (Out) -> Void)
-            where Res == Any?
-        {
-            work
-                .doAsync()
-                .onSuccess { [weak self] in
-                    results.append($0)
-
-                    self?.signalFunc?.perform(($0, index))
-
-                    if index < count - 1 {
-                        let input = inputs[index]
-                        work.input = input
-                        performWork(work, index: index + 1, callback: callback)
-                    } else {
-                        callback(results)
-                    }
-                }
-                .onFail { [weak self] in
-                    results.append(nil)
-
-                    self?.signalFunc?.perform((Res?.none, index))
-
-                    if index < count - 1 {
-                        let input = inputs[index]
-                        work.input = input
-                        performWork(work, index: index + 1, callback: callback)
-                    } else {
-                        callback(results)
-                    }
-                }
-        }
     }
 }

@@ -15,9 +15,10 @@ public protocol GroupWorkProtocol: Work<[Self.InElement], [Self.OutElement]> {
 public class GroupWork<InElement, OutElement>: Work<[InElement], [OutElement]>, GroupWorkProtocol {
     var count: Int { input?.count ?? 0 }
 
-    public init(_ inputs: In? = nil, 
+    public init(_ inputs: In? = nil,
                 on: DispatchQueue? = nil,
-                _ workClosure: @escaping WorkClosure<In.Element, Out.Element>) {
+                _ workClosure: @escaping WorkClosure<In.Element, Out.Element>)
+    {
         //
         super.init(input: inputs ?? [])
 
@@ -26,6 +27,11 @@ public class GroupWork<InElement, OutElement>: Work<[InElement], [OutElement]>, 
         doQueue = on ?? doQueue
 
         closure = { work in
+            guard work.unsafeInput.isEmpty == false else {
+                work.success([])
+                return
+            }
+
             let localWork = Work<In.Element, Out.Element>()
             localWork.closure = workClosure
 

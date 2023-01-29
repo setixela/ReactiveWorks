@@ -24,6 +24,9 @@ enum UnsafeTemper {
       let key = String(reflecting: type)
       let new = type.init()
 
+      if storage[key] != nil {
+         assertionFailure("UnsafeTemper already has storage for \(key)")
+      }
       storage[key] = new
    }
 

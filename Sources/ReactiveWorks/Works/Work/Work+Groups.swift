@@ -14,14 +14,15 @@ public protocol GroupWorkProtocol: Work<[Self.InElement], [Self.OutElement]> {
 
 public class GroupWork<InElement, OutElement>: Work<[InElement], [OutElement]>, GroupWorkProtocol {
     var count: Int { input?.count ?? 0 }
-    
+
     public convenience init(_ inputs: In? = nil,
-                on: DispatchQueue? = nil,
-                work: Work<In.Element, Out.Element>) {
+                            work: Work<In.Element, Out.Element>,
+                            on: DispatchQueue? = nil)
+    {
         self.init(inputs, on: on, work.closure)
         type = .groupWork
     }
-    
+
     public init(_ inputs: In? = nil,
                 on: DispatchQueue? = nil,
                 _ workClosure: WorkClosure<In.Element, Out.Element>?)
@@ -49,19 +50,19 @@ public class GroupWork<InElement, OutElement>: Work<[InElement], [OutElement]>, 
             }
         }
     }
-    
+
     // MARK: - Recursive func
-    
+
     private func performWork(_ work: Work<In.Element, Out.Element>, index: Int, callback: @escaping (Out) -> Void) {
         work
             .doAsync(unsafeInput[index])
             .onSuccess { [weak self] in
                 guard let self else { return }
-                
+
                 self.result?.append($0)
-                
+
                 self.signalFunc?.perform(($0, index))
-                
+
                 if index < self.unsafeInput.count - 1 {
                     self.performWork(work, index: index + 1, callback: callback)
                 } else {
@@ -70,7 +71,7 @@ public class GroupWork<InElement, OutElement>: Work<[InElement], [OutElement]>, 
             }
             .onFail { [weak self] in
                 guard let self else { return }
-                
+
                 if index < self.unsafeInput.count - 1 {
                     self.performWork(work, index: index + 1, callback: callback)
                 } else {

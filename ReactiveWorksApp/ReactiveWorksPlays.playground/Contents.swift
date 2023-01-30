@@ -4,23 +4,43 @@ import PlaygroundSupport
 import ReactiveWorks
 import UIKit
 
-class MyViewController: UIViewController {
+final class MyViewController: UIViewController {
+    private let stackView = UIStackView()
+
     override func loadView() {
-        let view = UIView()
-        view.backgroundColor = .white
+        stackView.axis = .vertical
+        stackView.backgroundColor = .white
+        stackView.addArrangedSubview(.init())
 
-        let label = UILabel()
-        label.frame = CGRect(x: 150, y: 200, width: 200, height: 20)
-        label.text = "Hello World!"
-        label.textColor = .black
+        view = UIView()
+        view.frame = .init(x: 0, y: 0, width: 360, height: 940)
 
-        view.addSubview(label)
-        self.view = view
+        stackView.frame = view.bounds
+
+        view.addSubview(stackView)
+    }
+}
+
+enum State {
+    case label(String)
+}
+
+extension MyViewController: StateMachine {
+    func setState(_ state: State) {
+        switch state {
+        case let .label(text):
+            let label = UILabel()
+            label.font = .systemFont(ofSize: 12, weight: .bold)
+            label.text = text
+
+            stackView.addArrangedSubview(label)
+        }
     }
 }
 
 // Present the view controller in the Live View window
-PlaygroundPage.current.liveView = MyViewController()
+let vc = MyViewController()
+PlaygroundPage.current.liveView = vc
 
 let retainer = Retainer()
 
@@ -68,34 +88,36 @@ let input = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 let startWork = Work<Void, Void>() { $0.success() }
 
-isEnabledDebugThreadNamePrint = false
+isEnabledDebugThreadNamePrint = true
+let setState = vc.stateDelegate
+
 startWork.retainBy(retainer)
     .doAsync()
     .doInput(input)
 
     .doNext(groupWork())
-    .onEachResult { print("Value: \($0), index: \($1)") }
-    .onSuccess { print("\nAll: \($0)\n") }
+    .onEachResult(setState) { .label("Value: \($0), index: \($1)") }
+    .onSuccess(setState) { allResult($0) }
 
     .doNext(groupFailedWork())
-    .onEachResult { print("Value: \($0), index: \($1)") }
-    .onSuccess { print("\nAll: \($0)\n") }
+    .onEachResult(setState) { .label("Value: \($0), index: \($1)") }
+    .onSuccess(setState) { allResult($0) }
 
     .doNext(groupWork())
-    .onEachResult { print("Value: \($0), index: \($1)") }
-    .onSuccess { print("\nAll: \($0)\n") }
+    .onEachResult(setState) { .label("Value: \($0), index: \($1)") }
+    .onSuccess(setState) { allResult($0) }
 
     .doNext(groupOptionalWork())
-    .onEachResult { print("Value: \(String(describing: $0)), index: \($1)") }
-    .onSuccess { print("\nAll: \($0)\n") }
+    .onEachResult(setState) { .label("Value: \(String(describing: $0)), index: \($1)") }
+    .onSuccess(setState) { allResult($0) }
 
     .doNext(groupOptFailWork())
-    .onEachResult { print("Value: \(String(describing: $0)), index: \($1)") }
-    .onSuccess { print("\nAll: \($0)\n") }
+    .onEachResult(setState) { .label("Value: \($0), index: \($1)") }
+    .onSuccess(setState) { allResult($0) }
 
     .doNext(groupWork())
-    .onEachResult { print("Value: \($0), index: \($1)") }
-    .onSuccess { print("\nAll: \($0)\n") }
+    .onEachResult(setState) { .label("Value: \($0), index: \($1)") }
+    .onSuccess(setState) { allResult($0) }
 
     .doNext(GroupWork<String, Int?> {
         guard let intVal = Int($0.unsafeInput) else { $0.fail(); return }
@@ -106,8 +128,14 @@ startWork.retainBy(retainer)
             $0.success(nil)
         }
     })
-    .onEachResult { print("Value: \(String(describing: $0)), index: \($1)") }
-    .onSuccess { print("\nAll: \($0)\n") }
+    .onEachResult(setState) { .label("Value: \(String(describing: $0)), index: \($1)") }
+    .onSuccess(setState) { allResult($0) }
 
     .doCompactMap()
-    .onSuccess { print("\nAll: \($0)\n") }
+    .onSuccess(setState) { allResult($0) }
+
+func allResult(_ anyres: Any) -> [State] { [
+    .label("----------------"),
+    .label("All: \(anyres)"),
+    .label("----------------"),
+] }

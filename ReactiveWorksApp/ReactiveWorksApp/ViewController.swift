@@ -2,21 +2,18 @@
 //  ViewController.swift
 //  ReactiveWorksApp
 //
-//  Created by Aleksandr Solovyev on 04.08.2022.
+//  Created by Aleksandr Solovyev on 30.01.2023.
 //
 
 import UIKit
-//import ReactiveWorks
-//import Anchorage
+import ReactiveWorks
 
 class ViewController: UIViewController {
 
-   override func viewDidLoad() {
-      super.viewDidLoad()
-      // Do any additional setup after loading the view.
-
-   //   let work = Work<Int,Int>()
-   }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view.
+    }
 
 
 }

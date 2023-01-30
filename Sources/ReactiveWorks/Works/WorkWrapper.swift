@@ -25,15 +25,9 @@ public struct WorkWrappper<T, U>: WorkWrappperProtocol where T: Any, U: Any {
 
       if let onQueue = work.doQueue {
          onQueue.async {
-            #if DEBUG
-               print("Thread: \(Thread.current)")
-            #endif
             work.doSync(value)
          }
       } else {
-         #if DEBUG
-            print("Thread: \(Thread.current)")
-         #endif
          work.doSync(value)
       }
    }

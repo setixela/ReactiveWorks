@@ -14,95 +14,69 @@ public protocol GroupWorkProtocol: Work<[Self.InElement], [Self.OutElement]> {
 
 public class GroupWork<InElement, OutElement>: Work<[InElement], [OutElement]>, GroupWorkProtocol {
     var count: Int { input?.count ?? 0 }
-
+    
+    public convenience init(_ inputs: In? = nil,
+                on: DispatchQueue? = nil,
+                work: Work<In.Element, Out.Element>) {
+        self.init(inputs, on: on, work.closure)
+        type = .groupWork
+    }
+    
     public init(_ inputs: In? = nil,
                 on: DispatchQueue? = nil,
-                _ workClosure: @escaping WorkClosure<In.Element, Out.Element>)
+                _ workClosure: WorkClosure<In.Element, Out.Element>?)
     {
         //
         super.init(input: inputs ?? [])
 
         result = []
-        type = .initGroupClosure
+        type = .groupWorkClosure
         doQueue = on ?? doQueue
 
-        closure = { work in
+        closure = { [weak self] work in
             guard work.unsafeInput.isEmpty == false else {
                 work.success([])
                 return
             }
 
             let localWork = Work<In.Element, Out.Element>()
+            localWork.doQueue = on ?? self?.doQueue
             localWork.closure = workClosure
+            localWork.type = .groupLocal
 
-            performWork(localWork, index: 0) {
+            self?.performWork(localWork, index: 0) {
                 work.success($0)
             }
         }
-
-        // MARK: - Local recursive funcs
-
-        // local func
-        func performWork(_ work: Work<In.Element, Out.Element>, index: Int, callback: @escaping (Out) -> Void) {
-            work
-                .doAsync(unsafeInput[index])
-                .onSuccess { [weak self] in
-                    guard let self else { return }
-
-                    self.result?.append($0)
-
-                    self.signalFunc?.perform(($0, index))
-
-                    if index < self.unsafeInput.count - 1 {
-                        performWork(work, index: index + 1, callback: callback)
-                    } else {
-                        callback(self.result ?? [])
-                    }
+    }
+    
+    // MARK: - Recursive func
+    
+    private func performWork(_ work: Work<In.Element, Out.Element>, index: Int, callback: @escaping (Out) -> Void) {
+        work
+            .doAsync(unsafeInput[index])
+            .onSuccess { [weak self] in
+                guard let self else { return }
+                
+                self.result?.append($0)
+                
+                self.signalFunc?.perform(($0, index))
+                
+                if index < self.unsafeInput.count - 1 {
+                    self.performWork(work, index: index + 1, callback: callback)
+                } else {
+                    callback(self.result ?? [])
                 }
-                .onFail { [weak self] in
-                    guard let self else { return }
-
-                    if index < self.unsafeInput.count - 1 {
-                        performWork(work, index: index + 1, callback: callback)
-                    } else {
-                        callback(self.result ?? [])
-                    }
+            }
+            .onFail { [weak self] in
+                guard let self else { return }
+                
+                if index < self.unsafeInput.count - 1 {
+                    self.performWork(work, index: index + 1, callback: callback)
+                } else {
+                    callback(self.result ?? [])
                 }
-        }
-
-        // local func for optional array
-        func performWork(_ work: Work<In.Element, Out.Element>, index: Int, callback: @escaping (Out) -> Void)
-            where Out.Element == Any?
-        {
-            work
-                .doAsync(unsafeInput[index])
-                .onSuccess { [weak self] in
-                    guard let self else { return }
-
-                    self.result?.append($0)
-                    self.signalFunc?.perform(($0, index))
-
-                    if index < self.unsafeInput.count - 1 {
-                        performWork(work, index: index + 1, callback: callback)
-                    } else {
-                        callback(self.result ?? [])
-                    }
-                }
-                .onFail { [weak self] in
-                    guard let self else { return }
-
-                    let null = Out.Element?.none
-
-                    self.result?.append(null as Any?)
-                    self.signalFunc?.perform((null, index))
-
-                    if index < self.unsafeInput.count - 1 {
-                        performWork(work, index: index + 1, callback: callback)
-                    } else {
-                        callback(self.result ?? [])
-                    }
-                }
-        }
+            }
     }
 }
 

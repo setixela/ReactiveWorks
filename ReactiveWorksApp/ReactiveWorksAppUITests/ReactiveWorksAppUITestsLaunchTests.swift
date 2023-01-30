@@ -2,12 +2,12 @@
 //  ReactiveWorksAppUITestsLaunchTests.swift
 //  ReactiveWorksAppUITests
 //
-//  Created by Aleksandr Solovyev on 04.08.2022.
+//  Created by Aleksandr Solovyev on 30.01.2023.
 //
 
 import XCTest
 
-class ReactiveWorksAppUITestsLaunchTests: XCTestCase {
+final class ReactiveWorksAppUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

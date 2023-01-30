@@ -13,7 +13,7 @@ public extension Work {
     @discardableResult
     func doNext<Out2>(_ work: Work<Out, Out2>, on: DispatchQueue? = nil) -> Work<Out, Out2> {
         work.savedResultClosure = savedResultClosure
-        work.type = .nextWork
+      //  work.type = .nextWork
         work.doQueue = on ?? doQueue
         
         nextWork = WorkWrappper<Out, Out2>(work: work)
@@ -131,7 +131,7 @@ public extension Work {
     {
         let work = usecase.work
         
-        work.type = .nextUsecase
+     //   work.type = .nextUsecase
         work.savedResultClosure = savedResultClosure
         work.doQueue = on ?? doQueue
         nextWork = WorkWrappper<U.In, U.Out>(work: work)
@@ -144,7 +144,7 @@ public extension Work {
                                       closure,
                                       savedResultClosure)
         
-        newWork.type = .nextClosure
+    //    newWork.type = .nextClosure
         newWork.doQueue = on ?? doQueue
         nextWork = WorkWrappper<Out, Out2>(work: newWork)
         
@@ -164,7 +164,7 @@ public extension Work {
         let work = Work<Worker.In, Worker.Out>(input: input,
                                                worker.doAsync(work:),
                                                savedResultClosure)
-        work.type = .nextWorker
+      //  work.type = .nextWorker
         work.doQueue = on ?? doQueue
         nextWork = WorkWrappper<Worker.In, Worker.Out>(work: work)
         

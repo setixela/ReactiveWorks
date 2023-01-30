@@ -2,13 +2,13 @@
 //  ReactiveWorksAppTests.swift
 //  ReactiveWorksAppTests
 //
-//  Created by Aleksandr Solovyev on 04.08.2022.
+//  Created by Aleksandr Solovyev on 30.01.2023.
 //
 
 import XCTest
 @testable import ReactiveWorksApp
 
-class ReactiveWorksAppTests: XCTestCase {
+final class ReactiveWorksAppTests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

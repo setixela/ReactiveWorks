@@ -13,14 +13,23 @@ public protocol UIViewModel: ModelProtocol {
    var isAutoreleaseView: Bool { get set }
 }
 
-public protocol ViewModelProtocol: UIViewModel {
-   associatedtype View: UIView
+public protocol ViewSetterProtocol: AnyObject {
+    associatedtype View: UIView
+    
+    var view: View { get }
+    
+    init()
+}
 
-   var view: View { get }
+public protocol ViewProtocol: ViewSetterProtocol where View == Self {}
+
+public extension ViewProtocol {
+    var view: View { self }
+}
+
+public protocol ViewModelProtocol: UIViewModel, ViewSetterProtocol {
 
    var autostartedView: View? { get set }
-
-   init()
 }
 
 public extension ViewModelProtocol {

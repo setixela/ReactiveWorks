@@ -62,6 +62,8 @@ public enum WorkType: String {
    case initOptionalGroupClosure
    case signal
    case groupLocal
+   case combine
+   case combineBuffered
 }
 
 extension Work: CustomStringConvertible {

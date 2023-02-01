@@ -88,7 +88,7 @@ let input = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 let startWork = Work<Void, Void>() { $0.success() }
 
-isEnabledDebugThreadNamePrint = true
+isEnabledDebugThreadNamePrint = false
 let setState = vc.stateDelegate
 
 startWork.retainBy(retainer)
@@ -139,3 +139,78 @@ func allResult(_ anyres: Any) -> [State] { [
     .label("All: \(anyres)"),
     .label("----------------"),
 ] }
+
+class Eventer1: Eventable {
+    struct Events: InitProtocol {
+        var value: Int?
+    }
+    
+    var events: EventsStore = .init()
+    
+    func start() {
+        DispatchQueue.global.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            for i in 0 ... 1000 {
+                self?.send(\.value, i)
+            }
+        }
+    }
+}
+
+class Eventer2: Eventable {
+    struct Events: InitProtocol {
+        var value: Int?
+    }
+    
+    var events: EventsStore = .init()
+    
+    func start() {
+        DispatchQueue.globalBackground.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            for i in 0 ... 1000 {
+                self?.send(\.value, i)
+            }
+        }
+    }
+}
+
+class Eventer3: Eventable {
+    struct Events: InitProtocol {
+        var value: Int?
+    }
+    
+    var events: EventsStore = .init()
+    
+    func start() {
+        DispatchQueue.globalBackground.asyncAfter(deadline: .now() + 1) { [weak self] in
+            for i in 0 ... 1000 {
+                self?.send(\.value, i)
+            }
+        }
+    }
+}
+
+let eventer1 = Eventer1()
+let eventer2 = Eventer2()
+let eventer3 = Eventer3()
+
+let eventerWork1 = eventer1.on(\.value)
+let eventerWork2 = eventer2.on(\.value)
+let eventerWork3 = eventer3.on(\.value)
+
+Work.startVoid
+    .retainBy(retainer)
+    .doCombineBuffered(eventerWork1, eventerWork2, eventerWork3)
+    .onSuccess {
+        print("Combined: \($0) - \($1) - \($2)")
+    }
+    .doNext { work in
+        let val = work.unsafeInput
+        work.success(val.0 + val.1 + val.2)
+    }
+    .onSuccess {
+        print("Sum: ", $0)
+    }
+
+eventer1.start()
+eventer2.start()
+eventer3.start()
+

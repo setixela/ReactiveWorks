@@ -2,6 +2,7 @@
 
 import PlaygroundSupport
 import ReactiveWorks
+import Anchorage
 import UIKit
 
 final class MyViewController: UIViewController {
@@ -9,6 +10,7 @@ final class MyViewController: UIViewController {
 
     override func loadView() {
         stackView.axis = .vertical
+        stackView.alignment = .leading
         stackView.backgroundColor = .white
         stackView.addArrangedSubview(.init())
 
@@ -18,6 +20,19 @@ final class MyViewController: UIViewController {
         stackView.frame = view.bounds
 
         view.addSubview(stackView)
+        
+//        let button1 = UIButton()
+//        button1.backgroundColor = .red
+//        button1.addAnchors.constSquare(size: 60)
+//        let button2 = UIButton()
+//        button2.backgroundColor = .green
+//        button2.addAnchors.constSquare(size: 60)
+//        let button3 = UIButton()
+//        button3.addAnchors.constSquare(size: 60)
+//        button3.backgroundColor = .blue
+//        stackView.addArrangedSubview(button1)
+//        stackView.addArrangedSubview(button2)
+//        stackView.addArrangedSubview(button3)
     }
 }
 
@@ -149,7 +164,7 @@ class Eventer1: Eventable {
     
     func start() {
         DispatchQueue.global.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            for i in 0 ... 1000 {
+            for i in 0 ... 100 {
                 self?.send(\.value, i)
             }
         }
@@ -164,8 +179,8 @@ class Eventer2: Eventable {
     var events: EventsStore = .init()
     
     func start() {
-        DispatchQueue.globalBackground.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            for i in 0 ... 1000 {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            for i in 0 ... 100 {
                 self?.send(\.value, i)
             }
         }
@@ -181,7 +196,7 @@ class Eventer3: Eventable {
     
     func start() {
         DispatchQueue.globalBackground.asyncAfter(deadline: .now() + 1) { [weak self] in
-            for i in 0 ... 1000 {
+            for i in 0 ... 100 {
                 self?.send(\.value, i)
             }
         }

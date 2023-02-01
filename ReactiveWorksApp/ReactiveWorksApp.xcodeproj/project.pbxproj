@@ -17,6 +17,7 @@
 		198C22482988042100557406 /* ReactiveWorksAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 198C22472988042100557406 /* ReactiveWorksAppUITests.swift */; };
 		198C224A2988042100557406 /* ReactiveWorksAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 198C22492988042100557406 /* ReactiveWorksAppUITestsLaunchTests.swift */; };
 		198C22582988046C00557406 /* ReactiveWorks in Frameworks */ = {isa = PBXBuildFile; productRef = 198C22572988046C00557406 /* ReactiveWorks */; };
+		19F51EC2298A7E5600346D83 /* Anchorage in Frameworks */ = {isa = PBXBuildFile; productRef = 19F51EC1298A7E5600346D83 /* Anchorage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +59,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				198C22582988046C00557406 /* ReactiveWorks in Frameworks */,
+				19F51EC2298A7E5600346D83 /* Anchorage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,6 +149,7 @@
 			name = ReactiveWorksApp;
 			packageProductDependencies = (
 				198C22572988046C00557406 /* ReactiveWorks */,
+				19F51EC1298A7E5600346D83 /* Anchorage */,
 			);
 			productName = ReactiveWorksApp;
 			productReference = 198C22232988041F00557406 /* ReactiveWorksApp.app */;
@@ -222,6 +225,7 @@
 			mainGroup = 198C221A2988041F00557406;
 			packageReferences = (
 				198C22562988046C00557406 /* XCRemoteSwiftPackageReference "ReactiveWorks" */,
+				19F51EC0298A7E5600346D83 /* XCRemoteSwiftPackageReference "Anchorage" */,
 			);
 			productRefGroup = 198C22242988041F00557406 /* Products */;
 			projectDirPath = "";
@@ -620,6 +624,14 @@
 				kind = branch;
 			};
 		};
+		19F51EC0298A7E5600346D83 /* XCRemoteSwiftPackageReference "Anchorage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/setixela/Anchorage.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -627,6 +639,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 198C22562988046C00557406 /* XCRemoteSwiftPackageReference "ReactiveWorks" */;
 			productName = ReactiveWorks;
+		};
+		19F51EC1298A7E5600346D83 /* Anchorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 19F51EC0298A7E5600346D83 /* XCRemoteSwiftPackageReference "Anchorage" */;
+			productName = Anchorage;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

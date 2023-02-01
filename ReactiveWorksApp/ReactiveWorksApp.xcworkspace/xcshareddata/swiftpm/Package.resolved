@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "anchorage",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/setixela/Anchorage.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "9e1695b06e1eb5ae54b575f7b57998bfe55919cf"
+      }
+    }
+  ],
+  "version" : 2
+}

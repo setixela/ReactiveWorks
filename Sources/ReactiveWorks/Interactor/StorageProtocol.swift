@@ -18,22 +18,24 @@ public protocol StorageProtocol: InitProtocol, Assetable {
 // TODO: - need to change conception
 
 enum UnsafeTemper {
-   private static var storage: [String: InitAnyObject] = [:]
+   private static var storage: [String: [InitAnyObject]] = [:]
 
    static func initStore(for type: InitAnyObject.Type) {
       let key = String(reflecting: type)
       let new = type.init()
 
-      if storage[key] != nil {
-         assertionFailure("UnsafeTemper already has storage for \(key)")
+      if var arr = storage[key] {
+         arr.append(new)
+         storage[key] = arr
+      } else {
+         storage[key] = [new]
       }
-      storage[key] = new
    }
 
    static func store<T: InitAnyObject>(for type: T.Type) -> T {
       let key = String(reflecting: type)
 
-      guard let value = storage[key] as? T else {
+      guard let value = storage[key]?.last as? T else {
          return T()
       }
 
@@ -43,6 +45,13 @@ enum UnsafeTemper {
    static func clearStore(for type: InitAnyObject.Type) {
       let key = String(reflecting: type)
 
-      storage[key] = nil
+      guard var arr = storage[key] else { return }
+      
+      arr.removeLast()
+      if arr.isEmpty {
+         storage[key] = nil
+      } else {
+         storage[key] = arr
+      }
    }
 }

@@ -12,8 +12,6 @@ public protocol WorkerProtocol: AnyObject {
    associatedtype Out
 
    typealias Wrk = Work<In, Out>
-
-   init()
    
    func doAsync(work: Wrk)
 }

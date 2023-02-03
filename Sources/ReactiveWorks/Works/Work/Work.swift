@@ -84,6 +84,8 @@ open class Work<In, Out>: Any, WorkProtocol, Finishible {
 
    public internal(set) var input: In?
 
+   public var `in`: In { unsafeInput }
+   
    public var unsafeInput: In {
       guard let input = input else {
          fatalError()

@@ -483,4 +483,11 @@ public extension Work where In == Void, Out == Void {
         }
         return work.doAsync()
     }
+   
+   static var void: Work<Void, Void> {
+      let work = Work<Void, Void>.init {
+         $0.success()
+      }
+      return work
+   }
 }

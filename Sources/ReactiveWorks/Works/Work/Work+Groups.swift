@@ -54,14 +54,16 @@ public class GroupWork<InElement, OutElement>: Work<[InElement], [OutElement]>, 
     // MARK: - Recursive func
 
     private func performWork(_ work: Work<In.Element, Out.Element>, index: Int, callback: @escaping (Out) -> Void) {
+        work.finisher = []
+        work.genericFail = []
         work
             .doAsync(unsafeInput[index])
-            .onSuccess { [weak self] in
+            .onSuccess { [weak self] res in
                 guard let self else { return }
 
-                self.result?.append($0)
+                self.result?.append(res)
 
-                self.signalFunc?.perform(($0, index))
+                self.signalFunc.forEach { $0.perform((res, index)) }
 
                 if index < self.unsafeInput.count - 1 {
                     self.performWork(work, index: index + 1, callback: callback)
@@ -91,7 +93,7 @@ public extension Work {
         }
         let lambda = Lambda(lambda: signalClosure)
 
-        signalFunc = lambda
+        signalFunc.append(lambda)
 
         return self
     }
@@ -105,7 +107,7 @@ public extension Work {
         }
         let lambda = Lambda(lambda: signalClosure)
 
-        signalFunc = lambda
+        signalFunc.append(lambda)
 
         return self
     }
@@ -124,7 +126,7 @@ public extension Work {
 
         let lambda = Lambda(lambda: signalClosure)
 
-        signalFunc = lambda
+        signalFunc.append(lambda)
 
         return self
     }
@@ -143,7 +145,7 @@ public extension Work {
 
         let lambda = Lambda(lambda: signalClosure)
 
-        signalFunc = lambda
+        signalFunc.append(lambda)
 
         return self
     }

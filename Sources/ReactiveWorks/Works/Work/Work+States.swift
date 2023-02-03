@@ -18,7 +18,7 @@ public extension Work {
         }
         
         let lambda = Lambda(lambda: closure)
-        successStateFunc = lambda
+        successStateFunc.append(lambda)
         
         return self
     }
@@ -31,7 +31,7 @@ public extension Work {
         }
         
         let lambda = Lambda(lambda: closure)
-        failStateVoidFunc = lambda
+        failStateVoidFunc.append(lambda)
         
         return self
     }
@@ -46,7 +46,7 @@ public extension Work {
         }
         
         let lambda = Lambda(lambda: closure)
-        failStateFunc = lambda
+        failStateFunc.append(lambda)
         
         return self
     }
@@ -65,7 +65,7 @@ public extension Work {
         }
         
         let lambda = Lambda(lambda: closure)
-        successStateVoidFunc = lambda
+        successStateVoidFunc.append(lambda)
         
         return self
     }
@@ -82,7 +82,7 @@ public extension Work {
         }
         
         let lambda = Lambda(lambda: closure)
-        successStateFunc = lambda
+        successStateFunc.append(lambda)
         
         return self
     }
@@ -97,7 +97,7 @@ public extension Work {
         }
         
         let lambda = Lambda(lambda: closure)
-        successStateFunc = lambda
+        successStateFunc.append(lambda)
         
         return self
     }
@@ -112,7 +112,7 @@ public extension Work {
         }
         
         let lambda = Lambda(lambda: closure)
-        failStateVoidFunc = lambda
+        failStateVoidFunc.append(lambda)
         
         return self
     }
@@ -129,7 +129,7 @@ public extension Work {
         }
         
         let lambda = Lambda(lambda: closure)
-        failStateFunc = lambda
+        failStateFunc.append(lambda)
         
         return self
     }
@@ -144,7 +144,7 @@ public extension Work {
         }
         
         let lambda = Lambda(lambda: closure)
-        failStateFunc = lambda
+        failStateFunc.append(lambda)
         
         return self
     }
@@ -174,7 +174,7 @@ public extension Work {
         }
         
         let lambda = Lambda(lambda: closure)
-        successStateFunc = lambda
+        successStateFunc.append(lambda)
         
         return self
     }
@@ -202,7 +202,7 @@ public extension Work {
         }
         
         let lambda = Lambda(lambda: closure)
-        failStateFunc = lambda
+        failStateFunc.append(lambda)
         
         return self
     }

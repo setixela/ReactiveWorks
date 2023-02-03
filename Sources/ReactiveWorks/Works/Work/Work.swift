@@ -37,10 +37,10 @@ public protocol Cancellable {
 
 public enum WorkType: String {
    case `default`
-//   case nextWork
-//   case nextClosure
-//   case nextUsecase
-//   case nextWorker
+   //   case nextWork
+   //   case nextClosure
+   //   case nextUsecase
+   //   case nextWorker
    case input
    case weakInput
    case closureInput
@@ -80,7 +80,6 @@ public protocol WorkProtocol {
 public var isEnabledDebugThreadNamePrint = true
 
 open class Work<In, Out>: Any, WorkProtocol, Finishible {
-   
    public internal(set) var type: WorkType = .default
 
    public internal(set) var input: In?
@@ -101,18 +100,17 @@ open class Work<In, Out>: Any, WorkProtocol, Finishible {
    public internal(set) var isCancelled = false
 
    // Private
-   var finisher: ((Out) -> Void)?
-   var voidFinisher: VoidClosure?
+   lazy var finisher: [(Out) -> Void] = []
+   lazy var voidFinisher: [VoidClosure] = []
+   lazy var genericFail: [LambdaProtocol] = []
 
-   var signalFunc: LambdaProtocol?
+   lazy var successStateFunc: [LambdaProtocol] = []
+   lazy var successStateVoidFunc: [Lambda<Void>] = []
 
-   var successStateFunc: LambdaProtocol?
-   var successStateVoidFunc: Lambda<Void>?
+   lazy var failStateFunc: [LambdaProtocol] = []
+   lazy var failStateVoidFunc: [Lambda<Void>] = []
 
-   var failStateFunc: LambdaProtocol?
-   var failStateVoidFunc: Lambda<Void>?
-
-   var genericFail: LambdaProtocol?
+   lazy var signalFunc: [LambdaProtocol] = []
 
    var nextWork: WorkWrappperProtocol?
    var voidNextWork: WorkWrappperProtocol?
@@ -160,16 +158,16 @@ open class Work<In, Out>: Any, WorkProtocol, Finishible {
    public func success(result: Out = ()) {
       isWorking = false
 
-      self.result = result
+      
 
       if checkCancel() { return }
       //
 
-      voidFinisher?()
-      finisher?(result)
+      voidFinisher.forEach { $0() }
+      finisher.forEach { $0(result) }
       //
-      successStateFunc?.perform(result)
-      successStateVoidFunc?.perform(())
+      successStateFunc.forEach { $0.perform(result) }
+      successStateVoidFunc.forEach { $0.perform(()) }
       //
       nextWork?.perform(result)
       voidNextWork?.perform(())
@@ -188,10 +186,10 @@ open class Work<In, Out>: Any, WorkProtocol, Finishible {
 
       if checkCancel() { return }
 
-      genericFail?.perform(value)
+      genericFail.forEach { $0.perform(value) }
       recoverWork?.perform(input)
-      failStateFunc?.perform(value)
-      failStateVoidFunc?.perform(())
+      failStateFunc.forEach { $0.perform(value) }
+      failStateVoidFunc.forEach { $0.perform(()) }
       anywayWork?.perform(())
 
       isFinished = true
@@ -273,9 +271,9 @@ public extension Work {
       closure?(self)
 
       #if DEBUG
-      if isEnabledDebugThreadNamePrint { 
-         print("                    Work: \(type.rawValue) - Queue: \(Thread.current.queueName)")
-      }
+         if isEnabledDebugThreadNamePrint {
+            print("                    Work: \(type.rawValue) - Queue: \(Thread.current.queueName)")
+         }
       #endif
 
       return result
@@ -300,9 +298,9 @@ public extension Work {
 
 extension Work {
    private func clean() {
-      finisher = nil
+      finisher = []
       nextWork = nil
-      genericFail = nil
+      genericFail = []
    }
 }
 

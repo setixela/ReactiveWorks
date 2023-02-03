@@ -10,11 +10,11 @@ import Foundation
 public extension Work {
     @discardableResult
     func onSuccess(_ finisher: @escaping (Out) -> Void) -> Self {
-        self.finisher = { [weak self] value in
+        self.finisher.append({ [weak self] value in
             self?.finishQueue.async {
                 finisher(value)
             }
-        }
+        })
         
         return self
     }
@@ -28,7 +28,7 @@ public extension Work {
             }
         }
         
-        self.finisher = clos
+        self.finisher.append(clos)
         
         return self
     }
@@ -43,23 +43,23 @@ public extension Work {
             }
         }
         
-        voidFinisher = clos
+        voidFinisher.append(clos)
         
         return self
     }
     
     @discardableResult func onSuccess(_ voidFinisher: @escaping () -> Void) -> Self {
-        self.voidFinisher = { [weak self] in
+        self.voidFinisher.append({ [weak self] in
             self?.finishQueue.async {
                 voidFinisher()
             }
-        }
+        })
         
         return self
     }
     
     @discardableResult func onFail<T>(_ failure: @escaping GenericClosure<T>) -> Self {
-        genericFail = Lambda(lambda: failure)
+        genericFail.append(Lambda(lambda: failure))
         
         return self
     }
@@ -71,7 +71,7 @@ public extension Work {
             failure(slf)
         }
         
-        genericFail = Lambda(lambda: clos)
+        genericFail.append(Lambda(lambda: clos))
         
         return self
     }
@@ -92,7 +92,7 @@ public extension Work {
         }
         
         let lambda = Lambda(lambda: closure)
-        successStateFunc = lambda
+        successStateFunc.append(lambda)
         
         return self
     }

@@ -101,18 +101,15 @@ var groupOptFailWork = { GroupWork<Int?, Int>(work: singleOptFailedWork) }
 
 let input = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-let startWork = Work<Void, Void>() { $0.success() }
-
 isEnabledDebugThreadNamePrint = false
 let setState = vc.stateDelegate
 
-startWork.retainBy(retainer)
-    .doAsync()
+Work.startVoid.retainBy(retainer)
     .doInput(input)
 
     .doNext(groupWork())
     .onEachResult(setState) { .label("Value: \($0), index: \($1)") }
-    .onSuccess(setState) { allResult($0) }
+    .onSuccess { print($0) }
 
     .doNext(groupFailedWork())
     .onEachResult(setState) { .label("Value: \($0), index: \($1)") }
@@ -211,25 +208,11 @@ let eventerWork1 = eventer1.on(\.value)
 let eventerWork2 = eventer2.on(\.value)
 let eventerWork3 = eventer3.on(\.value)
 
-//Work.startVoid
-//    .retainBy(retainer)
-//    .doCombineBuffered(eventerWork1, eventerWork2, eventerWork3)
-//    .onSuccess {
-//        print("Combined: \($0) - \($1) - \($2)")
-//    }
-//    .doNext { work in
-//        let val = work.unsafeInput
-//        work.success(val.0 + val.1 + val.2)
-//    }
-//    .onSuccess {
-//        print("Sum: ", $0)
-//    }
-
 Work.startVoid
     .retainBy(retainer)
-    .doCombineLatest(eventerWork1, eventerWork2, eventerWork3)
+    .doCombineBuffered(eventerWork1, eventerWork2, eventerWork3)
     .onSuccess {
-        print("Combined: \($0) - \($1) - \($2)")
+        print("Combined A: \($0) - \($1) - \($2)")
     }
     .doNext { work in
         let val = work.unsafeInput
@@ -239,7 +222,26 @@ Work.startVoid
         print("Sum: ", $0)
     }
 
+let otherWork = Work<Void, Int> {
+    $0.success(100000)
+}
+
+Work.startVoid
+    .retainBy(retainer)
+    .doCombineLatest(eventerWork1, otherWork)
+    .onSuccess {
+        print("Combined: \($0) - \($1)")
+    }
+    .doNext { work in
+        let val = work.unsafeInput
+        work.success(val.0 + val.1)
+    }
+    .onSuccess {
+        print("Sum: ", $0)
+    }
+
 eventer1.start()
 eventer2.start()
 eventer3.start()
 
+otherWork.doAsync()

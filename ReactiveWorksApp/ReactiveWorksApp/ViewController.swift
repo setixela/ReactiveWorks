@@ -42,8 +42,8 @@ class Eventer1: Eventable {
     var events: EventsStore = .init()
 
     func start() {
-        DispatchQueue.global.async { [weak self] in
-            for i in 0 ... 100000 {
+        DispatchQueue.main.async { [weak self] in
+            for i in 0 ... 10000 {
                 self?.send(\.value, i)
             }
         }
@@ -58,8 +58,8 @@ class Eventer2: Eventable {
     var events: EventsStore = .init()
 
     func start() {
-        DispatchQueue.global.async { [weak self] in
-            for i in 0 ... 100000 {
+        DispatchQueue.main.async { [weak self] in
+            for i in 0 ... 10000 {
                 self?.send(\.value, String(i))
             }
         }

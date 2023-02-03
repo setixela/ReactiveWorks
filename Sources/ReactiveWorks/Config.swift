@@ -7,8 +7,6 @@
 
 import Foundation
 
-struct Config {
-   static let isDebugView = false
-
-   static let isLog = false
+public struct Config {
+   public static var isLog = false
 }

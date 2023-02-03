@@ -164,7 +164,7 @@ class Eventer1: Eventable {
     
     func start() {
         DispatchQueue.global.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            for i in 0 ... 100 {
+            for i in 0 ... 10 {
                 self?.send(\.value, i)
             }
         }
@@ -180,7 +180,7 @@ class Eventer2: Eventable {
     
     func start() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            for i in 0 ... 100 {
+            for i in 0 ... 20 {
                 self?.send(\.value, i)
             }
         }
@@ -211,9 +211,23 @@ let eventerWork1 = eventer1.on(\.value)
 let eventerWork2 = eventer2.on(\.value)
 let eventerWork3 = eventer3.on(\.value)
 
+//Work.startVoid
+//    .retainBy(retainer)
+//    .doCombineBuffered(eventerWork1, eventerWork2, eventerWork3)
+//    .onSuccess {
+//        print("Combined: \($0) - \($1) - \($2)")
+//    }
+//    .doNext { work in
+//        let val = work.unsafeInput
+//        work.success(val.0 + val.1 + val.2)
+//    }
+//    .onSuccess {
+//        print("Sum: ", $0)
+//    }
+
 Work.startVoid
     .retainBy(retainer)
-    .doCombineBuffered(eventerWork1, eventerWork2, eventerWork3)
+    .doCombineLatest(eventerWork1, eventerWork2, eventerWork3)
     .onSuccess {
         print("Combined: \($0) - \($1) - \($2)")
     }

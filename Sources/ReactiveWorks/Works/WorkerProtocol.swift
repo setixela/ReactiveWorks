@@ -13,10 +13,13 @@ public protocol WorkerProtocol: AnyObject {
 
    typealias Wrk = Work<In, Out>
 
+   init()
+   
    func doAsync(work: Wrk)
 }
 
 public extension WorkerProtocol {
+   
    var work: Wrk {
       let work = Wrk()
       work.closure = doAsync(work:)

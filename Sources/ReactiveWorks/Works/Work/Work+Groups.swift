@@ -15,17 +15,17 @@ public protocol GroupWorkProtocol: Work<[Self.InElement], [Self.OutElement]> {
 public class GroupWork<InElement, OutElement>: Work<[InElement], [OutElement]>, GroupWorkProtocol {
     var count: Int { input?.count ?? 0 }
 
-    public convenience init(_ inputs: In? = nil,
-                            work: Work<In.Element, Out.Element>,
+   public convenience init(_ inputs: Input? = nil,
+                            work: Work<Input.Element, Out.Element>,
                             on: DispatchQueue? = nil)
     {
         self.init(inputs, on: on, work.closure)
         type = .groupWork
     }
 
-    public init(_ inputs: In? = nil,
+    public init(_ inputs: Input? = nil,
                 on: DispatchQueue? = nil,
-                _ workClosure: WorkClosure<In.Element, Out.Element>?)
+                _ workClosure: WorkClosure<Input.Element, Out.Element>?)
     {
         //
         super.init(input: inputs ?? [])
@@ -40,7 +40,7 @@ public class GroupWork<InElement, OutElement>: Work<[InElement], [OutElement]>, 
                 return
             }
 
-            let localWork = Work<In.Element, Out.Element>()
+            let localWork = Work<Input.Element, Out.Element>()
             localWork.doQueue = on ?? self?.doQueue
             localWork.closure = workClosure
             localWork.type = .groupLocal
@@ -53,7 +53,7 @@ public class GroupWork<InElement, OutElement>: Work<[InElement], [OutElement]>, 
 
     // MARK: - Recursive func
 
-    private func performWork(_ work: Work<In.Element, Out.Element>, index: Int, callback: @escaping (Out) -> Void) {
+    private func performWork(_ work: Work<Input.Element, Out.Element>, index: Int, callback: @escaping (Out) -> Void) {
         work.finisher = []
         work.genericFail = []
         work
@@ -476,7 +476,7 @@ public extension Work {
     }
 }
 
-public extension Work where In == Void, Out == Void {
+public extension Work where Input == Void, Out == Void {
     static var startVoid: Work<Void, Void> {
         let work = Work<Void, Void>.init {
             $0.success()

@@ -68,25 +68,25 @@ public enum WorkType: String {
 
 extension Work: CustomStringConvertible {
    public var description: String {
-      "Work: \(type.rawValue), In: \(String(describing: In.Type.self)) -> Out: \(String(describing: Out.Type.self))"
+      "Work: \(type.rawValue), In: \(String(describing: Input.Type.self)) -> Out: \(String(describing: Out.Type.self))"
    }
 }
 
 public protocol WorkProtocol {
-   associatedtype In
+   associatedtype Input
    associatedtype Out
 }
 
 public var isEnabledDebugThreadNamePrint = true
 
-open class Work<In, Out>: Any, WorkProtocol, Finishible {
+open class Work<Input, Out>: Any, WorkProtocol, Finishible {
    public internal(set) var type: WorkType = .default
 
-   public internal(set) var input: In?
+   public internal(set) var input: Input?
 
-   public var `in`: In { unsafeInput }
+   public var `in`: Input { unsafeInput }
    
-   public var unsafeInput: In {
+   public var unsafeInput: Input {
       guard let input = input else {
          fatalError()
       }
@@ -96,7 +96,7 @@ open class Work<In, Out>: Any, WorkProtocol, Finishible {
 
    public var result: Out?
 
-   public var closure: WorkClosure<In, Out>?
+   public var closure: WorkClosure<Input, Out>?
 
    public internal(set) var isFinished = false
    public internal(set) var isCancelled = false
@@ -131,8 +131,8 @@ open class Work<In, Out>: Any, WorkProtocol, Finishible {
    public internal(set) lazy var finishQueue = DispatchQueue.main
 
    // Methods
-   public init(input: In?,
-               _ closure: @escaping WorkClosure<In, Out>,
+   public init(input: Input?,
+               _ closure: @escaping WorkClosure<Input, Out>,
                _ savedResultClosure: (() -> Any)? = nil)
    {
       self.input = input
@@ -140,16 +140,16 @@ open class Work<In, Out>: Any, WorkProtocol, Finishible {
       self.savedResultClosure = savedResultClosure
    }
 
-   public init(_ closure: @escaping WorkClosure<In, Out>) {
+   public init(_ closure: @escaping WorkClosure<Input, Out>) {
       self.closure = closure
    }
 
-   public init(retainedBy: Retainer, _ closure: @escaping WorkClosure<In, Out>) {
+   public init(retainedBy: Retainer, _ closure: @escaping WorkClosure<Input, Out>) {
       self.closure = closure
       retainedBy.retain(self)
    }
 
-   public init(input: In? = nil) {
+   public init(input: Input? = nil) {
       self.input = input
    }
 
@@ -179,7 +179,7 @@ open class Work<In, Out>: Any, WorkProtocol, Finishible {
       isFinished = true
 
       if Config.isLog {
-         print("\nWork Succeed! - type: \(type),\n result: \(result),\n In: \(In.self), Out: \(Out.self)\n")
+         print("\nWork Succeed! - type: \(type),\n result: \(result),\n In: \(Input.self), Out: \(Out.self)\n")
       }
    }
 
@@ -197,7 +197,7 @@ open class Work<In, Out>: Any, WorkProtocol, Finishible {
       isFinished = true
 
       if Config.isLog {
-         print("\nWork Error! - type: \(type),\n result: \(value),\n In: \(In.self), Out: \(Out.self)\n")
+         print("\nWork Error! - type: \(type),\n result: \(value),\n In: \(Input.self), Out: \(Out.self)\n")
       }
    }
 
@@ -265,7 +265,7 @@ public extension Work {
 
 public extension Work {
    @discardableResult
-   func doSync(_ input: In? = nil) -> Out? {
+   func doSync(_ input: Input? = nil) -> Out? {
       cancelClosure?()
       isWorking = true
       isCancelled = false
@@ -290,7 +290,7 @@ public extension Work {
    }
 
    @discardableResult
-   func doAsync(_ input: In? = nil, on: DispatchQueue? = nil) -> Self {
+   func doAsync(_ input: Input? = nil, on: DispatchQueue? = nil) -> Self {
       (on ?? doQueue ?? .main).async { [weak self] in
          self?.doSync(input)
       }

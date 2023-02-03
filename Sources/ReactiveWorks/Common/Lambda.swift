@@ -6,15 +6,6 @@
 //
 
 import Foundation
-import UIKit
-
-public typealias VMP = ViewModelProtocol
-public typealias VMPS = VMP & Stateable
-public typealias VMPS2 = VMP & Stateable2
-public typealias BVM = BaseViewModel
-public typealias BVMA<U:UIView> = BaseViewModel<U> & Assetable
-public typealias SMP = SceneModelProtocol
-public typealias BSM = BaseSceneModel
 
 public typealias VoidClosure = () -> Void
 public typealias GenericClosure<T> = (T) -> Void

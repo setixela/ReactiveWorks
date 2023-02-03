@@ -158,7 +158,7 @@ open class Work<In, Out>: Any, WorkProtocol, Finishible {
    public func success(result: Out = ()) {
       isWorking = false
 
-      
+      self.result = result
 
       if checkCancel() { return }
       //

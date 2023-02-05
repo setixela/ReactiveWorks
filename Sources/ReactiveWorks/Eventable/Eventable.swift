@@ -30,7 +30,7 @@ public extension Eventable {
    }
 
    @discardableResult
-   func on<S: AnyObject>(_ eventKey: Key<Void>, _ slf: S, _ closure: @escaping (S) -> Void) -> Self {
+   func on<S: AnyObject>(_ eventKey: Key<Void>, _ slf: S?, _ closure: @escaping (S) -> Void) -> Self {
       let hash = eventKey.hashValue
       let clos = { [weak slf] in
          guard let slf = slf else { return }
@@ -42,7 +42,7 @@ public extension Eventable {
    }
 
    @discardableResult
-   func on<T, S: AnyObject>(_ eventKey: Key<T>, _ slf: S, _ closure: @escaping (S, T) -> Void) -> Self {
+   func on<T, S: AnyObject>(_ eventKey: Key<T>, _ slf: S?, _ closure: @escaping (S, T) -> Void) -> Self {
       let hash = eventKey.hashValue
       let clos = { [weak slf] (value: T) in
          guard let slf = slf else { return }

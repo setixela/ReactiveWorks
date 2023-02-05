@@ -26,14 +26,16 @@ public extension Eventable {
 
 public extension Work {
    @discardableResult
-   func sendEvent(_ result: Out) -> Self {
-      doSyncWithResult(result)
+   func sendAsyncEvent(_ result: Out) -> Self {
+      DispatchQueue.main.async { [weak self] in
+         self?.doSyncWithResult(result)
+      }
       return self
    }
    
    @discardableResult
-   func sendEvent() -> Self where Out == Void {
-      doSyncWithResult(())
+   func sendAsyncEvent() -> Self where Out == Void {
+      sendAsyncEvent(())
       return self
    }
 }

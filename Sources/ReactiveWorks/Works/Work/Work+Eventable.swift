@@ -23,3 +23,17 @@ public extension Eventable {
       return work
    }
 }
+
+public extension Work {
+   @discardableResult
+   func sendEvent(_ result: Out) -> Self {
+      doSyncWithResult(result)
+      return self
+   }
+   
+   @discardableResult
+   func sendEvent() -> Self where Out == Void {
+      doSyncWithResult(())
+      return self
+   }
+}

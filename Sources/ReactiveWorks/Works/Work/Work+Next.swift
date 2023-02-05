@@ -36,8 +36,6 @@ public extension Work {
     @discardableResult
     func doRecover(on: DispatchQueue? = nil) -> Work<Input, Out> where Input == Out {
         let newWork = Work<Input, Out>() { [weak self] work in
-            //    work.result = work.input
-            // guard let result = work?.input else { fatalError() }
             guard let input = self?.unsafeInput else { fatalError() }
             
             work.success(result: input)

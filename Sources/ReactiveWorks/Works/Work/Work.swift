@@ -106,6 +106,8 @@ open class Work<Input, Out>: Any, WorkProtocol, Finishible {
    lazy var finisher: [(Out) -> Void] = []
    lazy var voidFinisher: [VoidClosure] = []
    lazy var genericFail: [LambdaProtocol] = []
+   
+   lazy var anyResultVoidFinishers: [VoidClosure] = []
 
    lazy var successStateFunc: [LambdaProtocol] = []
    lazy var successStateVoidFunc: [Lambda<Void>] = []
@@ -168,6 +170,7 @@ open class Work<Input, Out>: Any, WorkProtocol, Finishible {
 
       voidFinisher.forEach { $0() }
       finisher.forEach { $0(result) }
+      anyResultVoidFinishers.forEach { $0() }
       //
       successStateFunc.forEach { $0.perform(result) }
       successStateVoidFunc.forEach { $0.perform(()) }
@@ -190,6 +193,9 @@ open class Work<Input, Out>: Any, WorkProtocol, Finishible {
       if checkCancel() { return }
 
       genericFail.forEach { $0.perform(value) }
+      
+      anyResultVoidFinishers.forEach { $0() }
+      
       recoverWork?.perform(input)
       failStateFunc.forEach { $0.perform(value) }
       failStateVoidFunc.forEach { $0.perform(()) }

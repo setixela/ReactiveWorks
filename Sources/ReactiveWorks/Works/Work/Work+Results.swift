@@ -96,4 +96,15 @@ public extension Work {
         
         return self
     }
+   
+   @discardableResult
+   func onAnyResult(_ voidFinisher: @escaping () -> Void) -> Self {
+      self.anyResultVoidFinishers.append({ [weak self] in
+         self?.finishQueue.async {
+            voidFinisher()
+         }
+      })
+      
+      return self
+   }
 }

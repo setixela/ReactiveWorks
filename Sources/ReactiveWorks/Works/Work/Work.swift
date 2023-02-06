@@ -46,6 +46,7 @@ public enum WorkType: String {
    case closureInput
    case mapper
    case compactMapper
+   case filter
    case mixer
    case weakMixer
    case loadSaved

@@ -32,4 +32,13 @@ public extension WorkerProtocol {
       }
       return work
    }
+   
+   func doAsync() -> Wrk where Wrk.Input == Void {
+      let work = Wrk()
+      work.closure = doAsync(work:)
+      work.finishQueue.async {
+         work.doSync()
+      }
+      return work
+   }
 }

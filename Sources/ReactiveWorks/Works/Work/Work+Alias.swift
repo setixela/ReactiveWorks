@@ -12,3 +12,5 @@ public class In<I>: Work<I, Void> {
 }
 
 public typealias Out<T> = Work<Void, T>
+
+public typealias InOut<T> = Work<T, T>

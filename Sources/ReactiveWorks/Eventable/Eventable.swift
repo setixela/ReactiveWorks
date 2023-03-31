@@ -84,4 +84,12 @@ public extension Eventable {
    func hasSubcriberForEvent<T>(_ eventKey: Key<T>) -> Bool {
       events[eventKey.hashValue] != nil
    }
+
+   @discardableResult
+   func unSubscribe<T>(_ eventKey: Key<T>) -> Bool {
+      guard events[eventKey.hashValue] != nil else { return false }
+
+      events[eventKey.hashValue] = nil
+      return true
+   }
 }

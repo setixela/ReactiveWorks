@@ -120,6 +120,7 @@ open class Work<Input, Out>: Any, WorkProtocol, Finishible {
    var nextWork: WorkWrappperProtocol?
    var voidNextWork: WorkWrappperProtocol?
    var recoverWork: WorkWrappperProtocol?
+   var voidRecoverWork: WorkWrappperProtocol?
    var loadWork: WorkWrappperProtocol?
    var anywayWork: WorkWrappperProtocol?
 
@@ -197,6 +198,7 @@ open class Work<Input, Out>: Any, WorkProtocol, Finishible {
       anyResultVoidFinishers.forEach { $0() }
       
       recoverWork?.perform(input)
+      voidRecoverWork?.perform(())
       failStateFunc.forEach { $0.perform(value) }
       failStateVoidFunc.forEach { $0.perform(()) }
       anywayWork?.perform(())

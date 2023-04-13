@@ -28,8 +28,20 @@ public extension Work {
         work.doQueue = on ?? doQueue
         
         recoverWork = WorkWrappper<Out, Out2>(work: work)
-        nextWork = recoverWork
+      //  nextWork = recoverWork
         
+        return work
+    }
+
+    @discardableResult
+    func doVoidRecover<Out2>(_ work: Work<Void, Out2>, on: DispatchQueue? = nil) -> Work<Void, Out2> {
+        work.savedResultClosure = savedResultClosure
+        work.type = .recoverNext
+        work.doQueue = on ?? doQueue
+
+        voidRecoverWork = WorkWrappper<Void, Out2>(work: work)
+        //nextWork = recoverWork
+
         return work
     }
     

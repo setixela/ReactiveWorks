@@ -16,18 +16,19 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "ReactiveWorks"
-  spec.version      = "0.0.1"
-  spec.summary      = "A short description of ReactiveWorks."
+  spec.version      = "1.0.0"
+  spec.summary      = "Async business logic framework."
+  spec.platform     = :ios, "14.0"
+  spec.ios.deployment_target = "14.0"
 
   # This description is used to generate tags and improve search results.
   #   * Think: What does it do? Why did you write it? What is the focus?
   #   * Try to keep it short, snappy and to the point.
   #   * Write the description between the DESC delimiters below.
   #   * Finally, don't worry about the indent, CocoaPods strips it!
-  spec.description  = <<-DESC
-                   DESC
+  spec.description  = "Async business logic framework"
 
-  spec.homepage     = "http://EXAMPLE/ReactiveWorks"
+  spec.homepage     = "https://github.com/setixela/StackNinja.git"
   # spec.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
@@ -38,7 +39,7 @@ Pod::Spec.new do |spec|
   #  Popular ones are 'MIT', 'BSD' and 'Apache License, Version 2.0'.
   #
 
-  spec.license      = "MIT (example)"
+  spec.license      = "MIT"
   # spec.license      = { :type => "MIT", :file => "FILE_LICENSE" }
 
 
@@ -79,7 +80,8 @@ Pod::Spec.new do |spec|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  spec.source       = { :git => "http://EXAMPLE/ReactiveWorks.git", :tag => "#{spec.version}" }
+  spec.swift_version = "5.0"
+  spec.source       = { :git => "https://github.com/setixela/StackNinja.git", :tag => "#{spec.version}" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -90,8 +92,7 @@ Pod::Spec.new do |spec|
   #  Not including the public_header_files will make all headers public.
   #
 
-  spec.source_files  = "Classes", "Classes/**/*.{h,m}"
-  spec.exclude_files = "Classes/Exclude"
+  spec.source_files  = "Sources", "Sources/**/*.*"
 
   # spec.public_header_files = "Classes/**/*.h"
 
@@ -117,7 +118,7 @@ Pod::Spec.new do |spec|
   #
 
   # spec.framework  = "SomeFramework"
-  # spec.frameworks = "SomeFramework", "AnotherFramework"
+  spec.frameworks = "AlamofireImage", "Alamofire"
 
   # spec.library   = "iconv"
   # spec.libraries = "iconv", "xml2"

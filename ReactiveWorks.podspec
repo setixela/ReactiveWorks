@@ -81,7 +81,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.swift_version = "5.0"
-  spec.source       = { :git => "https://github.com/setixela/StackNinja.git", :tag => "#{spec.version}" }
+  spec.source       = { :git => "https://github.com/setixela/ReactiveWorks.git", :tag => "#{spec.version}" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -118,7 +118,9 @@ Pod::Spec.new do |spec|
   #
 
   # spec.framework  = "SomeFramework"
-  spec.frameworks = "AlamofireImage", "Alamofire"
+  # spec.frameworks = "AlamofireImage", "Alamofire"
+
+  # spec.dependency 'AlamofireImage'
 
   # spec.library   = "iconv"
   # spec.libraries = "iconv", "xml2"

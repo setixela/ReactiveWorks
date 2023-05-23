@@ -13,7 +13,6 @@ public extension Work {
     @discardableResult
     func doNext<Out2>(_ work: Work<Out, Out2>, on: DispatchQueue? = nil) -> Work<Out, Out2> {
         work.savedResultClosure = savedResultClosure
-      //  work.type = .nextWork
         work.doQueue = on ?? doQueue
         
         nextWork = WorkWrappper<Out, Out2>(work: work)
@@ -301,5 +300,18 @@ public extension Work {
         nextWork = WorkWrappper(work: work)
         
         return work
+    }
+
+    @discardableResult
+    func doSendEvent(_ work: Work<Void, Void>, on: DispatchQueue? = nil) -> Work<Void, Void> where Input == Void {
+        let newWork = Work<Void, Void>()
+        newWork.savedResultClosure = savedResultClosure
+        newWork.doQueue = on ?? doQueue
+        newWork.closure = { [work] _ in
+            work.success()
+        }
+        nextWork = WorkWrappper(work: newWork)
+
+        return newWork
     }
 }

@@ -112,6 +112,8 @@ open class Work<Input, Out>: Any, WorkProtocol, Finishible {
    lazy var successStateFunc: [LambdaProtocol] = []
    lazy var successStateVoidFunc: [Lambda<Void>] = []
 
+   lazy var cancelVoidFinishers: [() -> Void] = []
+
    lazy var failStateFunc: [LambdaProtocol] = []
    lazy var failStateVoidFunc: [Lambda<Void>] = []
 

@@ -11,7 +11,8 @@ extension Work: Cancellable {
             isCancelled = true
             isWorking = false
         }
-        //
+
+        cancelVoidFinishers.forEach { $0() }
         nextWork?.cancel()
         voidNextWork?.cancel()
     }
@@ -25,6 +26,17 @@ public extension Work {
                 self?.cancellables.forEach { $0.cancel() }
             }
         }
+        return self
+    }
+
+    @discardableResult
+    func onCancel(_ finisher: @escaping () -> Void) -> Self {
+        self.cancelVoidFinishers.append({ [weak self] in
+            self?.finishQueue.async {
+                finisher()
+            }
+        })
+
         return self
     }
 }

@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Aleksandr Solovyev on 29.01.2023.
 //
@@ -31,11 +31,11 @@ public extension Work {
 
     @discardableResult
     func onCancel(_ finisher: @escaping () -> Void) -> Self {
-        self.cancelVoidFinishers.append({ [weak self] in
+        cancelVoidFinishers.append { [weak self] in
             self?.finishQueue.async {
                 finisher()
             }
-        })
+        }
 
         return self
     }

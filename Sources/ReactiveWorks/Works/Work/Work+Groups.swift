@@ -496,6 +496,48 @@ public extension Work {
 
       return newWork
    }
+
+//    @discardableResult
+//    func doCombineWith<In2, Out2>(_ work2: Work<In2, Out2>, on: DispatchQueue? = nil)
+//    -> Work<Void, (Out, Out2)>
+//    {
+//        let newWork = Work<Void, (Out, Out2)>(input: nil)
+//        newWork.savedResultClosure = savedResultClosure
+//        newWork.type = .combine
+//        newWork.doQueue = on ?? doQueue
+//        newWork.closure = { [weak self, weak work2] work in
+//            guard let work1 = self, let work2 else { work.fail(); return }
+//
+//            var result1: Out?
+//            var result2: Out2?
+//            work1
+//                .onSuccess {
+//                    result1 = $0
+//                    if result2 != nil {
+//                        work.success((result1!, result2!))
+//                        result1 = nil
+//                        result2 = nil
+//                        work.isFinished = false
+//                    }
+//                }
+//                .onFail { work.fail() }
+//
+//            work2
+//                .onSuccess {
+//                    result2 = $0
+//                    if result1 != nil {
+//                        work.success((result1!, result2!))
+//                        result1 = nil
+//                        result2 = nil
+//                        work.isFinished = false
+//                    }
+//                }
+//                .onFail { work.fail() }
+//        }
+//        nextWork = WorkWrappper<Void, (Out, Out2)>(work: newWork)
+//
+//        return newWork
+//    }
 }
 
 public extension Work where Input == Void, Out == Void {

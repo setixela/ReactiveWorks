@@ -27,7 +27,6 @@ public extension Work {
         work.doQueue = on ?? doQueue
         
         recoverWork = WorkWrappper<Out, Out2>(work: work)
-      //  nextWork = recoverWork
         
         return work
     }
@@ -39,7 +38,6 @@ public extension Work {
         work.doQueue = on ?? doQueue
 
         voidRecoverWork = WorkWrappper<Void, Out2>(work: work)
-        //nextWork = recoverWork
 
         return work
     }
@@ -201,6 +199,25 @@ public extension Work {
         nextWork = WorkWrappper(work: work)
         
         return work
+    }
+
+    func doCheck(on: DispatchQueue? = nil, _ checker: @escaping (Out) -> Bool) -> Work<Out, Out> {
+        let newWork = Work<Out, Out>()
+        newWork.savedResultClosure = savedResultClosure
+        newWork.closure = { work in
+            let input = work.in
+
+            if checker(input) {
+                work.success(input)
+            } else {
+                work.fail(input)
+            }
+        }
+        newWork.type = .mapper
+        newWork.doQueue = on ?? doQueue
+        nextWork = WorkWrappper(work: newWork)
+
+        return newWork
     }
     
     func doMix<T: Any>(_ value: T?, on: DispatchQueue? = nil) -> Work<Out, (Out, T)> {

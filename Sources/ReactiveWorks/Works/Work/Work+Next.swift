@@ -55,6 +55,7 @@ public extension Work {
         newWork.doQueue = on ?? doQueue
         
         recoverWork = WorkWrappper<Input, Out>(work: newWork)
+        nextWork = recoverWork
         
         return newWork
     }

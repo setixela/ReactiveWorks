@@ -178,6 +178,37 @@ public extension Work {
         
         return self
     }
+
+   @discardableResult
+   func onSuccessMixSaved<S, OutSaved>(_ delegate: Delegate<S>?,
+                                       _ stateFunc: @escaping ((Out, OutSaved)) -> [S]) -> Self
+   {
+      let closure: GenericClosure<Out> = { [weak self, delegate] result in
+         guard let savedResultClosure = self?.savedResultClosure else {
+            assertionFailure("savedResultClosure is nil")
+            return
+         }
+
+         let savedValue = savedResultClosure()
+
+         guard let saved = savedValue as? OutSaved else {
+            assertionFailure("saved value is not \(OutSaved.self)")
+            return
+         }
+
+         self?.finishQueue.async { [stateFunc] in
+            let value = stateFunc((result, saved))
+            value.forEach {
+               delegate?($0)
+            }
+         }
+      }
+
+      let lambda = Lambda(lambda: closure)
+      successStateFunc.append(lambda)
+
+      return self
+   }
     
     @discardableResult
     func onFailMixSaved<S, OutSaved>(_ delegate: Delegate<S>?,

@@ -342,7 +342,7 @@ public extension Work {
    }
 
    @discardableResult
-   func doSendEvent(_ work: Work<Void, Void>, on: DispatchQueue? = nil) -> Work<Void, Void> {
+   func doSendVoidEvent(_ work: Work<Void, Void>, on: DispatchQueue? = nil) -> Work<Void, Void> {
       let newWork = Work<Void, Void>()
       newWork.savedResultClosure = savedResultClosure
       newWork.doQueue = on ?? doQueue
@@ -354,16 +354,16 @@ public extension Work {
       return newWork
    }
 
-//    @discardableResult
-//    func doSendEvent(_ work: Work<Void, Out>, on: DispatchQueue? = nil) -> Work<Void, Out> {
-//        let newWork = Work<Void, Out>()
-//        newWork.savedResultClosure = savedResultClosure
-//        newWork.doQueue = on ?? doQueue
-//        newWork.closure = { [work] wrk in
-//            work.success(wrk.result!)
-//        }
-//        nextWork = WorkWrappper(work: newWork)
-//
-//        return newWork
-//    }
+   @discardableResult
+   func doSendEvent(_ work: Work<Void, Out>, on: DispatchQueue? = nil) -> Work<Out, Out> {
+      let newWork = Work<Out, Out>()
+      newWork.savedResultClosure = savedResultClosure
+      newWork.doQueue = on ?? doQueue
+      newWork.closure = { [work] inWork in
+         work.sendAsyncEvent(inWork.in)
+      }
+      nextWork = WorkWrappper(work: newWork)
+
+      return newWork
+   }
 }

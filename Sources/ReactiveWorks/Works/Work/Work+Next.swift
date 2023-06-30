@@ -346,8 +346,9 @@ public extension Work {
       let newWork = Work<Void, Void>()
       newWork.savedResultClosure = savedResultClosure
       newWork.doQueue = on ?? doQueue
-      newWork.closure = { [work] _ in
+      newWork.closure = { [work] inWork in
          work.success()
+         inWork.success(inWork.in)
       }
       nextWork = WorkWrappper(work: newWork)
 
@@ -361,6 +362,7 @@ public extension Work {
       newWork.doQueue = on ?? doQueue
       newWork.closure = { [work] inWork in
          work.sendAsyncEvent(inWork.in)
+         inWork.success(inWork.in)
       }
       nextWork = WorkWrappper(work: newWork)
 

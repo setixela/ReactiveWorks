@@ -41,6 +41,22 @@ public extension Eventable2 {
     }
 }
 
+public extension Eventable3 {
+   @discardableResult
+   func on<T>(_ eventKey: Key3<T>) -> Work<Void, T> {
+      let hash = eventKey.hashValue
+      let work = Work<Void, T>()
+      work.type = .event
+      //
+      let closure: Event<T> = { value in
+         work.doSyncWithResult(value)
+      }
+      //
+      events3[hash] = Lambda(lambda: closure)
+
+      return work
+   }
+}
 
 public extension Work {
    @discardableResult

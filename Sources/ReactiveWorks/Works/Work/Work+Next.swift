@@ -342,12 +342,12 @@ public extension Work {
    }
 
    @discardableResult
-   func doSendVoidEvent(_ work: Work<Void, Void>, on: DispatchQueue? = nil) -> Work<Void, Void> {
-      let newWork = Work<Void, Void>()
+   func doSendVoidEvent(_ work: Work<Void, Void>, on: DispatchQueue? = nil) -> Work<Out, Out> {
+      let newWork = Work<Out, Out>()
       newWork.savedResultClosure = savedResultClosure
       newWork.doQueue = on ?? doQueue
       newWork.closure = { [work] inWork in
-         work.success()
+         work.sendAsyncEvent()
          inWork.success(inWork.in)
       }
       nextWork = WorkWrappper(work: newWork)

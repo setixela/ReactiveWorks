@@ -21,6 +21,17 @@ public extension Work {
    }
 
    @discardableResult
+   func doRecover<Out2>(_ work: Work<Input, Out2>, on: DispatchQueue? = nil) -> Work<Input, Out2> {
+      work.savedResultClosure = savedResultClosure
+      work.type = .recoverNext
+      work.doQueue = on ?? doQueue
+
+      recoverWork = WorkWrappper<Input, Out2>(work: work)
+
+      return work
+   }
+
+   @discardableResult
    func doRecover<Out2>(_ work: Work<Out, Out2>, on: DispatchQueue? = nil) -> Work<Out, Out2> {
       work.savedResultClosure = savedResultClosure
       work.type = .recoverNext
@@ -253,7 +264,6 @@ public extension Work {
             work.fail()
             return
          }
-
 
          work.success(result: (work.in, saved))
       }

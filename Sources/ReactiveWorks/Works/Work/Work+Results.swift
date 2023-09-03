@@ -48,10 +48,10 @@ public extension Work {
         return self
     }
     
-    @discardableResult func onSuccess(_ voidFinisher: @escaping () -> Void) -> Self {
-        self.voidFinisher.append({ [weak self] in
+    @discardableResult func onSuccess(_ finisher: @escaping () -> Void) -> Self {
+        voidFinisher.append({ [weak self] in
             self?.finishQueue.async {
-                voidFinisher()
+                finisher()
             }
         })
         
@@ -59,16 +59,28 @@ public extension Work {
     }
     
     @discardableResult func onFail<T>(_ failure: @escaping GenericClosure<T>) -> Self {
-        genericFail.append(Lambda(lambda: failure))
+
+        let clos = { [weak self] value in
+            guard let self else { return }
+
+            self.finishQueue.async {
+                failure(value)
+            }
+        }
+        genericFail.append(Lambda(lambda: clos))
         
         return self
     }
     
     @discardableResult
     func onFail<S: AnyObject>(_ weakSelf: S, _ failure: @escaping (S) -> Void) -> Self {
-        let clos = { [weak weakSelf] (_: Out) in
-            guard let slf = weakSelf else { return }
-            failure(slf)
+        let clos = { [weak self] in
+            guard let self else { return }
+
+            self.finishQueue.async { [weak weakSelf] in
+                guard let slf = weakSelf else { return }
+                failure(slf)
+            }
         }
         
         genericFail.append(Lambda(lambda: clos))

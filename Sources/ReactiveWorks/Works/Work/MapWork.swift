@@ -29,3 +29,5 @@ public typealias MapInOut<I> = MapWork<I, I>
 public class MapIn<I>: MapWork<I, Void> {
     public typealias MapOut<O> = MapWork<I, O>
 }
+
+public typealias MapVoidWork = MapWork<Void, Void>

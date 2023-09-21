@@ -10,7 +10,7 @@ import Foundation
 public extension Eventable {
    @discardableResult
    func on<T>(_ eventKey: Key<T>) -> Work<Void, T> {
-      let hash = eventKey.hashValue
+      let hash = eventKey.caseName
       let work = Work<Void, T>()
       work.type = .event
       //
@@ -27,7 +27,7 @@ public extension Eventable {
 public extension Eventable2 {
     @discardableResult
     func on<T>(_ eventKey: Key2<T>) -> Work<Void, T> {
-        let hash = eventKey.hashValue
+        let hash = eventKey.caseName
         let work = Work<Void, T>()
         work.type = .event
         //
@@ -44,7 +44,7 @@ public extension Eventable2 {
 public extension Eventable3 {
    @discardableResult
    func on<T>(_ eventKey: Key3<T>) -> Work<Void, T> {
-      let hash = eventKey.hashValue
+      let hash = eventKey.caseName
       let work = Work<Void, T>()
       work.type = .event
       //

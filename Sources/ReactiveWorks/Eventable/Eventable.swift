@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Reinventing Eventable
 
-public typealias EventsStore = [Int: LambdaProtocol?]
+public typealias EventsStore = [AnyHashable: LambdaProtocol?]
 
 public protocol Eventable: AnyObject {
    associatedtype Events: InitProtocol
@@ -19,11 +19,14 @@ public protocol Eventable: AnyObject {
    var events: EventsStore { get set }
 }
 
+extension KeyPath {
+   var caseName: String { "\(self)\(Self.valueType)" }
+}
 
 public extension Eventable {
    @discardableResult
    func on<T>(_ eventKey: Key<T>, _ closure: @escaping Event<T>) -> Self {
-      let hash = eventKey.hashValue
+      let hash = eventKey
       let lambda = Lambda(lambda: closure)
       events[hash] = lambda
       return self
@@ -31,7 +34,7 @@ public extension Eventable {
 
    @discardableResult
    func on<S: AnyObject>(_ eventKey: Key<Void>, _ slf: S?, _ closure: @escaping (S) -> Void) -> Self {
-      let hash = eventKey.hashValue
+      let hash = eventKey
       let clos = { [weak slf] in
          guard let slf = slf else { return }
          closure(slf)
@@ -43,7 +46,7 @@ public extension Eventable {
 
    @discardableResult
    func on<T, S: AnyObject>(_ eventKey: Key<T>, _ slf: S?, _ closure: @escaping (S, T) -> Void) -> Self {
-      let hash = eventKey.hashValue
+      let hash = eventKey
       let clos = { [weak slf] (value: T) in
          guard let slf = slf else { return }
          closure(slf, value)
@@ -55,7 +58,7 @@ public extension Eventable {
 
    @discardableResult
    func send(_ eventKey: Key<Void>) -> Self {
-      let hash = eventKey.hashValue
+      let hash = eventKey
       guard
          let lambda = events[hash]
       else {
@@ -69,7 +72,7 @@ public extension Eventable {
 
    @discardableResult
    func send<T>(_ eventKey: Key<T>, _ payload: T) -> Self {
-      let hash = eventKey.hashValue
+      let hash = eventKey
       guard
          let lambda = events[hash]
       else {
@@ -82,14 +85,14 @@ public extension Eventable {
    }
 
    func hasSubcriberForEvent<T>(_ eventKey: Key<T>) -> Bool {
-      events[eventKey.hashValue] != nil
+      events[eventKey] != nil
    }
 
    @discardableResult
    func unSubscribe<T>(_ eventKey: Key<T>) -> Bool {
-      guard events[eventKey.hashValue] != nil else { return false }
+      guard events[eventKey] != nil else { return false }
 
-      events[eventKey.hashValue] = nil
+      events[eventKey] = nil
       return true
    }
 }

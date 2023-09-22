@@ -17,7 +17,7 @@ public protocol Eventable3: Eventable {
 
 public extension Eventable3 {
    @discardableResult func on<T>(_ eventKey: Key3<T>, _ closure: @escaping Event<T>) -> Self {
-      let hash = eventKey.caseName
+      let hash = eventKey
       let lambda = Lambda(lambda: closure)
       events3[hash] = lambda
       return self
@@ -25,7 +25,7 @@ public extension Eventable3 {
 
    @discardableResult
    func on<S: AnyObject>(_ eventKey: Key3<Void>, _ slf: S?, _ closure: @escaping (S) -> Void) -> Self {
-      let hash = eventKey.caseName
+      let hash = eventKey
       let clos = { [weak slf] in
          guard let slf = slf else { return }
          closure(slf)
@@ -37,7 +37,7 @@ public extension Eventable3 {
 
    @discardableResult
    func on<T, S: AnyObject>(_ eventKey: Key3<T>, _ slf: S?, _ closure: @escaping (S, T) -> Void) -> Self {
-      let hash = eventKey.caseName
+      let hash = eventKey
       let clos = { [weak slf] (value: T) in
          guard let slf = slf else { return }
          closure(slf, value)
@@ -49,7 +49,7 @@ public extension Eventable3 {
 
    @discardableResult
    func send(_ eventKey: Key3<Void>) -> Self {
-      let hash = eventKey.caseName
+      let hash = eventKey
       guard
          let lambda = events3[hash]
       else {
@@ -63,7 +63,7 @@ public extension Eventable3 {
 
    @discardableResult
    func send<T>(_ eventKey: Key3<T>, _ payload: T) -> Self {
-      let hash = eventKey.caseName
+      let hash = eventKey
       guard
          let lambda = events3[hash]
       else {
@@ -76,14 +76,14 @@ public extension Eventable3 {
    }
 
    func hasSubcriberForEvent<T>(_ eventKey: Key3<T>) -> Bool {
-      events3[eventKey.caseName] != nil
+      events3[eventKey] != nil
    }
 
    @discardableResult
    func unSubscribe<T>(_ eventKey: Key3<T>) -> Bool {
-      guard events3[eventKey.caseName] != nil else { return false }
+      guard events3[eventKey] != nil else { return false }
 
-      events3[eventKey.caseName] = nil
+      events3[eventKey] = nil
       return true
    }
 }

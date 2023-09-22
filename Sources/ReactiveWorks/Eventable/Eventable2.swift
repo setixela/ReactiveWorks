@@ -16,7 +16,7 @@ public protocol Eventable2: Eventable {
 public extension Eventable2 {
    @discardableResult
    func on<T>(_ eventKey: Key2<T>, _ closure: @escaping Event<T>) -> Self {
-      let hash = eventKey.caseName
+      let hash = eventKey
       let lambda = Lambda(lambda: closure)
       events2[hash] = lambda
       return self
@@ -24,7 +24,7 @@ public extension Eventable2 {
    
    @discardableResult
    func on<S: AnyObject>(_ eventKey: Key2<Void>, _ slf: S?, _ closure: @escaping (S) -> Void) -> Self {
-      let hash = eventKey.caseName
+      let hash = eventKey
       let clos = { [weak slf] in
          guard let slf = slf else { return }
          closure(slf)
@@ -36,7 +36,7 @@ public extension Eventable2 {
    
    @discardableResult
    func on<T, S: AnyObject>(_ eventKey: Key2<T>, _ slf: S?, _ closure: @escaping (S, T) -> Void) -> Self {
-      let hash = eventKey.caseName
+      let hash = eventKey
       let clos = { [weak slf] (value: T) in
          guard let slf = slf else { return }
          closure(slf, value)
@@ -48,7 +48,7 @@ public extension Eventable2 {
    
    @discardableResult
    func send(_ eventKey: Key2<Void>) -> Self {
-      let hash = eventKey.caseName
+      let hash = eventKey
       guard
          let lambda = events2[hash]
       else {
@@ -62,7 +62,7 @@ public extension Eventable2 {
    
    @discardableResult
    func send<T>(_ eventKey: Key2<T>, _ payload: T) -> Self {
-      let hash = eventKey.caseName
+      let hash = eventKey
       guard
          let lambda = events2[hash]
       else {
@@ -75,14 +75,14 @@ public extension Eventable2 {
    }
    
    func hasSubcriberForEvent<T>(_ eventKey: Key2<T>) -> Bool {
-      events2[eventKey.caseName] != nil
+      events2[eventKey] != nil
    }
 
    @discardableResult
    func unSubscribe<T>(_ eventKey: Key2<T>) -> Bool {
-      guard events2[eventKey.caseName] != nil else { return false }
+      guard events2[eventKey] != nil else { return false }
 
-      events2[eventKey.caseName] = nil
+      events2[eventKey] = nil
       return true
    }
 }

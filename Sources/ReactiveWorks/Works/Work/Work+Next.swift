@@ -378,4 +378,25 @@ public extension Work {
 
       return newWork
    }
+    
+   @discardableResult
+   func doZip<Out2>(_ work: Work<Void, Out2>, on: DispatchQueue? = nil) -> Work<Out, (Out, Out2)> {
+      let newWork = Work<Out, (Out, Out2)>() { wrk in
+         work.doAsync(())
+            .onSuccess {
+               wrk.success((wrk.in, $0))
+            }
+            .onFail {
+               wrk.fail()
+            }
+      }
+      
+      newWork.type = .default
+      newWork.savedResultClosure = savedResultClosure
+      newWork.doQueue = on ?? doQueue
+      
+      nextWork = WorkWrappper<Out, (Out, Out2)>(work: newWork)
+      
+      return newWork
+   }
 }

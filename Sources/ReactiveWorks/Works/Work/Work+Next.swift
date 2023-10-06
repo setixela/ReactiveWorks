@@ -399,4 +399,19 @@ public extension Work {
       
       return newWork
    }
+    
+    func doZip<Out2>(on: DispatchQueue? = nil, _ mapper: @escaping () -> Out2) -> Work<Out, (Out, Out2)> {
+        let newWork = Work<Out, (Out, Out2)>() { wrk in
+            wrk.success((wrk.in, mapper()))
+        }
+        
+        newWork.type = .default
+        newWork.savedResultClosure = savedResultClosure
+        newWork.doQueue = on ?? doQueue
+        
+        nextWork = WorkWrappper<Out, (Out, Out2)>(work: newWork)
+        
+        return newWork
+    }
+
 }

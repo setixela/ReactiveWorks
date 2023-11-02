@@ -221,7 +221,7 @@ public extension Work {
          if checker(input) {
             work.success(input)
          } else {
-            work.fail(input)
+            work.fail()
          }
       }
       newWork.type = .mapper

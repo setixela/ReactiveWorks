@@ -222,6 +222,7 @@ public extension Work {
             work.success(input)
          } else {
             work.fail()
+            work.fail(input)
          }
       }
       newWork.type = .mapper

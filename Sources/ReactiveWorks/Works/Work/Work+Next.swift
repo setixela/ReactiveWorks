@@ -189,6 +189,37 @@ public extension Work {
       return work
    }
 
+   @discardableResult
+   func doSaveTo<Store: AnyObject>(_ store: Store, _ keyPath: WritableKeyPath<Store, Out>) -> Work<Out, Out>
+   {
+      let work = Work<Out, Out> { [weak store] work in
+         store?[keyPath: keyPath] = work.in
+         work.success(work.in)
+      }
+      work.savedResultClosure = savedResultClosure
+      work.doQueue = doQueue
+      nextWork = WorkWrappper(work: work)
+
+      return work
+   }
+
+   @discardableResult
+   func doLoadFrom<Store: AnyObject>(_ store: Store, _ keyPath: KeyPath<Store, Out>) -> Work<Void, Out> {
+      let work = Work<Void, Out> { [weak store] work in
+         guard let store = store else {
+            work.fail()
+            return
+         }
+
+         work.success(result: store[keyPath: keyPath])
+      }
+      work.savedResultClosure = savedResultClosure
+      work.doQueue = doQueue
+      nextWork = WorkWrappper(work: work)
+
+      return work
+   }
+
    func doMap<T>(on: DispatchQueue? = nil, _ mapper: @escaping MapClosure<Out, T?>) -> Work<Out, T> {
       let work = Work<Out, T>()
       work.savedResultClosure = savedResultClosure

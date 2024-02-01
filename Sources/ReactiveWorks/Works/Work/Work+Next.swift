@@ -203,6 +203,20 @@ public extension Work {
       return work
    }
 
+    @discardableResult
+    func doSaveTo<Store: AnyObject>(_ store: Store, _ keyPath: WritableKeyPath<Store, Out?>) -> Work<Out, Void>
+    {
+        let work = Work<Out, Void> { [weak store] work in
+            store?[keyPath: keyPath] = work.in
+            work.success()
+        }
+        work.savedResultClosure = savedResultClosure
+        work.doQueue = doQueue
+        nextWork = WorkWrappper(work: work)
+
+        return work
+    }
+
    @discardableResult
    func doLoadFrom<Store: AnyObject>(_ store: Store, _ keyPath: KeyPath<Store, Out>) -> Work<Void, Out> {
       let work = Work<Void, Out> { [weak store] work in
@@ -431,7 +445,28 @@ public extension Work {
       
       return newWork
    }
-    
+
+    @discardableResult
+    func doZip<In2, Out2>(_ work: Work<In2, Out2>, input: In2, on: DispatchQueue? = nil) -> Work<Out, (Out, Out2)> {
+        let newWork = Work<Out, (Out, Out2)>() { wrk in
+            work.doAsync(input)
+                .onSuccess {
+                    wrk.success((wrk.in, $0))
+                }
+                .onFail {
+                    wrk.fail()
+                }
+        }
+
+        newWork.type = .default
+        newWork.savedResultClosure = savedResultClosure
+        newWork.doQueue = on ?? doQueue
+
+        nextWork = WorkWrappper<Out, (Out, Out2)>(work: newWork)
+
+        return newWork
+    }
+
     func doZip<Out2>(on: DispatchQueue? = nil, _ mapper: @escaping () -> Out2) -> Work<Out, (Out, Out2)> {
         let newWork = Work<Out, (Out, Out2)>() { wrk in
             wrk.success((wrk.in, mapper()))
